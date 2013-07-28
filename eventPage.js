@@ -1,15 +1,10 @@
-/*global chrome:true, console:true, CryptoJS:true */
+/*global chrome:true, console:true, CryptoJS:true, tld:true */
 /*jshint es5:true */
 
-function getHostname(url) {
+function getDomain(url) {
     var a = document.createElement('a');
     a.href = url;
-    return a.hostname;
-}
-
-function getDomain(hostname) {
-    // TODO: use public suffix list
-    return hostname.split('.').slice(-2).join('.');
+    return tld.getDomain(a.hostname);
 }
 
 // Encoder than can be passed to crypto-js to stringify the hash
@@ -154,8 +149,7 @@ chrome.runtime.onInstalled.addListener(function () {
 });
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
-    var hostKey = getHostname(tab.url);
-    var domainKey = getDomain(hostKey);
+    var domainKey = getDomain(tab.url);
     var hash = CryptoJS.SHA3(domainKey, { outputLength: 64 });
     
     console.log('Without sym', hash.toString(encoder(false)));
