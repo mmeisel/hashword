@@ -1,0 +1,16 @@
+{
+    "name": "Hashword",
+    "version": "0.1.0.0",
+    "manifest_version": 2,
+    "description": "Generate reproducible hashed passwords",
+    "background": {
+        "scripts": ["lib/sha3.js", "lib/enc-base64-min.js", "eventPage.js"],
+        "persistent": false
+    },
+    "incognito": "spanning",
+    "minimum_chrome_version": "22",
+    "permissions": [
+        "contextMenus",
+        "tabs"
+    ]
+}
