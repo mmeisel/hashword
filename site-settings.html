@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Site Settings</title>
+  <link rel="stylesheet" type="text/css" href="lib/bootstrap.min.css"/>
+  <link rel="stylesheet" type="text/css" href="hashword.css"/>
+  <script type="text/javascript" src="site-settings.js"></script>
+</head>
+<body>
+  <div class="container">
+    <p class="lead domain">Settings</p>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label class="col-6 control-label">Password Length</label>
+        <div class="col-6 control-spacing">
+          <div class="controls">
+            <label class="radio-inline">
+              <input type="radio" name="pwLength" value="8"/> 8
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="pwLength" value="16" checked="checked"/> 16
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="symbols" checked="checked"/> Use symbols
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-6 control-label">Generation</label>
+        <div class="col-6">
+          <label>
+            <input type="number" class="form-control" name="generation" value="1"/>
+          </label>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-12 confirm-buttons">
+          <button type="button" class="btn btn-default btn-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">OK</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

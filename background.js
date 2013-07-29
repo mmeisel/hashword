@@ -148,7 +148,7 @@ hw.getDomain = function (url) {
 };
 
 hw.getDefaultSettings = function () {
-    return { pwLength: 16, symbols: true };
+    return { pwLength: 16, symbols: true, generation: 1 };
 };
 
 hw.getNextId = function () {
@@ -156,11 +156,13 @@ hw.getNextId = function () {
 };
 
 hw.getHashword = function (domain, masterPassword, settings) {
-    var key = masterPassword + '@' + domain;
+    var key = masterPassword + '@' + domain + '+' + settings.generation;
     
     return CryptoJS.SHA3(key, { outputLength: settings.pwLength * 4 })
         .toString(hw.encoder(settings.symbols));
 };
+
+// Popups
 
 hw.openPasswordPopup = function (info, tab) {
     var popupWidth = 360;
@@ -175,6 +177,29 @@ hw.openPasswordPopup = function (info, tab) {
         
         chrome.windows.create({
             url: 'password.html?tabId=' + tab.id + '&fieldId=' + fieldId,
+            type: 'popup',
+            top: Math.max(wind.top, (wind.top + wind.height) / 2 - popupHeight),
+            left: Math.max(0, (wind.left + wind.width) / 2 - (popupWidth / 2)),
+            width: popupWidth,
+            height: popupHeight,
+            focused: true
+        });
+    });
+};
+
+hw.openSettingsPopup = function (info, tab) {
+    var popupWidth = 360;
+    var popupHeight = 270;
+    
+    chrome.windows.get(tab.windowId, function (wind) {
+        var fieldId = hw.getNextId();
+        var items = {};
+        
+        // Tell the content script to mark this field with the fieldId
+        chrome.tabs.sendMessage(tab.id, { command: 'setId', fieldId: fieldId });
+        
+        chrome.windows.create({
+            url: 'site-settings.html?domain=' + encodeURIComponent(hw.getDomain(tab.url)),
             type: 'popup',
             top: Math.max(wind.top, (wind.top + wind.height) / 2 - popupHeight),
             left: Math.max(0, (wind.left + wind.width) / 2 - (popupWidth / 2)),
@@ -222,6 +247,6 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
         hw.openPasswordPopup(info, tab);
     }
     else if (info.menuItemId === 'settings') {
-        // TODO
+        hw.openSettingsPopup(info, tab);
     }
 });
