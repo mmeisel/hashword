@@ -4,7 +4,7 @@
     "manifest_version": 2,
     "description": "Generate reproducible hashed passwords",
     "background": {
-        "scripts": ["lib/sha3.js", "lib/enc-base64-min.js", "lib/tld.js", "eventPage.js"],
+        "scripts": ["lib/sha3.js", "lib/enc-base64-min.js", "lib/tld.js", "background.js"],
         "persistent": false
     },
     "content_scripts": [
