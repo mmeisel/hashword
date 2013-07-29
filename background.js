@@ -4,12 +4,6 @@
 // Global namespace
 var hw = {};
 
-hw.getDomain = function (url) {
-    var a = document.createElement('a');
-    a.href = url;
-    return tld.getDomain(a.hostname);
-};
-
 // Encoder than can be passed to crypto-js to stringify the hash
 hw.encoder = function (_requireSym) {
     var self = {};
@@ -147,37 +141,28 @@ hw.encoder = function (_requireSym) {
     return self;
 };
 
+hw.getDomain = function (url) {
+    var a = document.createElement('a');
+    a.href = url;
+    return tld.getDomain(a.hostname);
+};
+
+hw.getDefaultSettings = function () {
+    return { pwLength: 16, symbols: true };
+};
+
 hw.getNextId = function () {
     return (+('' + Math.random()).substr(2)).toString(36);
 };
 
-hw.getHashword = function (url, masterPassword) {
-    var key = masterPassword + '@' + hw.getDomain(url);
+hw.getHashword = function (domain, masterPassword, settings) {
+    var key = masterPassword + '@' + domain;
     
-    return CryptoJS.SHA3(key, { outputLength: 64 }).toString(hw.encoder(true));
+    return CryptoJS.SHA3(key, { outputLength: settings.pwLength * 4 })
+        .toString(hw.encoder(settings.symbols));
 };
 
-// Callbacks from popups
-
-hw.populateField = function (tabId, fieldId, masterPassword) {
-    chrome.tabs.get(tabId, function (tab) {
-        chrome.tabs.sendMessage(tabId, {
-            command: 'fill',
-            fieldId: fieldId,
-            password: hw.getHashword(tab.url, masterPassword)
-        });
-    });
-};
-
-// Chrome extension events
-
-chrome.runtime.onInstalled.addListener(function () {
-    chrome.contextMenus.create({ id: 'insert', title: 'Insert Password', contexts: ['editable'] });
-    chrome.contextMenus.create({ id: 'settings', title: 'Site Settings', contexts: ['editable'] });
-});
-
-chrome.contextMenus.onClicked.addListener(function (info, tab) {
-    // Prompt for password
+hw.openPasswordPopup = function (info, tab) {
     var popupWidth = 360;
     var popupHeight = 132;
     
@@ -198,4 +183,45 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
             focused: true
         });
     });
+};
+
+// Callbacks from popups
+
+hw.populateField = function (tabId, fieldId, masterPassword) {
+    chrome.tabs.get(tabId, function (tab) {
+        var domain = hw.getDomain(tab.url);
+        
+        // check for settings, set defaults if they aren't available
+        chrome.storage.local.get(domain, function (items) {
+            var settings = items[domain];
+            
+            if (!settings) {
+                settings = hw.getDefaultSettings();
+                items[domain] = settings;
+                chrome.storage.local.set(items);
+            }
+            
+            chrome.tabs.sendMessage(tabId, {
+                command: 'fill',
+                fieldId: fieldId,
+                password: hw.getHashword(domain, masterPassword, settings)
+            });
+        });
+    });
+};
+
+// Chrome extension events
+
+chrome.runtime.onInstalled.addListener(function () {
+    chrome.contextMenus.create({ id: 'insert', title: 'Insert Password', contexts: ['editable'] });
+    chrome.contextMenus.create({ id: 'settings', title: 'Site Settings', contexts: ['editable'] });
+});
+
+chrome.contextMenus.onClicked.addListener(function (info, tab) {
+    if (info.menuItemId === 'insert') {
+        hw.openPasswordPopup(info, tab);
+    }
+    else if (info.menuItemId === 'settings') {
+        // TODO
+    }
 });
