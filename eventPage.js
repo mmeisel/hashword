@@ -1,14 +1,17 @@
 /*global chrome:true, console:true, CryptoJS:true, tld:true */
 /*jshint es5:true */
 
-function getDomain(url) {
+// Global namespace
+var hw = {};
+
+hw.getDomain = function (url) {
     var a = document.createElement('a');
     a.href = url;
     return tld.getDomain(a.hostname);
-}
+};
 
 // Encoder than can be passed to crypto-js to stringify the hash
-var encoder = function (_requireSym) {
+hw.encoder = function (_requireSym) {
     var self = {};
     var _charClasses = [
         'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef',
@@ -144,15 +147,55 @@ var encoder = function (_requireSym) {
     return self;
 };
 
+hw.getNextId = function () {
+    return (+('' + Math.random()).substr(2)).toString(36);
+};
+
+hw.getHashword = function (url, masterPassword) {
+    var key = masterPassword + '@' + hw.getDomain(url);
+    
+    return CryptoJS.SHA3(key, { outputLength: 64 }).toString(hw.encoder(true));
+};
+
+// Callbacks from popups
+
+hw.populateField = function (tabId, fieldId, masterPassword) {
+    chrome.tabs.get(tabId, function (tab) {
+        chrome.tabs.sendMessage(tabId, {
+            command: 'fill',
+            fieldId: fieldId,
+            password: hw.getHashword(tab.url, masterPassword)
+        });
+    });
+};
+
+// Chrome extension events
+
 chrome.runtime.onInstalled.addListener(function () {
-    chrome.contextMenus.create({ id: 'fill', title: 'Hashword', contexts: ['editable'] });
+    chrome.contextMenus.create({ id: 'insert', title: 'Insert Password', contexts: ['editable'] });
+    chrome.contextMenus.create({ id: 'settings', title: 'Site Settings', contexts: ['editable'] });
 });
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
-    var domainKey = getDomain(tab.url);
-    var hash = CryptoJS.SHA3(domainKey, { outputLength: 64 });
+    // Prompt for password
+    var popupWidth = 360;
+    var popupHeight = 132;
     
-    console.log('Without sym', hash.toString(encoder(false)));
-    console.log('With sym', hash.toString(encoder(true)));
+    chrome.windows.get(tab.windowId, function (wind) {
+        var fieldId = hw.getNextId();
+        var items = {};
+        
+        // Tell the content script to mark this field with the fieldId
+        chrome.tabs.sendMessage(tab.id, { command: 'setId', fieldId: fieldId });
+        
+        chrome.windows.create({
+            url: 'password.html?tabId=' + tab.id + '&fieldId=' + fieldId,
+            type: 'popup',
+            top: Math.max(wind.top, (wind.top + wind.height) / 2 - popupHeight),
+            left: Math.max(0, (wind.left + wind.width) / 2 - (popupWidth / 2)),
+            width: popupWidth,
+            height: popupHeight,
+            focused: true
+        });
+    });
 });
-

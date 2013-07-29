@@ -7,10 +7,17 @@
         "scripts": ["lib/sha3.js", "lib/enc-base64-min.js", "lib/tld.js", "eventPage.js"],
         "persistent": false
     },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["contentscript.js"]
+        }
+    ],
     "incognito": "spanning",
     "minimum_chrome_version": "22",
     "permissions": [
         "contextMenus",
+        "storage",
         "tabs"
     ]
 }
