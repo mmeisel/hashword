@@ -22,7 +22,7 @@ hw.encoder = function (_requireSym) {
     
     // These are aribtrarily chosen to be hopefully as unoffensive to password checkers as
     // possible. They're in ASCII order.
-    var _symbols = '#+,-./:@';
+    var _symbols = '!#+,-./@';
     
     /* Make sure the number is exactly `len` characters by padding it with 0s. Note that `len`s
      * above 8 are not supported. (This is only ever used with len=2 or len=3 in the current
