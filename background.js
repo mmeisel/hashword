@@ -226,10 +226,10 @@ hw.populateField = function (tabId, fieldId, masterPassword) {
                 chrome.storage.local.set(items);
             }
             
-            chrome.tabs.sendMessage(tabId, {
-                command: 'fill',
-                fieldId: fieldId,
-                password: hw.getHashword(domain, masterPassword, settings)
+            var password = hw.getHashword(domain, masterPassword, settings);
+            
+            chrome.tabs.executeScript(tabId, {
+                code: 'document.activeElement.value=' + JSON.stringify(password)
             });
         });
     });

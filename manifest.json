@@ -7,12 +7,6 @@
         "scripts": ["lib/sha3.js", "lib/enc-base64-min.js", "lib/tld.js", "background.js"],
         "persistent": false
     },
-    "content_scripts": [
-        {
-            "matches": ["<all_urls>"],
-            "js": ["contentscript.js"]
-        }
-    ],
     "commands": {
         "insert_password": {
             "suggested_key": {
@@ -23,10 +17,10 @@
         }
     },
     "incognito": "spanning",
-    "minimum_chrome_version": "22",
+    "minimum_chrome_version": "26",
     "permissions": [
+        "activeTab",
         "contextMenus",
-        "storage",
-        "tabs"
+        "storage"
     ]
 }
