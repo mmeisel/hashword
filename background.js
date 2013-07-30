@@ -178,8 +178,8 @@ hw.openPasswordPopup = function (tab) {
         chrome.windows.create({
             url: 'password.html?tabId=' + tab.id + '&fieldId=' + fieldId,
             type: 'popup',
-            top: Math.max(wind.top, (wind.top + wind.height) / 2 - popupHeight),
-            left: Math.max(0, (wind.left + wind.width) / 2 - (popupWidth / 2)),
+            top: Math.max(wind.top, wind.top + wind.height / 2 - popupHeight),
+            left: Math.max(0, wind.left + wind.width / 2 - popupWidth / 2),
             width: popupWidth,
             height: popupHeight,
             focused: true
