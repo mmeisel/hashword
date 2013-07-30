@@ -164,7 +164,7 @@ hw.getHashword = function (domain, masterPassword, settings) {
 
 // Popups
 
-hw.openPasswordPopup = function (info, tab) {
+hw.openPasswordPopup = function (tab) {
     var popupWidth = 360;
     var popupHeight = 132;
     
@@ -187,7 +187,7 @@ hw.openPasswordPopup = function (info, tab) {
     });
 };
 
-hw.openSettingsPopup = function (info, tab) {
+hw.openSettingsPopup = function (tab) {
     var popupWidth = 360;
     var popupHeight = 270;
     
@@ -244,9 +244,9 @@ chrome.runtime.onInstalled.addListener(function () {
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
     if (info.menuItemId === 'insert') {
-        hw.openPasswordPopup(info, tab);
+        hw.openPasswordPopup(tab);
     }
     else if (info.menuItemId === 'settings') {
-        hw.openSettingsPopup(info, tab);
+        hw.openSettingsPopup(tab);
     }
 });
