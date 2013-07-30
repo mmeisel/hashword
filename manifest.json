@@ -13,6 +13,15 @@
             "js": ["contentscript.js"]
         }
     ],
+    "commands": {
+        "insert_password": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+P",
+                "mac": "Command+Shift+P"
+            },
+            "description": "Insert Password"
+        }
+    },
     "incognito": "spanning",
     "minimum_chrome_version": "22",
     "permissions": [

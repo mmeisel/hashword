@@ -250,3 +250,10 @@ chrome.contextMenus.onClicked.addListener(function (info, tab) {
         hw.openSettingsPopup(tab);
     }
 });
+
+chrome.commands.onCommand.addListener(function (command) {
+    // We only have one command: insert_password
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        if (tabs.length) hw.openPasswordPopup(tabs[0]);
+    });
+});
