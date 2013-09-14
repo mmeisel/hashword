@@ -1,8 +1,4 @@
 window.onload = function () {
-    // Get the fieldId and tabId from the query string
-    var tabId = +window.location.search.match(/[&?]tabId=([0-9]+)/)[1];
-    var fieldId = window.location.search.match(/[&?]fieldId=([0-9a-z]+)/)[1];
-    
     document.querySelector('input[type="password"]').focus();
 
     document.querySelector('.btn-cancel').addEventListener('click', function () {
@@ -13,8 +9,12 @@ window.onload = function () {
         var form = e.srcElement;
         
         e.preventDefault();
-        chrome.runtime.getBackgroundPage(function (bgPage) {
-            bgPage.hw.populateField(tabId, fieldId, form.elements.password.value);
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            if (tabs.length) {
+                chrome.runtime.getBackgroundPage(function (bgPage) {
+                    bgPage.hw.populateField(tabs[0].id, form.elements.password.value);
+                });
+            }
         });
         window.close();
     });

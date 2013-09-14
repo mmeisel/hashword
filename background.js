@@ -164,29 +164,6 @@ hw.getHashword = function (domain, masterPassword, settings) {
 
 // Popups
 
-hw.openPasswordPopup = function (tab) {
-    var popupWidth = 360;
-    var popupHeight = 132;
-    
-    chrome.windows.get(tab.windowId, function (wind) {
-        var fieldId = hw.getNextId();
-        var items = {};
-        
-        // Tell the content script to mark this field with the fieldId
-        chrome.tabs.sendMessage(tab.id, { command: 'setId', fieldId: fieldId });
-        
-        chrome.windows.create({
-            url: 'password.html?tabId=' + tab.id + '&fieldId=' + fieldId,
-            type: 'popup',
-            top: Math.round(Math.max(wind.top, wind.top + wind.height / 2 - popupHeight)),
-            left: Math.round(Math.max(0, wind.left + wind.width / 2 - popupWidth / 2)),
-            width: popupWidth,
-            height: popupHeight,
-            focused: true
-        });
-    });
-};
-
 hw.openSettingsPopup = function (tab) {
     var popupWidth = 360;
     var popupHeight = 270;
@@ -212,7 +189,7 @@ hw.openSettingsPopup = function (tab) {
 
 // Callbacks from popups
 
-hw.populateField = function (tabId, fieldId, masterPassword) {
+hw.populateField = function (tabId, masterPassword) {
     chrome.tabs.get(tabId, function (tab) {
         var domain = hw.getDomain(tab.url);
         
@@ -238,26 +215,11 @@ hw.populateField = function (tabId, fieldId, masterPassword) {
 // Chrome extension events
 
 chrome.runtime.onInstalled.addListener(function () {
-    chrome.contextMenus.create({ id: 'insert', title: 'Insert Password', contexts: ['editable'] });
     chrome.contextMenus.create({ id: 'settings', title: 'Site Settings', contexts: ['editable'] });
 });
 
 chrome.contextMenus.onClicked.addListener(function (info, tab) {
-    if (info.menuItemId === 'insert') {
-        hw.openPasswordPopup(tab);
-    }
-    else if (info.menuItemId === 'settings') {
+    if (info.menuItemId === 'settings') {
         hw.openSettingsPopup(tab);
     }
 });
-
-chrome.commands.onCommand.addListener(function (command) {
-    // We only have one command: insert_password
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        if (tabs.length) {
-            //chrome.pageAction.show(tabs[0].id);
-            hw.openPasswordPopup(tabs[0]);
-        }
-    });
-});
-
