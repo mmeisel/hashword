@@ -255,8 +255,8 @@ chrome.commands.onCommand.addListener(function (command) {
     // We only have one command: insert_password
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         if (tabs.length) {
-            chrome.pageAction.show(tabs[0].id);
-            //hw.openPasswordPopup(tabs[0]);
+            //chrome.pageAction.show(tabs[0].id);
+            hw.openPasswordPopup(tabs[0]);
         }
     });
 });
