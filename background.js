@@ -151,10 +151,6 @@ hw.getDefaultSettings = function () {
     return { pwLength: 16, symbols: true, generation: 1 };
 };
 
-hw.getNextId = function () {
-    return (+('' + Math.random()).substr(2)).toString(36);
-};
-
 hw.getHashword = function (domain, masterPassword, settings) {
     var key = masterPassword + '@' + domain + '+' + settings.generation;
     
@@ -162,64 +158,18 @@ hw.getHashword = function (domain, masterPassword, settings) {
         .toString(hw.encoder(settings.symbols));
 };
 
-// Popups
+// Callback from popup
 
-hw.openSettingsPopup = function (tab) {
-    var popupWidth = 360;
-    var popupHeight = 270;
+hw.insertPassword = function (tabId, domain, masterPassword, settings) {
+    var password = hw.getHashword(domain, masterPassword, settings);
+    var items = {};
     
-    chrome.windows.get(tab.windowId, function (wind) {
-        var fieldId = hw.getNextId();
-        var items = {};
-        
-        // Tell the content script to mark this field with the fieldId
-        chrome.tabs.sendMessage(tab.id, { command: 'setId', fieldId: fieldId });
-        
-        chrome.windows.create({
-            url: 'site-settings.html?domain=' + encodeURIComponent(hw.getDomain(tab.url)),
-            type: 'popup',
-            top: Math.round(Math.max(wind.top, (wind.top + wind.height) / 2 - popupHeight)),
-            left: Math.round(Math.max(0, (wind.left + wind.width) / 2 - (popupWidth / 2))),
-            width: popupWidth,
-            height: popupHeight,
-            focused: true
-        });
+    // Populate field
+    chrome.tabs.executeScript(tabId, {
+        code: 'document.activeElement.value=' + JSON.stringify(password)
     });
+    
+    // Save settings
+    items[domain] = settings;
+    chrome.storage.local.set(items);
 };
-
-// Callbacks from popups
-
-hw.populateField = function (tabId, masterPassword) {
-    chrome.tabs.get(tabId, function (tab) {
-        var domain = hw.getDomain(tab.url);
-        
-        // check for settings, set defaults if they aren't available
-        chrome.storage.local.get(domain, function (items) {
-            var settings = items[domain];
-            
-            if (!settings) {
-                settings = hw.getDefaultSettings();
-                items[domain] = settings;
-                chrome.storage.local.set(items);
-            }
-            
-            var password = hw.getHashword(domain, masterPassword, settings);
-            
-            chrome.tabs.executeScript(tabId, {
-                code: 'document.activeElement.value=' + JSON.stringify(password)
-            });
-        });
-    });
-};
-
-// Chrome extension events
-
-chrome.runtime.onInstalled.addListener(function () {
-    chrome.contextMenus.create({ id: 'settings', title: 'Site Settings', contexts: ['editable'] });
-});
-
-chrome.contextMenus.onClicked.addListener(function (info, tab) {
-    if (info.menuItemId === 'settings') {
-        hw.openSettingsPopup(tab);
-    }
-});

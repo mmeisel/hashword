@@ -1,6 +1,3 @@
-body {
-	background: #efefef;
-}
 .container {
 	padding: 20px 20px 5px 20px;
 	min-width: 300px;
@@ -13,6 +10,9 @@ body {
 }
 .control-spacing {
 	padding-top: 8px;
+}
+.collapse:target {
+	display: block;
 }
 input[name="generation"] {
 	width: 60px;
