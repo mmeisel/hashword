@@ -9,7 +9,7 @@
     },
     "browser_action": {
         "default_title": "Insert Password",
-        "default_popup": "password.html"
+        "default_popup": "popup.html"
     },
     "commands": {
         "_execute_browser_action": {
