@@ -11,9 +11,6 @@
 .control-spacing {
 	padding-top: 8px;
 }
-.collapse:target {
-	display: block;
-}
 input[name="generation"] {
 	width: 60px;
 }

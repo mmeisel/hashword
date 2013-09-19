@@ -12,8 +12,22 @@
 	    <div class="form-group">
 	      <input type="password" name="password" class="form-control" placeholder="Master Password"/>
 	    </div>
+			<div class="form-group domain-container collapse">
+	      <div class="controls">
+	        <div class="radio">
+	          <input type="radio" id="domain-tld" name="domain"/>
+						<label for="domain-tld"></label>
+	        </div>
+	        <div class="radio">
+	          <input type="radio" id="domain-name" name="domain"/>
+						<label for="domain-name"></label>
+	        </div>
+	      </div>
+			</div>
 			<div class="form-group">
-				<a href="#" data-target="#settings" class="toggle"><small class="domain">Settings</small></a>
+				<a href="#" data-target="#settings" class="toggle">
+					<small class="settings-label">Settings</small>
+				</a>
 			</div>
 			<div id="settings" class="well well-sm collapse">
 	      <div class="form-group">

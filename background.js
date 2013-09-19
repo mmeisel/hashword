@@ -141,10 +141,10 @@ hw.encoder = function (_requireSym) {
     return self;
 };
 
-hw.getDomain = function (url) {
+hw.getDomainInfo = function (url) {
     var a = document.createElement('a');
     a.href = url;
-    return tld.getDomain(a.hostname);
+    return { name: '' + a.hostname, tld: tld.getDomain(a.hostname) };
 };
 
 hw.getDefaultSettings = function () {
