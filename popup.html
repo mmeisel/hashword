@@ -1,49 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app ng-csp>
 <head>
   <title>Enter Your Master Password</title>
   <link rel="stylesheet" type="text/css" href="lib/bootstrap.min.css"/>
   <link rel="stylesheet" type="text/css" href="hashword.css"/>
+  <script type="text/javascript" src="lib/angular.min.js"></script>
   <script type="text/javascript" src="popup.js"></script>
 </head>
 <body>
-  <div class="container">
-    <form>
+  <div class="container" ng-controller="PopupCtrl">
+    <p class="text-danger ng-cloak" ng-show="popup.error">{{ popup.error }}</p>
+    <form class="ng-cloak" ng-submit="insertPassword()" ng-hide="popup.error">
 	    <div class="form-group">
-	      <input type="password" name="password" class="form-control" placeholder="Master Password"/>
+	      <input type="password" name="password" class="form-control" placeholder="Master Password"
+	             ng-model="popup.password"
+	      />
 	    </div>
-			<div class="form-group domain-container collapse">
+			<div class="form-group ng-cloak" ng-show="hasSubdomain()">
 	      <div class="controls">
 	        <div class="radio">
-	          <input type="radio" id="domain-tld" name="domain"/>
-						<label for="domain-tld"></label>
-	        </div>
+	          <label>
+  	          <input type="radio" name="domain" value="{{ domainInfo.tld }}"
+  	                 ng-model="popup.domain" ng-change="changeDomain()"
+  	          />
+  	          Any {{ domainInfo.tld }} domain
+    	        </label>
+  	      </div>
 	        <div class="radio">
-	          <input type="radio" id="domain-name" name="domain"/>
-						<label for="domain-name"></label>
+	          <label>
+	            <input type="radio" name="domain" value="{{ domainInfo.name }}"
+	                   ng-model="popup.domain" ng-change="changeDomain()"
+	            />
+	            {{ domainInfo.name }} only
+	          </label>
 	        </div>
 	      </div>
 			</div>
 			<div class="form-group">
-				<a href="#" data-target="#settings" class="toggle">
-					<small class="settings-label">Settings</small>
+				<a href="#" ng-click="popup.showSettings = !popup.showSettings">
+					<small>Settings for {{ popup.domain }}</small>
 				</a>
 			</div>
-			<div id="settings" class="well well-sm collapse">
+			<div class="well well-sm ng-cloak" ng-show="popup.showSettings">
 	      <div class="form-group">
 	        <label class="col-6 control-label">Password Length</label>
 	        <div class="col-6 control-spacing">
 	          <div class="controls">
 	            <label class="radio-inline">
-	              <input type="radio" name="pwLength" value="8"/> 8
+	              <input type="radio" name="pwLength" value="8" ng-model="settings.pwLength"/> 8
 	            </label>
 	            <label class="radio-inline">
-	              <input type="radio" name="pwLength" value="16" checked="checked"/> 16
+	              <input type="radio" name="pwLength" value="16" ng-model="settings.pwLength"/> 16
 	            </label>
 	          </div>
 	          <div class="checkbox">
 	            <label>
-	              <input type="checkbox" name="symbols" checked="checked"/> Use symbols
+	              <input type="checkbox" name="symbols" ng-model="settings.symbols"/> Use symbols
 	            </label>
 	          </div>
 	        </div>
@@ -52,13 +64,15 @@
 	        <label class="col-6 control-label">Generation</label>
 	        <div class="col-6">
 	          <label>
-	            <input type="number" class="form-control" name="generation" value="1"/>
+	            <input type="number" class="form-control" name="generation"
+	                   ng-model="settings.generation"
+	            />
 	          </label>
 	        </div>
 	      </div>
 	    </div>
 		  <div class="form-group confirm-buttons">
-		    <button type="button" class="btn btn-default btn-cancel">Cancel</button>
+		    <button type="button" class="btn btn-default btn-cancel" ng-click="closeWindow()">Cancel</button>
 		    <button type="submit" class="btn btn-primary">OK</button>
 		  </div>
 		</form>
