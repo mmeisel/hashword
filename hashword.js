@@ -158,8 +158,6 @@ hw.getHashword = function (domain, masterPassword, settings) {
         .toString(hw.encoder(settings.symbols));
 };
 
-// Callback from popup
-
 hw.insertPassword = function (tabId, domain, masterPassword, settings) {
     var password = hw.getHashword(domain, masterPassword, settings);
     var items = {};

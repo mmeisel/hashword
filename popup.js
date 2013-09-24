@@ -1,3 +1,5 @@
+/*global hw */
+
 var PopupCtrl = ['$scope', function ($scope) {
     $scope.popup = { showSettings: false };
     
@@ -10,18 +12,18 @@ var PopupCtrl = ['$scope', function ($scope) {
         window.close();
     };
     
-    var _init = function (bgPage, tab) {
-        $scope.domainInfo = bgPage.hw.getDomainInfo(tab.url);
+    var _init = function (tab) {
+        $scope.domainInfo = hw.getDomainInfo(tab.url);
         
         $scope.insertPassword = function () {
-            bgPage.hw.insertPassword(tab.id, $scope.popup.domain, 
+            hw.insertPassword(tab.id, $scope.popup.domain, 
                 $scope.popup.password, $scope.settings);
             window.close();
         };
         
         $scope.changeDomain = function () {
             $scope.settings = $scope.allSettings[$scope.popup.domain] ||
-                bgPage.hw.getDefaultSettings();
+                hw.getDefaultSettings();
         };
         
         chrome.storage.local.get([$scope.domainInfo.name, $scope.domainInfo.tld], function (items) {
@@ -38,11 +40,9 @@ var PopupCtrl = ['$scope', function ($scope) {
     };
     
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        chrome.runtime.getBackgroundPage(function (bgPage) {
-            if (tabs.length && tabs[0].url) _init(bgPage, tabs[0]);
-            else $scope.popup.error = 'Hashword cannot be used on this page.';
-            
-            $scope.$digest();
-        });
+	    if (tabs.length && tabs[0].url) _init(tabs[0]);
+	    else $scope.popup.error = 'Hashword cannot be used on this page.';
+   
+	    $scope.$digest();
     });
 }];
