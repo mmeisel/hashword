@@ -13,25 +13,33 @@
 </head>
 <body>
   <div class="container" ng-controller="OptionsCtrl">
-		<h3 class="row"><img src="images/icon38.png"/> Hashword Options</h3>
+		<h3><img src="images/icon38.png"/> Hashword Options</h3>
 		<div class="row">
-			<div ng-class="{ 'col-md-9': editing }">
-				<table class="table table-striped">
+			<div ng-class="{ 'col-md-9': editing, 'col-md-12': !editing }">
+				<table class="table table-striped table-hover">
 					<thead>
 						<tr>
-							<th ng-repeat="column in columns">{{ column }}</th>
-							<th></th>
+							<th style="width: 40%">Domain</th>
+							<th class="fixed">Length</th>
+							<th class="fixed">Symbols</th>
+							<th class="fixed">Generation</th>
+							<th>Notes</th>
+							<th style="width: 40px"></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr ng-repeat="(domain, settings) in allSettings"
-								ng-class="{ 'success': editing.domain == domain }">
+								ng-class="{ 'success': editing.domain == domain }"
+								ng-click="edit(domain)">
 							<td>{{ domain }}</td>
-							<td ng-repeat="key in keyOrder">{{ settings[key] }}</td>
+							<td class="fixed">{{ settings.pwLength }}</td>
+							<td class="fixed">
+								<span class="glyphicon glyphicon-ok" ng-show="settings.symbols"></span>
+							</td>
+							<td class="fixed">{{ settings.generation }}</td>
+							<td>{{ settings.notes }}</td>
 							<td>
-								<a href class="btn btn-xs btn-default" ng-click="edit(domain)">
-									<span class="glyphicon glyphicon-pencil"></span>
-								</a>
+								<span class="glyphicon glyphicon-pencil hover-only"></span>
 							</td>
 						</tr>
 					</tbody>
@@ -47,7 +55,7 @@
 					  <div class="form-group row">
 							<div class="col-sm-5 text-left">
 						    <button type="button" class="btn btn-danger" ng-click="deleteEditing()">
-									<span class="glyphicon glyphicon-trash"></span> Delete
+									<span class="glyphicon glyphicon-trash"></span>
 								</button>
 							</div>
 							<div class="col-sm-7 text-right">

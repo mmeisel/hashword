@@ -2,9 +2,6 @@
 
 angular.module('options', ['siteSettings'])
 .controller('OptionsCtrl', ['$scope', '$rootScope', function ($scope, $rootScope) {
-    $scope.columns = [ 'Domain', 'Password Length', 'Use Symbols', 'Generation', 'Notes' ];
-    $scope.keyOrder = [ 'pwLength', 'symbols', 'generation', 'notes' ];
-
 	$scope.edit = function (domain) {
 		$scope.editing = { domain: domain, settings: angular.copy($scope.allSettings[domain]) };
 	};
