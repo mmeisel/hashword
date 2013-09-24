@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app ng-csp>
+<html lang="en" ng-app="options" ng-csp>
 <head>
   <title>Hashword Options</title>
   <link rel="stylesheet" type="text/css" href="lib/bootstrap.min.css"/>
@@ -8,24 +8,57 @@
   <script type="text/javascript" src="lib/sha3.js"></script>
   <script type="text/javascript" src="lib/tld.js"></script>
   <script type="text/javascript" src="hashword.js"></script>
+	<script type="text/javascript" src="sitesettings.js"></script>
 	<script type="text/javascript" src="options.js"></script>
 </head>
 <body>
   <div class="container" ng-controller="OptionsCtrl">
-		<h3><img src="images/icon38.png"/> Hashword Options</h3>
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th ng-repeat="column in columns">{{ column }}</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="(domain, settings) in allSettings">
-					<td>{{ domain }}</td>
-					<td ng-repeat="key in keyOrder">{{ settings[key] }}</td>
-				</tr>
-			</tbody>
-		</table>
+		<h3 class="row"><img src="images/icon38.png"/> Hashword Options</h3>
+		<div class="row">
+			<div ng-class="{ 'col-md-9': editing }">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th ng-repeat="column in columns">{{ column }}</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat="(domain, settings) in allSettings"
+								ng-class="{ 'success': editing.domain == domain }">
+							<td>{{ domain }}</td>
+							<td ng-repeat="key in keyOrder">{{ settings[key] }}</td>
+							<td>
+								<a href class="btn btn-xs btn-default" ng-click="edit(domain)">
+									<span class="glyphicon glyphicon-pencil"></span>
+								</a>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="ng-cloak col-md-3" ng-show="editing">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h4 class="panel-title">Settings for {{ editing.domain }}</h4>
+					</div>
+					<form class="panel-body" ng-submit="saveEditing()">
+						<div hw-settings-editor="editing.settings"></div>
+					  <div class="form-group row">
+							<div class="col-sm-5 text-left">
+						    <button type="button" class="btn btn-danger" ng-click="deleteEditing()">
+									<span class="glyphicon glyphicon-trash"></span> Delete
+								</button>
+							</div>
+							<div class="col-sm-7 text-right">
+						    <button type="button" class="btn btn-default" ng-click="cancelEditing()">Cancel</button>
+						    <button type="submit" class="btn btn-primary">OK</button>
+							</div>
+					  </div>
+					</form>
+				</div>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

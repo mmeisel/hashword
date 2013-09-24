@@ -17,8 +17,7 @@ angular.module('popup', ['siteSettings'])
         $scope.domainInfo = hw.getDomainInfo(tab.url);
         
         $scope.insertPassword = function () {
-            hw.insertPassword(tab.id, $scope.popup.domain, 
-                $scope.popup.password, $scope.settings);
+            hw.insertPassword(tab.id, $scope.popup.domain, $scope.popup.password, $scope.settings);
             window.close();
         };
         

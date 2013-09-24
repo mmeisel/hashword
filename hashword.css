@@ -1,16 +1,10 @@
 .container {
-	padding: 20px 20px 5px 20px;
+	padding: 15px 15px 5px 15px;
 	min-width: 300px;
-}
-.confirm-buttons {
-	text-align: center;
-}
-.control-label {
-	text-align: right;
-}
-.control-spacing {
-	padding-top: 8px;
 }
 input[name="generation"] {
 	width: 60px;
+}
+textarea.form-control {
+	height: 34px;
 }

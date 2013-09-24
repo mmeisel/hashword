@@ -17,24 +17,21 @@
     <form class="ng-cloak" ng-submit="insertPassword()" ng-hide="popup.error">
 	    <div class="form-group">
 	      <input type="password" name="password" class="form-control" placeholder="Master Password"
-	             ng-model="popup.password"
-	      />
+	             ng-model="popup.password"/>
 	    </div>
 			<div class="form-group ng-cloak" ng-show="hasSubdomain()">
 	      <div class="controls">
 	        <div class="radio">
 	          <label>
   	          <input type="radio" name="domain" value="{{ domainInfo.tld }}"
-  	                 ng-model="popup.domain" ng-change="changeDomain()"
-  	          />
+  	                 ng-model="popup.domain" ng-change="changeDomain()"/>
   	          Any {{ domainInfo.tld }} domain
     	        </label>
   	      </div>
 	        <div class="radio">
 	          <label>
 	            <input type="radio" name="domain" value="{{ domainInfo.name }}"
-	                   ng-model="popup.domain" ng-change="changeDomain()"
-	            />
+	                   ng-model="popup.domain" ng-change="changeDomain()"/>
 	            {{ domainInfo.name }} only
 	          </label>
 	        </div>
@@ -48,8 +45,8 @@
 			<div class="well well-sm ng-cloak" ng-show="popup.showSettings">
 				<div hw-settings-editor="settings"></div>
 	    </div>
-		  <div class="form-group confirm-buttons">
-		    <button type="button" class="btn btn-default btn-cancel" ng-click="closeWindow()">Cancel</button>
+		  <div class="form-group text-center">
+		    <button type="button" class="btn btn-default" ng-click="closeWindow()">Cancel</button>
 		    <button type="submit" class="btn btn-primary">OK</button>
 		  </div>
 		</form>

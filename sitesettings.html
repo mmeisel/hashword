@@ -1,8 +1,8 @@
 <div>
 	<div class="form-group">
-	  <label class="col-6 control-label">Password Length</label>
-	  <div class="col-6 control-spacing">
-	    <div class="controls">
+	  <label class="control-label">Password Length</label>
+	  <div>
+	    <div class="controls form-inline">
 	      <label class="radio-inline">
 	        <input type="radio" name="pwLength" value="8" ng-model="settings.pwLength"/> 8
 	      </label>
@@ -18,11 +18,13 @@
 	  </div>
 	</div>
 	<div class="form-group">
-	  <label class="col-6 control-label">Generation</label>
-	  <div class="col-6">
-	    <label>
-	      <input type="number" class="form-control" name="generation" ng-model="settings.generation"/>
-	    </label>
+	  <label class="control-label">Generation</label>
+	  <div>
+      <input type="number" class="form-control" name="generation" ng-model="settings.generation"/>
 	  </div>
+	</div>
+	<div class="form-group">
+		<label class="control-label">Notes</label>
+		<textarea class="form-control" name="notes" ng-model="settings.notes"></textarea>
 	</div>
 </div>
