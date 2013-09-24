@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" ng-app ng-csp>
+<head>
+  <title>Hashword Options</title>
+  <link rel="stylesheet" type="text/css" href="lib/bootstrap.min.css"/>
+  <link rel="stylesheet" type="text/css" href="hashword.css"/>
+  <script type="text/javascript" src="lib/angular.min.js"></script>
+  <script type="text/javascript" src="options.js"></script>
+</head>
+<body>
+  <div class="container" ng-controller="OptionsCtrl">
+		<h3><img src="images/icon38.png"/> Hashword Options</h3>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th ng-repeat="column in columns">{{ column }}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="(domain, settings) in allSettings">
+					<td>{{ domain }}</td>
+					<td ng-repeat="key in keyOrder">{{ settings[key] }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>
