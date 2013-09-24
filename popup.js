@@ -1,6 +1,7 @@
-/*global hw */
+/*global angular, hw */
 
-var PopupCtrl = ['$scope', function ($scope) {
+angular.module('popup', ['siteSettings'])
+.controller('PopupCtrl', ['$scope', function ($scope) {
     $scope.popup = { showSettings: false };
     
     $scope.hasSubdomain = function () {
@@ -45,4 +46,4 @@ var PopupCtrl = ['$scope', function ($scope) {
    
 	    $scope.$digest();
     });
-}];
+}]);

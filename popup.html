@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app ng-csp>
+<html lang="en" ng-app="popup" ng-csp>
 <head>
   <title>Enter Your Master Password</title>
   <link rel="stylesheet" type="text/css" href="lib/bootstrap.min.css"/>
@@ -8,6 +8,7 @@
   <script type="text/javascript" src="lib/sha3.js"></script>
   <script type="text/javascript" src="lib/tld.js"></script>
   <script type="text/javascript" src="hashword.js"></script>
+  <script type="text/javascript" src="sitesettings.js"></script>
   <script type="text/javascript" src="popup.js"></script>
 </head>
 <body>
@@ -45,34 +46,7 @@
 				</a>
 			</div>
 			<div class="well well-sm ng-cloak" ng-show="popup.showSettings">
-	      <div class="form-group">
-	        <label class="col-6 control-label">Password Length</label>
-	        <div class="col-6 control-spacing">
-	          <div class="controls">
-	            <label class="radio-inline">
-	              <input type="radio" name="pwLength" value="8" ng-model="settings.pwLength"/> 8
-	            </label>
-	            <label class="radio-inline">
-	              <input type="radio" name="pwLength" value="16" ng-model="settings.pwLength"/> 16
-	            </label>
-	          </div>
-	          <div class="checkbox">
-	            <label>
-	              <input type="checkbox" name="symbols" ng-model="settings.symbols"/> Use symbols
-	            </label>
-	          </div>
-	        </div>
-	      </div>
-	      <div class="form-group">
-	        <label class="col-6 control-label">Generation</label>
-	        <div class="col-6">
-	          <label>
-	            <input type="number" class="form-control" name="generation"
-	                   ng-model="settings.generation"
-	            />
-	          </label>
-	        </div>
-	      </div>
+				<div hw-settings-editor="settings"></div>
 	    </div>
 		  <div class="form-group confirm-buttons">
 		    <button type="button" class="btn btn-default btn-cancel" ng-click="closeWindow()">Cancel</button>
