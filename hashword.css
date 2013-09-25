@@ -1,26 +1,26 @@
 .container {
-	padding: 15px 15px 5px 15px;
-	min-width: 300px;
+    padding: 15px 15px 5px 15px;
+    min-width: 300px;
 }
 input[name="generation"] {
-	width: 60px;
+    width: 60px;
 }
 textarea.form-control {
-	height: 34px;
+    height: 34px;
 }
 .table {
-	border: 1px solid #ddd;
+    border: 1px solid #ddd;
 }
 .table tbody {
-	cursor: pointer;
+    cursor: pointer;
 }
 th.fixed, td.fixed {
-	width: 100px;
-	text-align: center;
+    width: 100px;
+    text-align: center;
 }
 .hover-only {
-	display: none;
+    display: none;
 }
 tr:hover .hover-only {
-	display: block;
+    display: block;
 }
