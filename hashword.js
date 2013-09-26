@@ -1,5 +1,4 @@
-/*global chrome:true, console:true, CryptoJS:true, tld:true */
-/*jshint es5:true */
+/*global console:true, CryptoJS:true, tld:true */
 
 // Global namespace
 var hw = {};
@@ -156,18 +155,4 @@ hw.getHashword = function (domain, masterPassword, settings) {
     
     return CryptoJS.SHA3(key, { outputLength: settings.pwLength * 4 })
         .toString(hw.encoder(settings.symbols));
-};
-
-hw.insertPassword = function (tabId, domain, masterPassword, settings) {
-    var password = hw.getHashword(domain, masterPassword, settings);
-    var items = {};
-    
-    // Populate field
-    chrome.tabs.executeScript(tabId, {
-        code: 'document.activeElement.value=' + JSON.stringify(password)
-    });
-    
-    // Save settings
-    items[domain] = settings;
-    chrome.storage.local.set(items);
 };

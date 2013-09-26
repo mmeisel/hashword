@@ -17,7 +17,18 @@ angular.module('popup', ['siteSettings'])
         $scope.domainInfo = hw.getDomainInfo(tab.url);
         
         $scope.insertPassword = function () {
-            hw.insertPassword(tab.id, $scope.popup.domain, $scope.popup.password, $scope.settings);
+            var pw = hw.getHashword($scope.popup.domain, $scope.popup.password, $scope.settings);
+            var items = {};
+    
+            // Populate field
+            chrome.tabs.executeScript(tab.id, {
+                code: 'document.activeElement.value=' + JSON.stringify(pw)
+            });
+    
+            // Save settings
+            items[$scope.popup.domain] = $scope.settings;
+            chrome.storage.local.set(items);
+
             window.close();
         };
         
