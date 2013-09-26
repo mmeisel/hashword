@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="index" ng-csp>
+<head>
+  <title>Hashword</title>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+  <link rel="stylesheet" type="text/css" href="lib/bootstrap.min.css"/>
+  <link rel="stylesheet" type="text/css" href="hashword.css"/>
+  <script type="text/javascript" src="lib/angular.min.js"></script>
+  <script type="text/javascript" src="lib/sha3.js"></script>
+  <script type="text/javascript" src="lib/tld.js"></script>
+  <script type="text/javascript" src="hashword.js"></script>
+  <script type="text/javascript" src="sitesettings.js"></script>
+  <script type="text/javascript" src="index.js"></script>
+</head>
+<body>
+  <div class="container" ng-controller="HashwordCtrl">
+    <h3><img src="images/icon38.png"/> Hashword</h3>
+    <form ng-submit="updatePassword()">
+      <div class="form-group">
+        <input type="text" name="domain" class="form-control" placeholder="Domain"
+               ng-model="form.domain"/>
+      </div>
+      <div class="form-group">
+        <input type="password" name="password" class="form-control" placeholder="Master Password"
+               ng-model="form.password"/>
+      </div>
+      <div>
+        <div hw-settings-editor="settings"></div>
+      </div>
+      <div class="form-group">
+        <div class="input-group">
+          <span class="input-group-btn">
+            <button type="submit" class="btn btn-primary"
+                    ng-disabled="!form.domain || !form.password">
+              Generate
+            </button>
+          </span>
+          <input type="text" class="form-control" readonly ng-model="form.output"/>
+        </div>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
