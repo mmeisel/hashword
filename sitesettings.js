@@ -5,6 +5,9 @@ angular.module('siteSettings', [])
     return {
         templateUrl: 'sitesettings.html',
         replace: true,
-        scope: { settings: '=hwSettingsEditor' }
+        scope: {
+            settings: '=hwSettingsEditor',
+            notes: '@'
+        }
     };
 });

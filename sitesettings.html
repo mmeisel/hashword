@@ -21,7 +21,7 @@
     <label class="control-label">Generation</label>
     <input type="number" class="form-control" name="generation" ng-model="settings.generation"/>
   </div>
-  <div class="form-group">
+  <div class="form-group" ng-show="notes != null">
     <label class="control-label">Notes</label>
     <textarea class="form-control" name="notes" ng-model="settings.notes"></textarea>
   </div>
