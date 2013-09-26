@@ -143,7 +143,7 @@ hw.encoder = function (_requireSym) {
 hw.getDomainInfo = function (url) {
     var a = document.createElement('a');
     a.href = url;
-    return { name: '' + a.hostname, tld: tld.getDomain(a.hostname) };
+    return { name: a.hostname.toLowerCase(), tld: tld.getDomain(a.hostname).toLowerCase() };
 };
 
 hw.getDefaultSettings = function () {
@@ -151,7 +151,7 @@ hw.getDefaultSettings = function () {
 };
 
 hw.getHashword = function (domain, masterPassword, settings) {
-    var key = masterPassword + '@' + domain + '+' + settings.generation;
+    var key = masterPassword + '@' + domain.toLowerCase() + '+' + settings.generation;
     
     return CryptoJS.SHA3(key, { outputLength: settings.pwLength * 4 })
         .toString(hw.encoder(settings.symbols));
