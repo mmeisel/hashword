@@ -15,7 +15,7 @@
   <div class="container" ng-controller="OptionsCtrl">
     <h3><img src="images/icon38.png"/> Hashword Options</h3>
     <div class="row">
-      <div ng-class="{ 'col-md-9': editing, 'col-md-12': !editing }">
+      <div ng-class="{ 'col-md-7 col-lg-8': editing, 'col-md-12': !editing }">
         <table class="table table-striped table-hover">
           <thead>
             <tr>
@@ -45,20 +45,20 @@
           </tbody>
         </table>
       </div>
-      <div class="ng-cloak col-md-3" ng-show="editing">
+      <div class="ng-cloak col-md-5 col-lg-4" ng-show="editing">
         <div class="panel panel-default">
           <div class="panel-heading">
             <h4 class="panel-title">Settings for {{ editing.domain }}</h4>
           </div>
-          <form class="panel-body" ng-submit="saveEditing()">
+          <form class="panel-body form-horizontal" ng-submit="saveEditing()">
             <div hw-settings-editor="editing.settings" notes></div>
-            <div class="form-group row">
-              <div class="col-sm-5 text-left">
+            <div class="form-group">
+              <div class="col-xs-5 text-left">
                 <button type="button" class="btn btn-danger" ng-click="deleteEditing()">
                   <span class="glyphicon glyphicon-trash"></span>
                 </button>
               </div>
-              <div class="col-sm-7 text-right">
+              <div class="col-xs-7 text-right">
                 <button type="button" class="btn btn-default" ng-click="cancelEditing()">Cancel</button>
                 <button type="submit" class="btn btn-primary">OK</button>
               </div>

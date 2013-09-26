@@ -13,25 +13,28 @@
   <script type="text/javascript" src="index.js"></script>
 </head>
 <body>
-  <div class="container" ng-controller="HashwordCtrl">
+  <div class="container compact" ng-controller="HashwordCtrl">
     <h3><img src="images/icon38.png"/> Hashword</h3>
-    <form ng-submit="updatePassword()">
+    <form class="form-horizontal" ng-submit="updatePassword()">
       <div class="form-group">
-        <input type="text" name="domain" class="form-control" placeholder="Domain"
-               ng-model="form.domain"/>
+        <div class="col-xs-12">
+          <input type="text" name="domain" class="form-control" placeholder="Domain"
+                 ng-model="form.domain"/>
+        </div>
       </div>
       <div class="form-group">
-        <input type="password" name="password" class="form-control" placeholder="Master Password"
-               ng-model="form.password"/>
+        <div class="col-xs-12">
+          <input type="password" name="password" class="form-control" placeholder="Master Password"
+                 ng-model="form.password"/>
+        </div>
       </div>
       <div>
         <div hw-settings-editor="settings"></div>
       </div>
       <div class="form-group">
-        <div class="input-group">
+        <div class="input-group col-xs-12">
           <span class="input-group-btn">
-            <button type="submit" class="btn btn-primary"
-                    ng-disabled="!form.domain || !form.password">
+            <button type="submit" class="btn btn-primary" ng-disabled="!form.domain || !form.password">
               Generate
             </button>
           </span>

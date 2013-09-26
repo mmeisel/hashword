@@ -2,6 +2,9 @@
     padding: 15px 15px 5px 15px;
     min-width: 300px;
 }
+.container.compact {
+    max-width: 750px;
+}
 input[name="generation"] {
     width: 60px;
 }
@@ -19,8 +22,8 @@ th.fixed, td.fixed {
     text-align: center;
 }
 .hover-only {
-    display: none;
+    visibility: hidden;
 }
 tr:hover .hover-only {
-    display: block;
+    visibility: visible;
 }

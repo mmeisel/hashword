@@ -14,13 +14,15 @@
 <body>
   <div class="container" ng-controller="PopupCtrl">
     <p class="text-danger ng-cloak" ng-show="popup.error">{{ popup.error }}</p>
-    <form class="ng-cloak" ng-submit="insertPassword()" ng-hide="popup.error">
+    <form class="ng-cloak form-horizontal" ng-submit="insertPassword()" ng-hide="popup.error">
       <div class="form-group">
-        <input type="password" name="password" class="form-control" placeholder="Master Password"
-               ng-model="popup.password"/>
+        <div class="col-xs-12">
+          <input type="password" name="password" class="form-control" placeholder="Master Password"
+                 ng-model="popup.password"/>
+        </div>
       </div>
       <div class="form-group ng-cloak" ng-show="hasSubdomain()">
-        <div class="controls">
+        <div class="controls col-xs-12">
           <div class="radio">
             <label>
               <input type="radio" name="domain" value="{{ domainInfo.tld }}"
@@ -38,7 +40,7 @@
         </div>
       </div>
       <div class="form-group">
-        <a href="#" ng-click="popup.showSettings = !popup.showSettings">
+        <a href="#" class="col-xs-12" ng-click="popup.showSettings = !popup.showSettings">
           <small>Settings for {{ popup.domain }}</small>
         </a>
       </div>
