@@ -1,8 +1,8 @@
 {
     "name": "Hashword",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "manifest_version": 2,
-    "description": "Generate reproducible hashed passwords",
+    "description": "Generate a unique, secure password for every web site from one master password.",
     "browser_action": {
         "default_title": "Insert Hashword",
         "default_popup": "popup.html",
