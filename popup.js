@@ -51,7 +51,7 @@ angular.module('popup', ['siteSettings'])
     };
     
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        if (tabs.length && tabs[0].url) _init(tabs[0]);
+        if (tabs.length && tabs[0].url && tabs[0].url.indexOf('http') === 0) _init(tabs[0]);
         else $scope.popup.error = 'Hashword cannot be used on this page.';
    
         $scope.$digest();
