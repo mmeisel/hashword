@@ -1,6 +1,6 @@
 /*global angular, hw */
 
-angular.module('popup', ['siteSettings'])
+angular.module('popup', ['common', 'siteSettings'])
 .controller('PopupCtrl', ['$scope', function ($scope) {
     $scope.popup = { showSettings: false };
     

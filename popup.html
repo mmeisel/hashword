@@ -9,6 +9,7 @@
   <script type="text/javascript" src="lib/sha3.js"></script>
   <script type="text/javascript" src="lib/tld.js"></script>
   <script type="text/javascript" src="hashword.js"></script>
+  <script type="text/javascript" src="common.js"></script>
   <script type="text/javascript" src="sitesettings.js"></script>
   <script type="text/javascript" src="popup.js"></script>
 </head>
@@ -57,7 +58,7 @@
       </div>
     </form>
     <small class="col-xs-12 text-center" ng-show="settings.accessDate != null">
-      <em class="text-muted">Last used {{ settings.accessDate | date }}</em>
+      <em class="text-muted">Last used {{ settings.accessDate | hwDate }}</em>
     </small>
   </div>
 </body>
