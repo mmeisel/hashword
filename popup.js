@@ -13,26 +13,33 @@ angular.module('popup', ['common', 'siteSettings'])
         window.close();
     };
     
-    var _init = function (tab) {
+    // Update dates and save settings. We need to update a copy of the object in the
+    // scope so we don't cause another digest cycle when we're trying to close the window.
+    function _updateAndSaveSettings() {
+        var items = {};
+        var settings = angular.copy($scope.settings);
+        
+        
+        settings.accessDate = new Date().getTime();
+        if (settings.createDate == null) {
+            settings.createDate = settings.accessDate;
+        }
+        items[$scope.popup.domain] = settings;
+        chrome.storage.local.set(items);
+    }
+    
+    function _init(tab) {
         $scope.domainInfo = hw.getDomainInfo(tab.url);
         
         $scope.insertPassword = function () {
             var pw = hw.getHashword($scope.popup.domain, $scope.popup.password, $scope.settings);
-            var items = {};
     
             // Populate field
             chrome.tabs.executeScript(tab.id, {
                 code: 'document.activeElement.value=' + JSON.stringify(pw)
             });
     
-            // Update dates and save settings
-            $scope.settings.accessDate = new Date().getTime();
-            if (!$scope.settings.createDate) {
-                $scope.settings.createDate = $scope.settings.createDate;
-            }
-            items[$scope.popup.domain] = $scope.settings;
-            chrome.storage.local.set(items);
-
+            _updateAndSaveSettings();
             window.close();
         };
         
@@ -52,7 +59,7 @@ angular.module('popup', ['common', 'siteSettings'])
             $scope.changeDomain();
             $scope.$digest();
         });
-    };
+    }
     
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         if (tabs.length && tabs[0].url && tabs[0].url.indexOf('http') === 0) _init(tabs[0]);
