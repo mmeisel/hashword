@@ -26,5 +26,6 @@ tr.success .hover-only {
     opacity: 1;
 }
 .panel-title-tall {
-    padding-top: 5px;
+    padding-top: 6px;
+    padding-bottom: 6px;
 }
