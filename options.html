@@ -49,19 +49,19 @@
           <table class="table table-hover">
             <thead>
               <tr>
-                <th>Domain</th>
-                <th>First Added</th>
-                <th>Last Used</th>
+                <th hw-sort-trigger="domain">Domain</th>
+                <th hw-sort-trigger="settings.createDate">Created</th>
+                <th hw-sort-trigger="settings.accessDate">Last Used</th>
                 <th style="width: 40px"></th>
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="(domain, settings) in allSettings"
-                  ng-class="{ 'success': editing.domain == domain }"
-                  ng-click="edit(domain)">
-                <td>{{ domain }}<br/><small class="text-muted">{{ settings.notes }}</small></td>
-                <td>{{ (settings.createDate | date) || '2013' }}</td>
-                <td>{{ (settings.accessDate | date) || '2013' }}</td>
+              <tr ng-repeat="site in allSites | orderBy:predicate:reverse track by site.domain"
+                  ng-class="{ 'success': editing.domain == site.domain }"
+                  ng-click="edit(site)">
+                <td>{{ site.domain }}<br/><small class="text-muted">{{ site.settings.notes }}</small></td>
+                <td>{{ site.settings.createDate | hwDate }}</td>
+                <td>{{ site.settings.accessDate | hwDate }}</td>
                 <td>
                   <span class="glyphicon glyphicon-pencil hover-only"></span>
                 </td>
@@ -71,6 +71,13 @@
         </div>
       </div>
     </div>
+    <script type="text/ng-template" id="sort-trigger.html">
+      <a href ng-click="setSort()" ng-transclude></a>
+      <span class="glyphicon"
+            ng-class="{ 'glyphicon-arrow-up': !$parent.reverse, 'glyphicon-arrow-down': $parent.reverse }"'
+            ng-show="$parent.predicate[0] == sortBy">
+      </span>
+    </script>
   </div>
 </body>
 </html>
