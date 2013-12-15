@@ -3,6 +3,10 @@
     "version": "0.3.1",
     "manifest_version": 2,
     "description": "Generate a unique, secure password for every web site from one master password.",
+    "background": {
+        "scripts": ["background.js"],
+        "persistent": false
+    },
     "browser_action": {
         "default_title": "Insert Hashword",
         "default_popup": "popup.html",

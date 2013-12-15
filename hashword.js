@@ -147,7 +147,7 @@ hw.getDomainInfo = function (url) {
 };
 
 hw.getDefaultSettings = function () {
-    return { pwLength: 16, symbols: true, generation: 1, createDate: new Date().getTime() };
+    return { pwLength: 16, symbols: true, generation: 1 };
 };
 
 hw.getHashword = function (domain, masterPassword, settings) {

@@ -52,20 +52,7 @@ angular.module('options', ['siteSettings'])
     
     chrome.storage.local.get(null, function (items) {
         $scope.allSites = Object.keys(items).map(function (domain) {
-            var settings = items[domain];
-            
-            // For data from previous versions that doesn't have the create/access dates.
-            // We'll use 0 as a special value to indicate that the date is not known. This will
-            // allow these older sites to sort as less than newer sites, but also provide a
-            // filterable value that can be used to show something more meaningful.
-            if (!settings.createDate) {
-                settings.createDate = 0;
-            }
-            if (!settings.accessDate) {
-                settings.accessDate = 0;
-            }
-            
-            return { domain: domain, settings: settings };
+            return { domain: domain, settings: items[domain] };
         });
         $scope.$digest();
     });
