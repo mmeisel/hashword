@@ -1,7 +1,7 @@
 /*global angular, hw */
 
 angular.module('options', ['siteSettings'])
-.controller('OptionsCtrl', ['$scope', '$rootScope', function ($scope, $rootScope) {
+.controller('OptionsCtrl', ['$scope', function ($scope) {
     $scope.edit = function (domain) {
         $scope.editing = { domain: domain, settings: angular.copy($scope.allSettings[domain]) };
     };

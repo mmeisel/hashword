@@ -26,6 +26,7 @@ angular.module('popup', ['siteSettings'])
             });
     
             // Save settings
+            $scope.settings.accessDate = new Date().getTime();
             items[$scope.popup.domain] = $scope.settings;
             chrome.storage.local.set(items);
 
