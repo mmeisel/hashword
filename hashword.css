@@ -11,19 +11,17 @@ input[name="generation"] {
 textarea.form-control {
     height: 34px;
 }
-.table {
-    border: 1px solid #ddd;
-}
 .table tbody {
     cursor: pointer;
 }
-th.fixed, td.fixed {
-    width: 100px;
-    text-align: center;
-}
 .hover-only {
     visibility: hidden;
+    opacity: 0.5;
 }
 tr:hover .hover-only {
     visibility: visible;
+}
+tr.success .hover-only {
+    visibility: visible;
+    opacity: 1;
 }
