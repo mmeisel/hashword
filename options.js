@@ -49,6 +49,7 @@ angular.module('options', ['common', 'siteSettings'])
     
     $scope.predicate = ['domain'];
     $scope.reverse = false;
+    $scope.search = {};
     
     chrome.storage.local.get(null, function (items) {
         $scope.allSites = Object.keys(items).map(function (domain) {

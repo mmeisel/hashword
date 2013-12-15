@@ -45,9 +45,16 @@
       <div class="col-md-7 col-md-pull-5">
         <div class="panel panel-default">
           <div class="panel-heading">
-            <h4 class="panel-title">Sites</h4>
+            <div class="row">
+              <h4 class="panel-title panel-title-tall col-xs-7">Sites</h4>
+              <form class="col-xs-5">
+                <input type="text" class="form-control input-sm" placeholder="Search"
+                       ng-model="search.query"/>
+              </form>
+            </div>
           </div>
-          <table class="table table-hover">
+          <div class="panel-body" ng-hide="(allSites | filter:search.query).length">No sites.</div>
+          <table class="table table-hover" ng-show="(allSites | filter:search.query).length">
             <thead>
               <tr>
                 <th hw-sort-trigger="domain">Domain</th>
@@ -57,7 +64,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr ng-repeat="site in allSites | orderBy:predicate:reverse track by site.domain"
+              <tr ng-repeat="site in allSites | filter:search.query | orderBy:predicate:reverse track by site.domain"
                   ng-class="{ 'success': editing.domain == site.domain }"
                   ng-click="edit(site)">
                 <td>{{ site.domain }}<br/><small class="text-muted">{{ site.settings.notes }}</small></td>
