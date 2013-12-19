@@ -52,6 +52,7 @@
       <div class="form-group text-center">
         <button type="button" class="btn btn-default" ng-click="closeWindow()">Cancel</button>
         <button type="submit" class="btn"
+                ng-disabled="!popup.password"
                 ng-class="settings.createDate == null ? 'btn-success' : 'btn-primary'">
           {{ settings.createDate == null ? 'Create and Insert' : 'Insert' }}
         </button>
