@@ -15,7 +15,7 @@
 <body>
   <div class="container compact" ng-controller="HashwordCtrl">
     <h3><img src="images/icon38.png"/> Hashword</h3>
-    <form class="form-horizontal" ng-submit="updatePassword()">
+    <form class="form-horizontal" hw-submit>
       <div class="form-group">
         <div class="col-xs-12">
           <input type="text" name="domain" class="form-control" placeholder="Domain"
@@ -39,7 +39,7 @@
                 Generate
               </button>
             </span>
-            <input type="text" class="form-control" readonly ng-model="form.output" hw-select-on-submit/>
+            <input type="text" class="form-control hw-output"/>
           </div>
         </div>
       </div>
