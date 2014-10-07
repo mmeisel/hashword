@@ -57,7 +57,7 @@ angular.module('popup', ['common', 'siteSettings'])
             $scope.popup.domain = items[$scope.domainInfo.name] ?
                     $scope.domainInfo.name : $scope.domainInfo.tld;
             $scope.changeDomain();
-            $scope.$digest();
+            $scope.$apply();
         });
     }
     
@@ -65,6 +65,6 @@ angular.module('popup', ['common', 'siteSettings'])
         if (tabs.length && tabs[0].url && tabs[0].url.indexOf('http') === 0) _init(tabs[0]);
         else $scope.popup.error = 'Hashword cannot be used on this page.';
    
-        $scope.$digest();
+        $scope.$apply();
     });
 }]);

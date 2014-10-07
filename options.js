@@ -21,7 +21,7 @@ angular.module('options', ['common', 'siteSettings'])
                             site.settings = edited.settings;
                         }
                     });
-                    $scope.$digest();
+                    $scope.$apply();
                 }
             });
         }
@@ -41,7 +41,7 @@ angular.module('options', ['common', 'siteSettings'])
                         return site.domain != domain;
                     });
                 }
-                $scope.$digest();
+                $scope.$apply();
             });
         }
         $scope.editing = null;
@@ -55,7 +55,7 @@ angular.module('options', ['common', 'siteSettings'])
         $scope.allSites = Object.keys(items).map(function (domain) {
             return { domain: domain, settings: items[domain] };
         });
-        $scope.$digest();
+        $scope.$apply();
     });
 }])
 
