@@ -1,3 +1,6 @@
+label {
+    font-weight: normal;
+}
 .container {
     padding: 15px 15px 5px 15px;
     min-width: 300px;
