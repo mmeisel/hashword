@@ -15,8 +15,8 @@
 </head>
 <body>
   <div class="container ng-cloak" ng-controller="PopupCtrl">
-    <p class="text-danger" ng-show="popup.error">{{ popup.error }}</p>
-    <form class="form-horizontal" ng-submit="insertPassword()" ng-hide="popup.error">
+    <p class="text-danger" ng-if="popup.error">{{ popup.error }}</p>
+    <form class="form-horizontal" ng-submit="insertPassword()" ng-if="!popup.error">
       <div class="form-group">
         <div class="col-xs-12">
           <input type="password" name="password" class="form-control" placeholder="Master Password"
@@ -46,7 +46,7 @@
           <small>Settings for {{ popup.domain }}</small>
         </a>
       </div>
-      <div class="well well-sm" ng-show="popup.showSettings">
+      <div class="well well-sm" ng-if="popup.showSettings">
         <div hw-settings-editor="settings" notes></div>
       </div>
       <div class="form-group text-center">
@@ -58,7 +58,7 @@
         </button>
       </div>
     </form>
-    <small class="col-xs-12 text-center" ng-show="settings.accessDate != null">
+    <small class="col-xs-12 text-center" ng-if="settings.accessDate != null">
       <em class="text-muted">Last used {{ settings.accessDate | hwDate }}</em>
     </small>
   </div>
