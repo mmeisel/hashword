@@ -1,3 +1,4 @@
+/*jshint eqnull:true */
 /*global angular, hw */
 
 angular.module('options', ['common', 'siteSettings'])
@@ -47,16 +48,19 @@ angular.module('options', ['common', 'siteSettings'])
         $scope.editing = null;
     };
     
+    $scope.loadAllSites = function () {
+        chrome.storage.local.get(null, function (items) {
+            $scope.allSites = Object.keys(items).map(function (domain) {
+                return { domain: domain, settings: items[domain] };
+            });
+            $scope.$apply();
+        });
+    };
+    
     $scope.predicate = ['domain'];
     $scope.reverse = false;
     $scope.search = {};
-    
-    chrome.storage.local.get(null, function (items) {
-        $scope.allSites = Object.keys(items).map(function (domain) {
-            return { domain: domain, settings: items[domain] };
-        });
-        $scope.$apply();
-    });
+    $scope.loadAllSites();
 }])
 
 .directive('hwSortTrigger', function () {
@@ -81,4 +85,84 @@ angular.module('options', ['common', 'siteSettings'])
             };
         }]
     };
-});
+})
+
+.directive('hwExport', function () {
+    var EXPORT_DEFAULT_FILENAME = 'hashword-options.json';
+    
+    return function ($scope, $element) {
+        $element
+        .attr('download', EXPORT_DEFAULT_FILENAME)
+        .on('click', function (e) {
+            var output = JSON.stringify({
+                hashwordVersion: chrome.runtime.getManifest().version,
+                data: $scope.allSites
+            });
+
+            $element.attr('href', URL.createObjectURL(new Blob([output]),
+                                                      'application/json;charset=UTF-8'));
+        });
+    };
+})
+
+.directive('hwImport', function () {
+    function getConfirmedImport(fileData) {
+        try {
+            var imported = JSON.parse(fileData);
+    
+            if (!imported.hashwordVersion || !imported.data) {
+                window.alert('This file is not a hashword options file.');
+            }
+            else if (window.confirm('This will overwrite all of your settings, are you sure?')) {
+                return imported;
+            }
+        }
+        catch (ex) {
+            window.alert('Import failed: ' + ex);
+        }
+        
+        return null;
+    }
+    
+    return function ($scope, $element) {
+        var fileInput = angular.element('<input type="file"/>');
+        // Wrap in a form so we can reset the content after an upload, see
+        // http://stackoverflow.com/questions/21132971
+        var form = angular.element('<form/>').append(fileInput);
+    
+        fileInput.on('change', function () {
+            var file = fileInput[0].files[0];
+            
+            if (file != null) {
+                var fileReader = new FileReader();
+                
+                fileReader.onload = function (e) {
+                    var imported = getConfirmedImport(e.target.result);
+                    
+                    if (imported) {
+                        var converted = {};
+                        
+                        imported.data.forEach(function (site) {
+                            converted[site.domain] = site.settings;
+                        });
+                        
+                        chrome.storage.local.set(converted, function () {
+                            if (!chrome.runtime.lastError) {
+                                $scope.loadAllSites();
+                            }
+                        });
+                    }
+                };
+                fileReader.readAsText(file, 'UTF-8');
+            }
+            
+            form[0].reset();
+        });
+        
+        $element.on('click', function (e) {
+            e.preventDefault();
+            fileInput[0].click();
+        });
+    };
+})
+;
