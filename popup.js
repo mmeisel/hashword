@@ -41,7 +41,8 @@ angular.module('popup', ['common', 'siteSettings'])
     
             // Populate field
             chrome.tabs.executeScript(tab.id, {
-                code: 'document.activeElement.value=' + JSON.stringify(pw)
+                code: 'document.activeElement.value=' + JSON.stringify(pw),
+                allFrames: true
             });
     
             _updateAndSaveSettings();
