@@ -1,4 +1,4 @@
-/*global angular, hw */
+/*global angular, hw, hwRules */
 
 angular.module('popup', ['common', 'siteSettings'])
 .controller('PopupCtrl', ['$scope', function ($scope) {
@@ -18,14 +18,19 @@ angular.module('popup', ['common', 'siteSettings'])
     function _updateAndSaveSettings() {
         var items = {};
         var settings = angular.copy($scope.settings);
-        
+        var isNewDomain = settings.createDate == null;
         
         settings.accessDate = new Date().getTime();
-        if (settings.createDate == null) {
+        if (settings.accessDate == null) {
             settings.createDate = settings.accessDate;
         }
         items[$scope.popup.domain] = settings;
-        chrome.storage.local.set(items);
+        chrome.storage.local.set(items, function () {
+            // If it's a new domain, reset the rules for which icon to show
+            if (isNewDomain) {
+                hwRules.resetRules();
+            }
+        });
     }
     
     function _init(tab) {

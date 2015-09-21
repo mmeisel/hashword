@@ -1,5 +1,5 @@
 /*jshint eqnull:true */
-/*global angular, hw */
+/*global angular, hw, hwRules */
 
 angular.module('options', ['common', 'siteSettings'])
 .controller('OptionsCtrl', ['$scope', function ($scope) {
@@ -41,6 +41,9 @@ angular.module('options', ['common', 'siteSettings'])
                     $scope.allSites = $scope.allSites.filter(function (site) {
                         return site.domain != domain;
                     });
+
+                    // Reset the rules for which icon to show
+                    hwRules.resetRules();
                 }
                 $scope.$apply();
             });

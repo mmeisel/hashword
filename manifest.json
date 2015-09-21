@@ -4,19 +4,19 @@
     "manifest_version": 2,
     "description": "Generate a unique, secure password for every web site from one master password.",
     "background": {
-        "scripts": ["background.js"],
+        "scripts": ["rules.js", "background.js"],
         "persistent": false
     },
-    "browser_action": {
+    "page_action": {
         "default_title": "Insert Hashword",
         "default_popup": "popup.html",
         "default_icon": {
-            "19": "images/icon19.png",
-            "38": "images/icon38.png"
+            "19": "images/icon19-inactive.png",
+            "38": "images/icon38-inactive.png"
         }
     },
     "commands": {
-        "_execute_browser_action": {
+        "_execute_page_action": {
             "suggested_key": {
                 "default": "Ctrl+Shift+P",
                 "mac": "Command+Shift+P"
@@ -29,10 +29,11 @@
         "128": "images/icon128.png"
     },
     "incognito": "spanning",
-    "minimum_chrome_version": "26",
+    "minimum_chrome_version": "39",
     "options_page": "options.html",
     "permissions": [
         "activeTab",
+        "declarativeContent",
         "storage"
     ]
 }

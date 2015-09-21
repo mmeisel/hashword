@@ -1,4 +1,4 @@
-/*global console:true, CryptoJS:true, tld:true */
+/*global CryptoJS:true, tld:true */
 
 // Global namespace
 var hw = {};
