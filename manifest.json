@@ -7,7 +7,7 @@
         "scripts": ["rules.js", "background.js"],
         "persistent": false
     },
-    "page_action": {
+    "browser_action": {
         "default_title": "Insert Hashword",
         "default_popup": "popup.html",
         "default_icon": {
@@ -16,7 +16,7 @@
         }
     },
     "commands": {
-        "_execute_page_action": {
+        "_execute_browser_action": {
             "suggested_key": {
                 "default": "Ctrl+Shift+P",
                 "mac": "Command+Shift+P"

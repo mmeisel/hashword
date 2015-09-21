@@ -37,18 +37,8 @@ hwRules.resetRules = function () {
     });
     
     function _resetRulesInternal(hwData, imageData) {
-        // Show page action on any page with a password field
-        var showRule = {
-            id: 'show',
-            conditions: [
-                new chrome.declarativeContent.PageStateMatcher({ css: ["input[type='password']"] })
-            ],
-            actions: [new chrome.declarativeContent.ShowPageAction()]
-        };
-
         // Change the icon based on whether the extension has been used on this page before
         var iconRule = {
-            id: 'icon',
             actions: [new chrome.declarativeContent.SetIcon({ imageData: imageData })]
         };
 
@@ -61,7 +51,7 @@ hwRules.resetRules = function () {
         });
 
         chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
-            chrome.declarativeContent.onPageChanged.addRules([showRule, iconRule]);
+            chrome.declarativeContent.onPageChanged.addRules([iconRule]);
         });
     }
 };
