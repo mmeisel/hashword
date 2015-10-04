@@ -21,7 +21,7 @@ angular.module('popup', ['common', 'siteSettings'])
         var isNewDomain = settings.createDate == null;
         
         settings.accessDate = new Date().getTime();
-        if (settings.accessDate == null) {
+        if (isNewDomain) {
             settings.createDate = settings.accessDate;
         }
         items[$scope.popup.domain] = settings;
