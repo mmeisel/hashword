@@ -39,9 +39,17 @@ angular.module('popup', ['common', 'siteSettings'])
         $scope.insertPassword = function () {
             var pw = hw.getHashword($scope.popup.domain, $scope.popup.password, $scope.settings);
     
-            // Populate field
+            // Populate field, then trigger some key events so hopefully the scripts on the page
+            // will register that we've entered something.
+            var script = 'document.activeElement.value = ' + JSON.stringify(pw) + '; ' +
+                '["keydown", "keypress", "keyup"].forEach(function (t) { ' +
+                    'document.activeElement.dispatchEvent(' +
+                        'new KeyboardEvent(t, { bubbles: true, cancelable: true })' +
+                    '); ' +
+                '});';
+
             chrome.tabs.executeScript(tab.id, {
-                code: 'document.activeElement.value=' + JSON.stringify(pw),
+                code: script,
                 allFrames: true
             });
     
