@@ -17,51 +17,69 @@
 <body>
   <div class="container ng-cloak" ng-controller="PopupCtrl">
     <p class="text-danger" ng-if="popup.error">{{ popup.error }}</p>
-    <form class="form-horizontal" ng-submit="insertPassword()" ng-if="!popup.error">
-      <div class="form-group">
-        <div class="col-xs-12">
-          <input type="password" name="password" class="form-control" placeholder="Master Password"
-                 ng-model="popup.password"/>
+    <div ng-if="!popup.error">
+      <form class="form-horizontal" ng-submit="insertPassword()">
+        <div class="form-group">
+          <div class="col-xs-12">
+            <input type="password" name="password" class="form-control"
+                   placeholder="Master Password" autofocus
+                   ng-model="popup.password"/>
+          </div>
         </div>
-      </div>
-      <div class="form-group" ng-if="hasSubdomain()">
-        <div class="col-xs-12">
-          <div class="radio">
-            <label>
-              <input type="radio" name="domain" value="{{ domainInfo.tld }}"
-                     ng-model="popup.domain" ng-change="changeDomain()"/>
-              Any {{ domainInfo.tld }} domain
+        <div class="form-group" ng-if="hasSubdomain()">
+          <div class="col-xs-12">
+            <div class="radio">
+              <label>
+                <input type="radio" name="domain" value="{{ domainInfo.tld }}"
+                       ng-model="popup.domain" ng-change="changeDomain()"/>
+                Any {{ domainInfo.tld }} domain
+                </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input type="radio" name="domain" value="{{ domainInfo.name }}"
+                       ng-model="popup.domain" ng-change="changeDomain()"/>
+                {{ domainInfo.name }} only
               </label>
-          </div>
-          <div class="radio">
-            <label>
-              <input type="radio" name="domain" value="{{ domainInfo.name }}"
-                     ng-model="popup.domain" ng-change="changeDomain()"/>
-              {{ domainInfo.name }} only
-            </label>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="form-group">
-        <a href="#" class="col-xs-12" ng-click="popup.showSettings = !popup.showSettings">
-          <small>Settings for {{ popup.domain }}</small>
-        </a>
-      </div>
-      <div class="well well-sm" ng-if="popup.showSettings">
-        <div hw-settings-editor="settings" notes></div>
-      </div>
-      <div class="form-group text-center">
-        <button type="button" class="btn btn-default" ng-click="closeWindow()">Cancel</button>
-        <button type="submit" class="btn"
-                ng-disabled="!popup.password"
-                ng-class="settings.createDate == null ? 'btn-success' : 'btn-primary'">
-          {{ settings.createDate == null ? 'Create and Insert' : 'Insert' }}
-        </button>
-      </div>
-    </form>
-    <small class="col-xs-12 text-center" ng-if="settings.accessDate != null">
-      <em class="text-muted">Last used {{ settings.accessDate | hwDate }}</em>
-    </small>
+        <div class="form-group">
+          <a href="#" class="col-xs-12" ng-click="popup.showSettings = !popup.showSettings">
+            <small>Settings for {{ popup.domain }}</small>
+          </a>
+        </div>
+        <div class="well well-sm" ng-if="popup.showSettings">
+          <div hw-settings-editor="settings" notes></div>
+        </div>
+        <hr/>
+        <div class="form-group">
+          <div class="col-xs-12 text-center">
+            <button type="button" class="btn"
+                    ng-disabled="!popup.password"
+                    ng-class="{ 'btn-success': popup.passwordField === false && settings.createDate == null,
+                                'btn-primary': popup.passwordField === false && settings.createDate != null,
+                                'btn-default': popup.passwordField !== false }"
+                    ng-click="copyPassword()">
+              <span class="glyphicon glyphicon-copy"></span>
+              <span ng-if="popup.passwordField === false">
+                {{ settings.createDate == null ? 'Add and Copy' : 'Copy' }}
+              </span>
+            </button>
+            <button type="submit" class="btn"
+                    ng-if="popup.passwordField !== false"
+                    ng-disabled="!popup.password"
+                    ng-class="settings.createDate == null ? 'btn-success' : 'btn-primary'">
+              {{ settings.createDate == null ? 'Add and Insert' : 'Insert' }}
+            </button>
+          </div>
+        </div>
+      </form>
+      <small class="col-xs-12 text-center" ng-if="settings.accessDate != null">
+        <em class="text-muted">Last used {{ settings.accessDate | hwDate }}</em>
+      </small>
+    </div>
   </div>
+  <textarea type="text" id="copy-me" tabindex="-1"></textarea>
 </body>
 </html>

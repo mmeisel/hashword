@@ -9,7 +9,14 @@ angular.module('popup', ['common', 'siteSettings'])
             ('www.' + $scope.domainInfo.tld) != $scope.domainInfo.name;
     };
 
-    $scope.closeWindow = function () {
+    $scope.copyPassword = function () {
+        var textarea = document.querySelector('#copy-me');
+        var pw = hw.getHashword($scope.popup.domain, $scope.popup.password, $scope.settings);
+
+        textarea.value = pw;
+        textarea.select();
+        document.execCommand('copy');
+        textarea.value = '';
         window.close();
     };
 
@@ -46,6 +53,7 @@ angular.module('popup', ['common', 'siteSettings'])
 
     function _init(tab) {
         $scope.domainInfo = hw.getDomainInfo(tab.url);
+        $scope.passwordField = null;
 
         $scope.insertPassword = function () {
             var pw = hw.getHashword($scope.popup.domain, $scope.popup.password, $scope.settings);
@@ -82,6 +90,21 @@ angular.module('popup', ['common', 'siteSettings'])
                     $scope.domainInfo.name : $scope.domainInfo.tld;
             $scope.changeDomain();
             $scope.$apply();
+        });
+
+        // Ask the page to tell us if there's a password field focused on it or not
+        chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+            if (request.passwordField != null && sender.tab.id === tab.id) {
+                $scope.popup.passwordField = $scope.popup.passwordField || request.passwordField;
+                $scope.$apply();
+            }
+        });
+
+        chrome.tabs.executeScript(tab.id, {
+            code: 'chrome.runtime.sendMessage({ ' +
+                    'passwordField: !!document.querySelector(\'input[type="password"]:focus\') ' +
+                '});',
+            allFrames: true
         });
     }
 }]);

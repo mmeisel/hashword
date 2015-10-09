@@ -32,3 +32,14 @@ tr.success .hover-only {
     padding-top: 6px;
     padding-bottom: 6px;
 }
+#copy-me {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: none;
+    resize: none;
+    outline: none;
+}
