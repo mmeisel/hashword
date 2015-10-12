@@ -30,7 +30,6 @@
     },
     "incognito": "spanning",
     "minimum_chrome_version": "39",
-    "options_page": "options.html",
     "permissions": [
         "activeTab",
         "clipboardWrite",

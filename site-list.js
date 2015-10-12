@@ -1,8 +1,7 @@
-/*jshint eqnull:true */
-/*global angular, hw, hwRules */
+/*global hw, hwRules */
 
-angular.module('options', ['common', 'siteSettings'])
-.controller('OptionsCtrl', ['$scope', function ($scope) {
+angular.module('site-list', ['common', 'siteSettings'])
+.controller('SiteListController', ['$scope', function ($scope) {
     $scope.edit = function (site) {
         $scope.editing = angular.copy(site);
     };
@@ -91,7 +90,7 @@ angular.module('options', ['common', 'siteSettings'])
 })
 
 .directive('hwExport', function () {
-    var EXPORT_DEFAULT_FILENAME = 'hashword-options.json';
+    var EXPORT_DEFAULT_FILENAME = 'hashword-site-list.json';
     
     return function ($scope, $element) {
         $element
@@ -114,7 +113,7 @@ angular.module('options', ['common', 'siteSettings'])
             var imported = JSON.parse(fileData);
     
             if (!imported.hashwordVersion || !imported.data) {
-                window.alert('This file is not a hashword options file.');
+                window.alert('This file is not a hashword site list file.');
             }
             else if (window.confirm('This will overwrite all of your settings, are you sure?')) {
                 return imported;
