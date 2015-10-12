@@ -110,16 +110,14 @@ angular.module('popup', ['common', 'siteSettings'])
 
             // Ask the page to tell us if there's a password field focused on it or not
             chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-                if (request.passwordField != null && sender.tab.id === tab.id) {
-                    scope.state.showInsert = scope.state.showInsert || request.passwordField;
+                if (request.passwordFieldActive != null && sender.tab.id === tab.id) {
+                    scope.state.showInsert = scope.state.showInsert || request.passwordFieldActive;
                     scope.$apply();
                 }
             });
 
             chrome.tabs.executeScript(tab.id, {
-                code: 'chrome.runtime.sendMessage({ ' +
-                        'passwordField: !!document.querySelector(\'input[type="password"]:focus\') ' +
-                    '});',
+                file: 'check-active.js',
                 allFrames: true
             });
         }
