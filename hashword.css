@@ -8,6 +8,16 @@ label {
 .container.compact {
     max-width: 750px;
 }
+.popup-title {
+    padding: 10px;
+    background-color: #eee;
+    border-bottom: 1px solid #ddd;
+}
+.popup-title .logo {
+    width: 19px;
+    height: 19px;
+    margin-top: -1px;
+}
 input[name="generation"] {
     width: 60px;
 }
