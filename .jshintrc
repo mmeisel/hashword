@@ -1,0 +1,7 @@
+{
+    "eqnull": true,
+    "globals": [
+        "angular",
+        "chrome"
+    ]
+}
