@@ -1,5 +1,3 @@
 (function (el) {
-    chrome.runtime.sendMessage({
-        passwordFieldActive: el != null && el.type && el.type.toLowerCase() === "password"
-    });
+    return el != null && el.type != null && el.type.toLowerCase() === "password";
 })(document.activeElement);

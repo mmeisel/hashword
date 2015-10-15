@@ -42,6 +42,9 @@ tr.success .hover-only {
     padding-top: 6px;
     padding-bottom: 6px;
 }
+.invisible {
+    visibility: hidden;
+}
 #copy-me {
     position: fixed;
     left: 0;

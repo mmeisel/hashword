@@ -1,6 +1,6 @@
 <p class="text-danger" ng-if="state.error">{{ state.error }}</p>
 <div ng-if="!state.error">
-  <form class="form-horizontal" ng-submit="state.showInsert ? insertPassword() : copyPassword()">
+  <form class="form-horizontal" ng-submit="onSubmit()">
     <div class="form-group">
       <div class="col-xs-12">
         <input type="password" name="password" class="form-control"
@@ -35,12 +35,12 @@
       <div hw-settings-editor="settings" notes></div>
     </div>
     <hr/>
-    <div class="form-group">
+    <div class="form-group" ng-class="{ 'invisible': state.showInsert == null }">
       <div class="col-xs-12 text-center">
         <button type="{{ state.showInsert ? 'button' : 'submit' }}" class="btn"
                 ng-disabled="!state.password"
                 ng-class="state.showInsert ? 'btn-default' : (settings.createDate == null ? 'btn-success' : 'btn-primary')"
-                ng-click="copyPassword()">
+                ng-click="copyPassword(true)">
           <span class="glyphicon glyphicon-copy"></span>
           <span ng-if="!state.showInsert">
             {{ settings.createDate == null ? 'Add and Copy' : 'Copy' }}
