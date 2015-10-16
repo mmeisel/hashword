@@ -1,6 +1,6 @@
 /*global hw, hwRules */
 
-angular.module('popup', ['common', 'site-settings'])
+angular.module('popup', ['clipboard', 'common', 'site-settings'])
 .directive('popupForm', function () {
     return {
         link: linkFn,
@@ -89,13 +89,9 @@ angular.module('popup', ['common', 'site-settings'])
         }
 
         function copyPassword(closeWindow) {
-            var textarea = document.querySelector('#copy-me');
             var pw = hw.getHashword(scope.state.domain, scope.state.password, scope.settings);
 
-            textarea.value = pw;
-            textarea.select();
-            document.execCommand('copy');
-            textarea.value = '';
+            scope.clipboardApi.copy(pw);
 
             if (closeWindow) {
                 window.close();

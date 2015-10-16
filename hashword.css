@@ -45,7 +45,7 @@ tr.success .hover-only {
 .invisible {
     visibility: hidden;
 }
-#copy-me {
+clipboard textarea {
     position: fixed;
     left: 0;
     bottom: 0;
