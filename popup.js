@@ -1,6 +1,6 @@
 /*global hw, hwRules */
 
-angular.module('popup', ['common', 'siteSettings'])
+angular.module('popup', ['common', 'site-settings'])
 .directive('popupForm', function () {
     return {
         link: linkFn,

@@ -1,6 +1,6 @@
 /*global hw, hwRules */
 
-angular.module('site-list', ['common', 'siteSettings'])
+angular.module('site-list', ['common', 'site-settings'])
 .controller('SiteListController', ['$scope', function ($scope) {
     $scope.edit = function (site) {
         $scope.editing = angular.copy(site);
