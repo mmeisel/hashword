@@ -1,7 +1,7 @@
 /*global hw, hwRules */
 
-angular.module('site-list', ['common', 'site-settings'])
-.controller('SiteListController', ['$scope', function ($scope) {
+angular.module('site-list', ['clipboard', 'common', 'site-settings', 'ui.bootstrap'])
+.controller('SiteListController', ['$scope', '$uibModal', function ($scope, $uibModal) {
     $scope.edit = function (site) {
         $scope.editing = angular.copy(site);
     };
@@ -49,7 +49,20 @@ angular.module('site-list', ['common', 'site-settings'])
         }
         $scope.editing = null;
     };
-    
+
+    $scope.copyPassword = function() {
+        var modal = $uibModal.open({
+            size: 'sm',
+            templateUrl: 'password-modal.html'
+        });
+
+        modal.result.then(function (masterPassword) {
+            var pw = hw.getHashword($scope.editing.domain, masterPassword, $scope.editing.settings);
+
+            $scope.clipboardApi.copy(pw);
+        });
+    };
+
     $scope.loadAllSites = function () {
         chrome.storage.local.get(null, function (items) {
             $scope.allSites = Object.keys(items).map(function (domain) {
