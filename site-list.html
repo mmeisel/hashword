@@ -1,24 +1,26 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="options" ng-csp>
+<html lang="en" ng-app="site-list" ng-csp>
 <head>
-  <title>Hashword Options</title>
+  <title>Hashword Site List</title>
   <link rel="stylesheet" type="text/css" href="lib/angular-csp.css"/>
   <link rel="stylesheet" type="text/css" href="lib/bootstrap.min.css"/>
   <link rel="stylesheet" type="text/css" href="hashword.css"/>
   <script type="text/javascript" src="lib/angular.min.js"></script>
+  <script type="text/javascript" src="lib/ui-bootstrap.min.js"></script>
   <script type="text/javascript" src="lib/sha3.js"></script>
   <script type="text/javascript" src="lib/tld.js"></script>
   <script type="text/javascript" src="hashword.js"></script>
   <script type="text/javascript" src="rules.js"></script>
   <script type="text/javascript" src="common.js"></script>
-  <script type="text/javascript" src="sitesettings.js"></script>
-  <script type="text/javascript" src="options.js"></script>
+  <script type="text/javascript" src="clipboard.js"></script>
+  <script type="text/javascript" src="site-settings.js"></script>
+  <script type="text/javascript" src="site-list.js"></script>
 </head>
 <body>
-  <div class="container" ng-controller="OptionsCtrl">
+  <div class="container" ng-controller="SiteListController">
     <div class="row">
       <div class="col-md-7">
-        <h3><img src="images/icon38.png"/> Hashword Options</h3>
+        <h3><img src="images/icon38.png"/> Hashword Site List</h3>
         <small class="pull-right" style="margin-top: -25px">
           <a href hw-import>Import</a> &bull; <a href hw-export>Export</a>
         </small>
@@ -37,17 +39,21 @@
           <form class="panel-body form-horizontal" ng-if="editing" ng-submit="saveEditing()">
             <div hw-settings-editor="editing.settings" notes></div>
             <div class="form-group">
-              <div class="col-xs-3 text-left">
+              <div class="col-xs-4 text-left">
                 <button type="button" class="btn btn-danger" ng-click="deleteEditing()">
                   <span class="glyphicon glyphicon-trash"></span>
                 </button>
+                <button type="button" class="btn btn-default" ng-click="copyPassword()">
+                  <span class="glyphicon glyphicon-copy"></span>
+                </button>
               </div>
-              <div class="col-xs-9 text-right">
+              <div class="col-xs-8 text-right">
                 <button type="button" class="btn btn-default" ng-click="cancelEditing()">Cancel</button>
                 <button type="submit" class="btn btn-success">Save</button>
               </div>
             </div>
           </form>
+          <clipboard api="clipboardApi"></clipboard>
         </div>
       </div>
       <div class="col-md-7 col-md-pull-5">
@@ -95,5 +101,35 @@
       </span>
     </script>
   </div>
+
+  <script type="text/ng-template" id="password-modal.html">
+    <form ng-submit="$close(password)">
+      <div class="modal-body">
+        <input type="password" name="password" class="form-control"
+               placeholder="Master Password" autofocus
+               ng-model="password"/>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="$dismiss()">Cancel</button>
+        <button type="submit" class="btn btn-primary">
+          <span class="glyphicon glyphicon-copy"></span> Copy
+        </button>
+      </div>
+    </form>
+  </script>
+
+  <script type="text/ng-template" id="delete-modal.html">
+    <form ng-submit="$close()">
+      <div class="modal-body">
+        <p>Are you sure you want to forget your settings for {{ editing.domain }}?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="$dismiss()">Cancel</button>
+        <button type="button" class="btn btn-danger" ng-click="$close()">
+          <span class="glyphicon glyphicon-trash"></span> Forget
+        </button>
+      </div>
+    </form>
+  </script>
 </body>
 </html>

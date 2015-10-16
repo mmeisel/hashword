@@ -1,0 +1,62 @@
+<p class="text-danger" ng-if="state.error">{{ state.error }}</p>
+<div ng-if="!state.error">
+  <form class="form-horizontal" ng-submit="onSubmit()">
+    <div class="form-group">
+      <div class="col-xs-12">
+        <input type="password" name="password" class="form-control"
+               placeholder="Master Password" autofocus
+               ng-model="state.password"/>
+      </div>
+    </div>
+    <div class="form-group" ng-if="hasSubdomain()">
+      <div class="col-xs-12">
+        <div class="radio">
+          <label>
+            <input type="radio" name="domain" value="{{ domainInfo.tld }}"
+                   ng-model="state.domain" ng-change="changeDomain()"/>
+            Any {{ domainInfo.tld }} domain
+            </label>
+        </div>
+        <div class="radio">
+          <label>
+            <input type="radio" name="domain" value="{{ domainInfo.name }}"
+                   ng-model="state.domain" ng-change="changeDomain()"/>
+            {{ domainInfo.name }} only
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <a href="#" class="col-xs-12" ng-click="state.showSettings = !state.showSettings">
+        <small>Settings for {{ state.domain }}</small>
+      </a>
+    </div>
+    <div class="well well-sm" ng-if="state.showSettings">
+      <div hw-settings-editor="settings" notes></div>
+    </div>
+    <hr/>
+    <div class="form-group" ng-class="{ 'invisible': state.showInsert == null }">
+      <div class="col-xs-12 text-center">
+        <button type="{{ state.showInsert ? 'button' : 'submit' }}" class="btn"
+                ng-disabled="!state.password"
+                ng-class="state.showInsert ? 'btn-default' : (settings.createDate == null ? 'btn-success' : 'btn-primary')"
+                ng-click="copyPassword(true)">
+          <span class="glyphicon glyphicon-copy"></span>
+          <span ng-if="!state.showInsert">
+            {{ settings.createDate == null ? 'Add and Copy' : 'Copy' }}
+          </span>
+        </button>
+        <button type="submit" class="btn"
+                ng-if="state.showInsert"
+                ng-disabled="!state.password"
+                ng-class="settings.createDate == null ? 'btn-success' : 'btn-primary'">
+          {{ settings.createDate == null ? 'Add and Insert' : 'Insert' }}
+        </button>
+      </div>
+    </div>
+  </form>
+  <small class="col-xs-12 text-center" ng-if="settings.accessDate != null">
+    <em class="text-muted">Last used {{ settings.accessDate | hwDate }}</em>
+  </small>
+</div>
+<clipboard api="clipboardApi"></clipboard>

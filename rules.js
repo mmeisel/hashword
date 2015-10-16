@@ -46,8 +46,8 @@ hwRules.resetRules = function () {
     });
 
     function _resetRulesInternal(hwData, imageData) {
-        // When the page has a password field, show the "add" icon if the extension hasn't been used
-        // here before. Show the "insert" icon if it has.
+        // When the extension has been used on a site, show the "insert" icon. On pages with a
+        // password field where it hasn't been used, show the "add" icon.
         var addIconRule = {
             priority: 50,
             conditions: [
@@ -66,8 +66,7 @@ hwRules.resetRules = function () {
             // An implicit '.' is added at the beginning of the hostname, so this will work for
             // exact matches as well.
             return new chrome.declarativeContent.PageStateMatcher({
-                pageUrl: { hostSuffix: '.' + domain },
-                css: ['input[type="password"]']
+                pageUrl: { hostSuffix: '.' + domain }
             });
         });
 

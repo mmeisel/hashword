@@ -8,6 +8,16 @@ label {
 .container.compact {
     max-width: 750px;
 }
+.popup-title {
+    padding: 10px;
+    background-color: #eee;
+    border-bottom: 1px solid #ddd;
+}
+.popup-title .logo {
+    width: 19px;
+    height: 19px;
+    margin-top: -1px;
+}
 input[name="generation"] {
     width: 60px;
 }
@@ -31,4 +41,18 @@ tr.success .hover-only {
 .panel-title-tall {
     padding-top: 6px;
     padding-bottom: 6px;
+}
+.invisible {
+    visibility: hidden;
+}
+clipboard textarea {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: none;
+    resize: none;
+    outline: none;
 }

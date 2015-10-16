@@ -1,8 +1,7 @@
-/*jshint eqnull:true */
-/*global angular, hw, hwRules */
+/*global hw, hwRules */
 
-angular.module('options', ['common', 'siteSettings'])
-.controller('OptionsCtrl', ['$scope', function ($scope) {
+angular.module('site-list', ['clipboard', 'common', 'site-settings', 'ui.bootstrap'])
+.controller('SiteListController', ['$scope', '$uibModal', function ($scope, $uibModal) {
     $scope.edit = function (site) {
         $scope.editing = angular.copy(site);
     };
@@ -35,7 +34,19 @@ angular.module('options', ['common', 'siteSettings'])
     $scope.deleteEditing = function () {
         var domain = $scope.editing.domain;
         
-        if (domain) {
+        if (!domain) {
+            return;
+        }
+
+        var modal = $uibModal.open({
+            scope: $scope,
+            size: 'sm',
+            templateUrl: 'delete-modal.html'
+        });
+
+        modal.result.then(function () {
+            $scope.editing = null;
+
             chrome.storage.local.remove(domain, function () {
                 if (!chrome.runtime.lastError) {
                     $scope.allSites = $scope.allSites.filter(function (site) {
@@ -47,10 +58,22 @@ angular.module('options', ['common', 'siteSettings'])
                 }
                 $scope.$apply();
             });
-        }
-        $scope.editing = null;
+        });
     };
-    
+
+    $scope.copyPassword = function() {
+        var modal = $uibModal.open({
+            size: 'sm',
+            templateUrl: 'password-modal.html'
+        });
+
+        modal.result.then(function (masterPassword) {
+            var pw = hw.getHashword($scope.editing.domain, masterPassword, $scope.editing.settings);
+
+            $scope.clipboardApi.copy(pw);
+        });
+    };
+
     $scope.loadAllSites = function () {
         chrome.storage.local.get(null, function (items) {
             $scope.allSites = Object.keys(items).map(function (domain) {
@@ -91,7 +114,7 @@ angular.module('options', ['common', 'siteSettings'])
 })
 
 .directive('hwExport', function () {
-    var EXPORT_DEFAULT_FILENAME = 'hashword-options.json';
+    var EXPORT_DEFAULT_FILENAME = 'hashword-site-list.json';
     
     return function ($scope, $element) {
         $element
@@ -114,7 +137,7 @@ angular.module('options', ['common', 'siteSettings'])
             var imported = JSON.parse(fileData);
     
             if (!imported.hashwordVersion || !imported.data) {
-                window.alert('This file is not a hashword options file.');
+                window.alert('This file is not a hashword site list file.');
             }
             else if (window.confirm('This will overwrite all of your settings, are you sure?')) {
                 return imported;

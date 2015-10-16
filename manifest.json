@@ -11,8 +11,8 @@
         "default_title": "Insert Hashword",
         "default_popup": "popup.html",
         "default_icon": {
-            "19": "images/icon19.png",
-            "38": "images/icon38.png"
+            "19": "images/icon19-inactive.png",
+            "38": "images/icon38-inactive.png"
         }
     },
     "commands": {
@@ -30,9 +30,9 @@
     },
     "incognito": "spanning",
     "minimum_chrome_version": "39",
-    "options_page": "options.html",
     "permissions": [
         "activeTab",
+        "clipboardWrite",
         "declarativeContent",
         "storage"
     ]
