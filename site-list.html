@@ -117,5 +117,19 @@
       </div>
     </form>
   </script>
+
+  <script type="text/ng-template" id="delete-modal.html">
+    <form ng-submit="$close()">
+      <div class="modal-body">
+        <p>Are you sure you want to forget your settings for {{ editing.domain }}?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" ng-click="$dismiss()">Cancel</button>
+        <button type="button" class="btn btn-danger" ng-click="$close()">
+          <span class="glyphicon glyphicon-trash"></span> Forget
+        </button>
+      </div>
+    </form>
+  </script>
 </body>
 </html>

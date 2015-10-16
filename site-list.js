@@ -34,7 +34,19 @@ angular.module('site-list', ['clipboard', 'common', 'site-settings', 'ui.bootstr
     $scope.deleteEditing = function () {
         var domain = $scope.editing.domain;
         
-        if (domain) {
+        if (!domain) {
+            return;
+        }
+
+        var modal = $uibModal.open({
+            scope: $scope,
+            size: 'sm',
+            templateUrl: 'delete-modal.html'
+        });
+
+        modal.result.then(function () {
+            $scope.editing = null;
+
             chrome.storage.local.remove(domain, function () {
                 if (!chrome.runtime.lastError) {
                     $scope.allSites = $scope.allSites.filter(function (site) {
@@ -46,8 +58,7 @@ angular.module('site-list', ['clipboard', 'common', 'site-settings', 'ui.bootstr
                 }
                 $scope.$apply();
             });
-        }
-        $scope.editing = null;
+        });
     };
 
     $scope.copyPassword = function() {
