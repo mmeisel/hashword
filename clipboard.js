@@ -6,7 +6,7 @@ angular.module('clipboard', [])
         scope: {
             api: '='
         },
-        templateUrl: 'clipboard.html'
+        template: '<textarea type="text" tabindex="-1"></textarea>'
     };
 
     function linkFn(scope, element) {
