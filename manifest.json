@@ -8,7 +8,7 @@
         "persistent": false
     },
     "browser_action": {
-        "default_title": "Insert Hashword",
+        "default_title": "Hashword",
         "default_popup": "popup.html",
         "default_icon": {
             "19": "images/icon19-inactive.png",
