@@ -5,8 +5,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
         if (details.reason == 'update') {
             _upgradeData(items);
         }
-
-        hwRules.resetRules();
     });
 
     function _upgradeData(items) {
@@ -29,3 +27,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
         chrome.storage.local.set(items);
     }
 });
+
+// Install rules on initialization
+hwRules.resetRules();
