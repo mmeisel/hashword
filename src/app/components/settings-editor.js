@@ -1,9 +1,9 @@
 /*global angular */
 
-angular.module('site-settings', [])
+angular.module('components')
 .directive('hwSettingsEditor', function () {
     return {
-        templateUrl: 'site-settings.html',
+        templateUrl: 'settings-editor.html',
         replace: true,
         scope: {
             settings: '=hwSettingsEditor',

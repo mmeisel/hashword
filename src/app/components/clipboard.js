@@ -1,4 +1,4 @@
-angular.module('clipboard', [])
+angular.module('components')
 .directive('clipboard', function () {
     return {
         link: linkFn,
