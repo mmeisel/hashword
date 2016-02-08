@@ -1,6 +1,6 @@
 /*global hw, hwRules */
 
-angular.module('site-list', ['clipboard', 'common', 'site-settings', 'ui.bootstrap'])
+angular.module('site-list', ['components', 'ui.bootstrap'])
 .controller('SiteListController', ['$scope', '$uibModal', function ($scope, $uibModal) {
     $scope.edit = function (site) {
         $scope.editing = angular.copy(site);

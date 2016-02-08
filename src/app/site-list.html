@@ -2,25 +2,18 @@
 <html lang="en" ng-app="site-list" ng-csp>
 <head>
   <title>Hashword Site List</title>
-  <link rel="stylesheet" type="text/css" href="lib/angular-csp.css"/>
-  <link rel="stylesheet" type="text/css" href="lib/bootstrap.min.css"/>
-  <link rel="stylesheet" type="text/css" href="hashword.css"/>
-  <script type="text/javascript" src="lib/angular.min.js"></script>
-  <script type="text/javascript" src="lib/ui-bootstrap.min.js"></script>
-  <script type="text/javascript" src="lib/sha3.js"></script>
-  <script type="text/javascript" src="lib/tld.js"></script>
-  <script type="text/javascript" src="hashword.js"></script>
+  <link rel="stylesheet" type="text/css" href="../styles/all.css"/>
+  <script type="text/javascript" src="../lib.js"></script>
+  <script type="text/javascript" src="../core/hashword.js"></script>
   <script type="text/javascript" src="rules.js"></script>
-  <script type="text/javascript" src="common.js"></script>
-  <script type="text/javascript" src="clipboard.js"></script>
-  <script type="text/javascript" src="site-settings.js"></script>
+  <script type="text/javascript" src="components.js"></script>
   <script type="text/javascript" src="site-list.js"></script>
 </head>
 <body>
   <div class="container" ng-controller="SiteListController">
     <div class="row">
       <div class="col-md-7">
-        <h3><img src="images/icon38.png"/> Hashword Site List</h3>
+        <h3><img src="../images/icon38.png"/> Hashword Site List</h3>
         <small class="pull-right" style="margin-top: -25px">
           <a href hw-import>Import</a> &bull; <a href hw-export>Export</a>
         </small>

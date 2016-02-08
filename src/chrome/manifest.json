@@ -9,7 +9,7 @@
     },
     "browser_action": {
         "default_title": "Hashword",
-        "default_popup": "popup.html",
+        "default_popup": "app/popup.html",
         "default_icon": {
             "19": "images/icon19-inactive.png",
             "38": "images/icon38-inactive.png"
@@ -32,7 +32,7 @@
     "incognito": "spanning",
     "minimum_chrome_version": "40",
     "options_ui": {
-        "page": "options.html",
+        "page": "app/options.html",
         "chrome_style": true
     },
     "permissions": [

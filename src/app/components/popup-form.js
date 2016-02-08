@@ -70,7 +70,7 @@ angular.module('components')
         function checkActive(resolve) {
             // Ask the page to tell us if there's a password field focused on it or not
             chrome.tabs.executeScript(tabId, {
-                file: 'check-active.js',
+                file: 'app/check-active.js',
                 allFrames: true
             },
             function (results) {
