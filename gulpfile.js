@@ -4,11 +4,9 @@
 
 var gulp = require('gulp');
 var concat = require('gulp-concat');
-var cssnano = require('gulp-cssnano');
 var htmlmin = require('gulp-htmlmin');
 var eventStream = require('event-stream');
 var templatecache = require('gulp-angular-templatecache');
-var uglify = require('gulp-uglify');
 
 var src = {
     assets: ['src/content/fonts/**/*', 'src/content/images/**/*'],
@@ -46,7 +44,6 @@ gulp.task('components', function () {
     
     eventStream.merge(js, templates)
         .pipe(concat('components.js'))
-        .pipe(uglify())
         .pipe(gulp.dest(dist.app));
 });
 
@@ -64,14 +61,12 @@ gulp.task('libScripts', function () {
 
 gulp.task('scripts', ['components', 'libScripts'], function () {
     gulp.src(src.js)
-        .pipe(uglify())
         .pipe(gulp.dest(dist.root));
 });
 
 gulp.task('css', function () {
     gulp.src(src.css)
         .pipe(concat('all.css'))
-        .pipe(cssnano())
         .pipe(gulp.dest(dist.css));
 });
 
