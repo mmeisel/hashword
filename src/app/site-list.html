@@ -25,7 +25,7 @@
             <em class="text-muted">Click on a site to view or edit its settings.</em>
           </div>
           <form class="panel-body form-horizontal" ng-if="editing" ng-submit="saveEditing()">
-            <div hw-settings-editor="editing.settings" notes></div>
+            <hw-settings-editor settings="editing.settings" notes></hw-settings-editor>
             <div class="form-group">
               <div class="col-xs-4 text-left">
                 <button type="button" class="btn btn-danger" ng-click="deleteEditing()">
