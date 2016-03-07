@@ -1,6 +1,6 @@
 /*global hw, hwRules */
 
-angular.module('components')
+angular.module('popup', ['filters'])
 .directive('popupForm', function () {
     return {
         link: linkFn,
@@ -70,7 +70,7 @@ angular.module('components')
         function checkActive(resolve) {
             // Ask the page to tell us if there's a password field focused on it or not
             chrome.tabs.executeScript(tabId, {
-                file: 'app/check-active.js',
+                file: 'check-active.js',
                 allFrames: true
             },
             function (results) {
