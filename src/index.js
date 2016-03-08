@@ -1,6 +1,6 @@
 /*global angular, hw */
 
-angular.module('index', ['site-settings'])
+angular.module('index', ['settings-editor'])
 .controller('HashwordCtrl', ['$scope', function ($scope) {
     $scope.form = {};
     $scope.settings = hw.getDefaultSettings();

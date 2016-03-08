@@ -1,6 +1,6 @@
 /*global angular */
 
-angular.module('common', [])
+angular.module('filters', [])
 .filter('hwDate', ['$filter', function ($filter) {
     // Display '2013' for sites with no create/access date. Otherwise, pass the date on to
     // angular's built-in date filter.
