@@ -1,6 +1,6 @@
 /*global hw, hwRules */
 
-angular.module('popup', ['filters'])
+angular.module('popup', ['clipboard', 'filters'])
 .directive('popupForm', function () {
     return {
         link: linkFn,
