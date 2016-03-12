@@ -5,7 +5,7 @@
 var gulp = require('gulp');
 var concat = require('gulp-concat');
 var htmlmin = require('gulp-htmlmin');
-var eventStream = require('event-stream');
+var streamqueue = require('streamqueue');
 var templatecache = require('gulp-angular-templatecache');
 
 var src = {
@@ -35,7 +35,7 @@ gulp.task('common', function () {
         .pipe(htmlmin(htmlminOptions))
         .pipe(templatecache({ module: 'templates', standalone: true }));
     
-    eventStream.merge(js, templates)
+    streamqueue({ objectMode: true }, js, templates)
         .pipe(concat('common.js'))
         .pipe(gulp.dest(outputdir));
 });
