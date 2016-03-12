@@ -74,10 +74,13 @@ angular.module('popup', ['clipboard', 'filters'])
                 allFrames: true
             },
             function (results) {
-                if (results) {
+                if (!chrome.runtime.lastError && results) {
                     scope.state.showInsert = results.reduce(function (prevValue, curValue) {
                         return prevValue || curValue;
                     });
+                }
+                else {
+                    scope.state.showInsert = false;
                 }
                 resolve();
             });
