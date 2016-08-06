@@ -4,7 +4,7 @@
 var hwRules = {};
 
 hwRules.loadIcons = function(callback) {
-    var imageSizes = ['19', '38'];
+    var imageSizes = ['16', '19', '36', '38'];
     var imageVariants = ['insert', 'add'];
     var totalImages = imageSizes.length * imageVariants.length;
     var loadedImages = 0;

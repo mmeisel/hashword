@@ -11,7 +11,9 @@
         "default_title": "Hashword",
         "default_popup": "popup.html",
         "default_icon": {
+            "16": "images/icon16-inactive.png",
             "19": "images/icon19-inactive.png",
+            "32": "images/icon32-inactive.png",
             "38": "images/icon38-inactive.png"
         }
     },
