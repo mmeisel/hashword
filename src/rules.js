@@ -71,7 +71,11 @@ hwRules.resetRules = function () {
         });
 
         chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
-            chrome.declarativeContent.onPageChanged.addRules([addIconRule, insertIconRule]);
+            chrome.declarativeContent.onPageChanged.addRules([addIconRule, insertIconRule], function () {
+                if (chrome.runtime.lastError) {
+                    console.error('Error adding declarativeContent rules', chrome.runtime.lastError);
+                }
+            });
         });
     }
 };
