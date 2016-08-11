@@ -37,20 +37,22 @@
     <hr/>
     <div class="form-group" ng-class="{ 'invisible': state.showInsert == null }">
       <div class="col-xs-12 text-center">
-        <button type="{{ state.showInsert ? 'button' : 'submit' }}" class="btn"
-                ng-disabled="!state.password"
-                ng-class="state.showInsert ? 'btn-default' : (settings.createDate == null ? 'btn-success' : 'btn-primary')"
-                ng-click="copyPassword(true)">
-          <span class="glyphicon glyphicon-copy"></span>
-          <span ng-if="!state.showInsert">
-            {{ settings.createDate == null ? 'Add and Copy' : 'Copy' }}
-          </span>
-        </button>
-        <button type="submit" class="btn"
+        <button type="button" class="btn btn-default"
                 ng-if="state.showInsert"
                 ng-disabled="!state.password"
+                ng-click="copyPassword(true)">
+          <span class="glyphicon glyphicon-copy"></span>
+        </button>
+        <button type="submit" class="btn"
+                ng-disabled="!state.password"
                 ng-class="settings.createDate == null ? 'btn-success' : 'btn-primary'">
-          {{ settings.createDate == null ? 'Add and Insert' : 'Insert' }}
+          <span ng-if="state.showInsert">
+            {{ settings.createDate == null ? 'Add and Insert' : 'Insert' }}
+          </span>
+          <span ng-if="!state.showInsert">
+            <span class="glyphicon glyphicon-copy"></span>
+            {{ settings.createDate == null ? 'Add and Copy' : 'Copy' }}
+          </span>
         </button>
       </div>
     </div>
