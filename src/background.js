@@ -1,11 +1,19 @@
 /*global chrome, hwRules */
 chrome.runtime.onInstalled.addListener(function(details) {
-    chrome.storage.local.get(null, function (items) {
-         // Upgrade stored data to a new format when a new version is installed.
-        if (details.reason == 'update') {
+    // Install declarative content rules
+
+    if (details.reason == 'update') {
+        // Upgrade stored data to a new format when a new version is installed.
+        // Delay installing the rules until the data is upgraded in case the new rules code relies
+        // on the new format.
+        chrome.storage.local.get(null, function (items) {
             _upgradeData(items);
-        }
-    });
+            hwRules.resetRules();
+        });
+    }
+    else {
+        hwRules.resetRules();
+    }
 
     function _upgradeData(items) {
         Object.keys(items).filter(function (domain) {
@@ -28,5 +36,5 @@ chrome.runtime.onInstalled.addListener(function(details) {
     }
 });
 
-// Install rules on initialization
-hwRules.resetRules();
+// Just in case
+chrome.runtime.onStartup.addListener(hwRules.resetRules);
