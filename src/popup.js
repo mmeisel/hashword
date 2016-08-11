@@ -96,6 +96,8 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
 
             scope.clipboardApi.copy(pw);
 
+            updateAndSaveSettings();
+
             if (closeWindow) {
                 window.close();
             }
