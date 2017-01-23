@@ -1,5 +1,6 @@
 {
     "eqnull": true,
+    "esversion": 6,
     "globals": [
         "angular",
         "chrome"
