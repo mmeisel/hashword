@@ -3,15 +3,19 @@ chrome.runtime.onInstalled.addListener(function(details) {
     // Install declarative content rules
 
     if (details.reason == 'update') {
+        console.info('Upgrade detected, checking data format...');
+
         // Upgrade stored data to a new format when a new version is installed.
         // Delay installing the rules until the data is upgraded in case the new rules code relies
         // on the new format.
         chrome.storage.local.get(null, function (items) {
             _upgradeData(items);
+            console.info('Data upgraded, adding declarativeContent rules');
             hwRules.resetRules();
         });
     }
     else {
+        console.info('Adding declarativeContent rules for new install');
         hwRules.resetRules();
     }
 
