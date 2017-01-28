@@ -174,6 +174,7 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
                         
                         chrome.storage.local.set(converted, function () {
                             if (!chrome.runtime.lastError) {
+                                hwRules.resetRules();
                                 $scope.loadAllSites();
                             }
                         });
