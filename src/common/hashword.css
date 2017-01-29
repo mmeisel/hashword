@@ -8,10 +8,6 @@ label {
 .container.compact {
     max-width: 750px;
 }
-.popup {
-    /* Workaround for https://bugs.chromium.org/p/chromium/issues/detail?id=428044 */
-    min-height: 220px;
-}
 .popup-title {
     padding: 10px;
     background-color: #eee;

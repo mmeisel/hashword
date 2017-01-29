@@ -1,5 +1,5 @@
 <p class="text-danger" ng-if="state.error">{{ state.error }}</p>
-<div ng-if="!state.error">
+<div ng-if="!state.error && state.ready">
   <form class="form-horizontal" ng-submit="onSubmit()">
     <div class="form-group">
       <div class="col-xs-12">

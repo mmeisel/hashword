@@ -14,7 +14,8 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
             password: '',
             showInsert: null,
             showSettings: false,
-            error: null
+            error: null,
+            ready: false
         };
 
         scope.domainInfo = null;
@@ -29,6 +30,11 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
             return Promise.all([new Promise(getSettings), new Promise(checkActive)]);
         })
         .then(function () {
+            // This is a hack to work around a chrome bug:
+            // https://bugs.chromium.org/p/chromium/issues/detail?id=428044
+            // It seems if we hide everything until we're done loading, this doesn't happen.
+            // Perhaps it's too many resizes in a short period of time.
+            scope.state.ready = true;
             scope.$apply();
         })
         .catch(function (reason) {
