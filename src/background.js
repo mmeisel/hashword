@@ -22,6 +22,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
     function upgradeData(items) {
         Object.keys(items).filter(function (domain) {
             let settings = items[domain];
+            let upgraded = false;
     
             // For data from previous versions that doesn't have the create/access dates.
             // We'll use 0 as a special value to indicate that the date is not known. This will
@@ -30,10 +31,17 @@ chrome.runtime.onInstalled.addListener(function (details) {
             if (settings.createDate == null) {
                 settings.createDate = 0;
                 settings.accessDate = 0;
-                return true;
+                upgraded = true;
             }
-        
-            return false;
+
+            // At some point, some password lengths got written as strings. These should always be
+            // numbers. Fix this.
+            if (settings.pwLength !== +settings.pwLength) {
+                settings.pwLength = +settings.pwLength;
+                upgraded = true;
+            }
+
+            return upgraded;
         });
     
         chrome.storage.local.set(items);
