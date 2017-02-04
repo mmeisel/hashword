@@ -1,10 +1,10 @@
 <p class="text-danger" ng-if="state.error">{{ state.error }}</p>
 <div ng-if="!state.error && state.ready">
-  <form class="form-horizontal" ng-submit="onSubmit()">
+  <form name="hwPopupForm" class="form-horizontal" ng-submit="onSubmit()">
     <div class="form-group">
       <div class="col-xs-12">
         <input type="password" name="password" class="form-control"
-               placeholder="Master Password" autofocus
+               placeholder="Master Password" autofocus required
                ng-model="state.password"/>
       </div>
     </div>
@@ -39,12 +39,12 @@
       <div class="col-xs-12 text-center">
         <button type="button" class="btn btn-default"
                 ng-if="state.showInsert"
-                ng-disabled="!state.password"
+                ng-disabled="!hwPopupForm.$valid"
                 ng-click="copyPassword(true)">
           <span class="glyphicon glyphicon-copy"></span>
         </button>
         <button type="submit" class="btn"
-                ng-disabled="!state.password"
+                ng-disabled="!hwPopupForm.$valid"
                 ng-class="settings.createDate == null ? 'btn-success' : 'btn-primary'">
           <span ng-if="state.showInsert">
             {{ settings.createDate == null ? 'Add and Insert' : 'Insert' }}
