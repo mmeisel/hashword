@@ -9,27 +9,26 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
     };
 
     function linkFn(scope) {
-        scope.state = {
-            domain: '',
-            password: '',
-            showInsert: null,
-            showSettings: false,
-            error: null,
-            ready: false
-        };
+        angular.extend(scope, {
+            state: {
+                domain: '',
+                password: '',
+                showInsert: null,
+                showSettings: false,
+                error: null,
+                ready: false
+            },
+            domainInfo: null,
+            hasSubdomain,
+            copyPassword,
+            onSubmit,
+            changeDomain
+        });
 
-        scope.domainInfo = null;
-        scope.hasSubdomain = hasSubdomain;
-        scope.copyPassword = copyPassword;
-        scope.onSubmit = onSubmit;
-        scope.changeDomain = changeDomain;
-
-        var tabId = null;
-        var promise = new Promise(getActiveTab)
-        .then(function () {
-            return Promise.all([new Promise(getSettings), new Promise(checkActive)]);
-        })
-        .then(function () {
+        let tabId = null;
+        let promise = new Promise(getActiveTab)
+        .then(() => Promise.all([new Promise(getSettings), new Promise(checkActive)]))
+        .then(() => {
             // This is a hack to work around a chrome bug:
             // https://bugs.chromium.org/p/chromium/issues/detail?id=428044
             // It seems if we hide everything until we're done loading, this doesn't happen.
@@ -37,13 +36,13 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
             scope.state.ready = true;
             scope.$apply();
         })
-        .catch(function (reason) {
+        .catch((reason) => {
             scope.state.error = reason;
             scope.$apply();
         });
 
         function getActiveTab(resolve, reject) {
-            chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                 if (tabs.length && tabs[0].url && tabs[0].url.indexOf('http') === 0) {
                     tabId = tabs[0].id;
                     scope.domainInfo = hw.getDomainInfo(tabs[0].url);
@@ -56,7 +55,7 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
         }
 
         function getSettings(resolve, reject) {
-            chrome.storage.local.get([scope.domainInfo.name, scope.domainInfo.tld], function (items) {
+            chrome.storage.local.get([scope.domainInfo.name, scope.domainInfo.tld], (items) => {
                 if (chrome.runtime.lastError) {
                     return reject(chrome.runtime.lastError.message);
                 }
@@ -79,9 +78,9 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
                 file: 'check-active.js',
                 allFrames: true
             },
-            function (results) {
+            (results) => {
                 if (!chrome.runtime.lastError && results) {
-                    scope.state.showInsert = results.reduce(function (prevValue, curValue) {
+                    scope.state.showInsert = results.reduce((prevValue, curValue) => {
                         return prevValue || curValue;
                     });
                 }
@@ -98,7 +97,7 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
         }
 
         function copyPassword(closeWindow) {
-            var pw = hw.getHashword(scope.state.domain, scope.state.password, scope.settings);
+            let pw = hw.getHashword(scope.state.domain, scope.state.password, scope.settings);
 
             scope.clipboardApi.copy(pw);
 
@@ -110,7 +109,7 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
         }
 
         function onSubmit() {
-            promise.then(function () {
+            promise.then(() => {
                 (scope.state.showInsert ? insertPassword : copyPassword)();
                 window.close();
             });
@@ -119,16 +118,16 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
         // Update dates and save settings. We need to update a copy of the object in the
         // scope so we don't cause another digest cycle when we're trying to close the window.
         function updateAndSaveSettings() {
-            var items = {};
-            var settings = angular.copy(scope.settings);
-            var isNewDomain = settings.createDate == null;
+            let items = {};
+            let settings = angular.copy(scope.settings);
+            let isNewDomain = settings.createDate == null;
 
             settings.accessDate = new Date().getTime();
             if (isNewDomain) {
                 settings.createDate = settings.accessDate;
             }
             items[scope.state.domain] = settings;
-            chrome.storage.local.set(items, function () {
+            chrome.storage.local.set(items, () => {
                 // If it's a new domain, reset the rules for which icon to show
                 if (isNewDomain) {
                     hwRules.resetRules();
@@ -137,16 +136,16 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
         }
 
         function insertPassword() {
-            var pw = hw.getHashword(scope.state.domain, scope.state.password, scope.settings);
+            let pw = hw.getHashword(scope.state.domain, scope.state.password, scope.settings);
 
             // Populate field, then trigger some key events so hopefully the scripts on the page
             // will register that we've entered something.
-            var script = 'document.activeElement.value = ' + JSON.stringify(pw) + '; ' +
-                '["keydown", "keypress", "keyup"].forEach(function (t) { ' +
+            let script = 'document.activeElement.value = ' + JSON.stringify(pw) + '; ' +
+                '["keydown", "keypress", "keyup"].forEach((t) => ' +
                     'document.activeElement.dispatchEvent(' +
                         'new KeyboardEvent(t, { bubbles: true, cancelable: true })' +
-                    '); ' +
-                '});';
+                    ')' +
+                ');';
 
             chrome.tabs.executeScript(tabId, {
                 code: script,
