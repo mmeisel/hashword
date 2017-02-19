@@ -8,6 +8,13 @@ label {
 .container.compact {
     max-width: 750px;
 }
+.popup-domain-label {
+    display: inline-block;
+    max-width: 220px;
+    padding: 6px 0 3px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
 .popup-title {
     padding: 10px;
     background-color: #eee;
