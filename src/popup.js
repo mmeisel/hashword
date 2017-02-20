@@ -122,6 +122,7 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
         }
 
         items[ctrl.activeDomain] = ctrl.settings;
+        console.log(ctrl.activeDomain, ctrl.settings);
         chrome.storage.local.set(items, function () {
             // TODO: handle errors
             // If it's a new domain, reset the rules for which icon to show
@@ -198,13 +199,11 @@ function ($scope ,  popupService ,  PopupModes) {
             popupService.settings
         );
 
-        // Populate field, then trigger some key events so hopefully the scripts on the page
+        // Populate field, then trigger the input event so hopefully the scripts on the page
         // will register that we've entered something.
         const script = 'document.activeElement.value = ' + JSON.stringify(pw) + '; ' +
-            '["keydown", "keypress", "keyup"].forEach((t) => ' +
-                'document.activeElement.dispatchEvent(' +
-                    'new KeyboardEvent(t, { bubbles: true, cancelable: true })' +
-                ')' +
+            'document.activeElement.dispatchEvent(' +
+                'new Event("input", { bubbles: true, cancelable: true })' +
             ');';
 
         chrome.tabs.executeScript(popupService.tabId, {
