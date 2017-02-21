@@ -122,7 +122,6 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
         }
 
         items[ctrl.activeDomain] = ctrl.settings;
-        console.log(ctrl.activeDomain, ctrl.settings);
         chrome.storage.local.set(items, function () {
             // TODO: handle errors
             // If it's a new domain, reset the rules for which icon to show
