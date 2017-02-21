@@ -29,12 +29,8 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
         updateAccessDate
     });
 
-    // This is a hack to work around a chrome bug:
-    // https://bugs.chromium.org/p/chromium/issues/detail?id=428044
-    const animationPromise = new Promise((resolve) => $timeout(resolve, 200));
-
     ctrl.initPromise = new Promise(getActiveTab)
-    .then(() => Promise.all([new Promise(getSettings), new Promise(checkActive), animationPromise]))
+    .then(() => Promise.all([new Promise(getSettings), new Promise(checkActive)]))
     .then(() => ctrl.mode = PopupModes.READY)
     .catch(setError);
 
