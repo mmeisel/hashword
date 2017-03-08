@@ -47,7 +47,7 @@ hw.encoder = function (requireSymbols) {
         let charClassIdx = 0;
         const chars = [];
 
-        wordArray.words.forEach((curWord) => {
+        wordArray.words.forEach(curWord => {
             if (bitCount > 0) {
                 const bitsInWord = Math.min(bitCount, 32);
                 const numberStart = bitsInWord === 32 ? ((curWord >>> 31) * 15 + 6) : 0;

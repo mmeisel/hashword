@@ -30,7 +30,7 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
             
             chrome.storage.local.set(items, function () {
                 if (!chrome.runtime.lastError) {
-                    $scope.allSites.forEach((site) => {
+                    $scope.allSites.forEach(site => {
                         if (site.domain == edited.domain) {
                             site.settings = edited.settings;
                         }
@@ -63,7 +63,7 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
 
             chrome.storage.local.remove(domain, function () {
                 if (!chrome.runtime.lastError) {
-                    $scope.allSites = $scope.allSites.filter((site) => site.domain != domain);
+                    $scope.allSites = $scope.allSites.filter(site => site.domain != domain);
 
                     // Reset the rules for which icon to show
                     hwRules.resetRules();
@@ -88,7 +88,7 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
 
     function loadAllSites() {
         chrome.storage.local.get(null, function (items) {
-            $scope.allSites = Object.keys(items).map((domain) => {
+            $scope.allSites = Object.keys(items).map(domain => {
                 return { domain, settings: items[domain] };
             });
             $scope.$apply();
@@ -126,7 +126,7 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
     return function ($scope, $element) {
         $element
         .attr('download', EXPORT_DEFAULT_FILENAME)
-        .on('click', (e) => {
+        .on('click', e => {
             const output = JSON.stringify({
                 hashwordVersion: chrome.runtime.getManifest().version,
                 data: $scope.allSites
@@ -157,7 +157,7 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
                     if (imported) {
                         const converted = {};
                         
-                        imported.data.forEach((site) => converted[site.domain] = site.settings);
+                        imported.data.forEach(site => converted[site.domain] = site.settings);
                         
                         chrome.storage.local.set(converted, function () {
                             if (!chrome.runtime.lastError) {

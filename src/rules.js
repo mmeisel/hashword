@@ -10,13 +10,13 @@ hwRules.loadIcons = function () {
     const imageData = {};
     const imagePromises = [];
 
-    imageVariants.forEach((variant) => {
+    imageVariants.forEach(variant => {
         imageData[variant] = {};
 
-        imageSizes.forEach((size) => {
+        imageSizes.forEach(size => {
             const promise = loadIcon(variant, size);
 
-            promise.then((result) => imageData[variant][size] = result);
+            promise.then(result => imageData[variant][size] = result);
             imagePromises.push(promise);
         });
     });
@@ -57,7 +57,7 @@ hwRules.resetRules = function () {
 
     function resetRulesStart() {
         hwRules.resetPromise = new Promise((resolve, reject) => {
-            chrome.storage.local.get(null, (hwData) => {
+            chrome.storage.local.get(null, hwData => {
                 if (chrome.runtime.lastError) {
                     reject(chrome.runtime.lastError.message);
                 }
@@ -69,7 +69,7 @@ hwRules.resetRules = function () {
                 .then(resolve, reject);
             });
         })
-        .catch((reason) => console.error(reason));
+        .catch(reason => console.error(reason));
 
         return hwRules.resetPromise;
     }
@@ -91,7 +91,7 @@ hwRules.resetRules = function () {
             actions: [new chrome.declarativeContent.SetIcon({ imageData: imageData.insert })]
         };
 
-        insertIconRule.conditions = Object.keys(hwData).map((domain) => {
+        insertIconRule.conditions = Object.keys(hwData).map(domain => {
             // Chrome adds an implicit '.' is added at the beginning of the hostname when matching,
             // so this will work for exact matches as well.
             return new chrome.declarativeContent.PageStateMatcher({
