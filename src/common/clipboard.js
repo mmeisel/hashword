@@ -1,18 +1,15 @@
-angular.module('clipboard', [])
-.directive('clipboard', function () {
-    return {
-        link: linkFn,
-        restrict: 'E',
-        scope: {
-            api: '='
-        },
-        template: '<textarea type="text" tabindex="-1"></textarea>'
-    };
+export default class {
+    constructor() {
+        Object.assign(this, {
+            link: this.link,
+            restrict: 'E',
+            scope: { api: '=' },
+            template: '<textarea type="text" tabindex="-1"></textarea>'
+        });
+    }
 
-    function linkFn(scope, element) {
-        scope.api = {
-            copy: copy
-        };
+    link(scope, element) {
+        scope.api = { copy };
 
         const textarea = element.find('textarea')[0];
 
@@ -23,4 +20,4 @@ angular.module('clipboard', [])
             textarea.value = '';
         }
     }
-});
+}

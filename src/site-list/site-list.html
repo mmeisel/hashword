@@ -2,10 +2,10 @@
 <html lang="en" ng-app="site-list" ng-csp>
 <head>
   <title>Hashword Site List</title>
-  <link rel="stylesheet" type="text/css" href="styles.css"/>
+  <link rel="stylesheet" type="text/css" href="../styles.css"/>
 </head>
 <body>
-  <div class="container" ng-controller="SiteListController">
+  <div class="container" ng-controller="SiteListController as $ctrl">
     <div class="row">
       <div class="col-md-7">
         <h3><img src="../images/icon38.png"/> Hashword Site List</h3>
@@ -24,19 +24,19 @@
           <div class="panel-body" ng-if="!editing">
             <em class="text-muted">Click on a site to view or edit its settings.</em>
           </div>
-          <form class="panel-body form-horizontal" ng-if="editing" ng-submit="saveEditing()">
-            <hw-settings-editor settings="editing.settings" notes></hw-settings-editor>
+          <form class="panel-body form-horizontal" ng-if="editing" ng-submit="$ctrl.saveEditing()">
+            <settings-editor settings="editing.settings" notes></settings-editor>
             <div class="form-group">
               <div class="col-xs-4 text-left">
-                <button type="button" class="btn btn-danger" ng-click="deleteEditing()">
+                <button type="button" class="btn btn-danger" ng-click="$ctrl.deleteEditing()">
                   <span class="glyphicon glyphicon-trash"></span>
                 </button>
-                <button type="button" class="btn btn-default" ng-click="copyPassword()">
+                <button type="button" class="btn btn-default" ng-click="$ctrl.copyPassword()">
                   <span class="glyphicon glyphicon-copy"></span>
                 </button>
               </div>
               <div class="col-xs-8 text-right">
-                <button type="button" class="btn btn-default" ng-click="cancelEditing()">Cancel</button>
+                <button type="button" class="btn btn-default" ng-click="$ctrl.cancelEditing()">Cancel</button>
                 <button type="submit" class="btn btn-success">Save</button>
               </div>
             </div>
@@ -68,7 +68,7 @@
             <tbody>
               <tr ng-repeat="site in allSites | filter:search.query | orderBy:predicate:reverse track by site.domain"
                   ng-class="{ 'success': editing.domain == site.domain }"
-                  ng-click="edit(site)">
+                  ng-click="$ctrl.edit(site)">
                 <td>{{ site.domain }}<br/><small class="text-muted">{{ site.settings.notes }}</small></td>
                 <td>{{ site.settings.createDate | hwDate }}</td>
                 <td>{{ site.settings.accessDate | hwDate }}</td>
@@ -82,7 +82,7 @@
       </div>
     </div>
     <script type="text/ng-template" id="sort-trigger.html">
-      <a href ng-click="setSort()" ng-transclude></a>
+      <a href ng-click="$ctrl.setSort()" ng-transclude></a>
       <span class="glyphicon"
             ng-class="{ 'glyphicon-arrow-up': !$parent.reverse, 'glyphicon-arrow-down': $parent.reverse }"
             ng-show="$parent.predicate[0] == sortBy">
@@ -106,9 +106,6 @@
     </form>
   </script>
 
-  <script type="text/javascript" src="common.js"></script>
-  <script type="text/javascript" src="rules.js"></script>
-  <script type="text/javascript" src="site-list.js"></script>
   <script type="text/ng-template" id="delete-modal.html">
     <form ng-submit="$close()">
       <div class="modal-body">
@@ -122,5 +119,7 @@
       </div>
     </form>
   </script>
+
+  <script type="text/javascript" src="../site-list.js"></script>
 </body>
 </html>

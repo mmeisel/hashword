@@ -1,100 +1,14 @@
-/*global hw, hwRules */
 
-angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.bootstrap'])
-.controller('SiteListController', ['$scope', '$uibModal', function ($scope, $uibModal) {
-    angular.extend($scope, {
-        predicate: ['domain'],
-        reverse: false,
-        search: {},
-        edit,
-        saveEditing,
-        cancelEditing,
-        deleteEditing,
-        copyPassword,
-        loadAllSites
-    });
+import '../lib/angular.min';
+import '../lib/ui-bootstrap.min';
 
-    return loadAllSites();
+import hwRules from './rules';
+import './common/common';
+import Controller from './site-list/site-list.controller';
 
-    function edit(site) {
-        $scope.editing = angular.copy(site);
-    }
-    
-    function saveEditing() {
-        if ($scope.editing) {
-            const edited = $scope.editing;
-            const items = {};
-            
-            items[edited.domain] = edited.settings;
-            $scope.editing = null;
-            
-            chrome.storage.local.set(items, function () {
-                if (!chrome.runtime.lastError) {
-                    $scope.allSites.forEach(site => {
-                        if (site.domain == edited.domain) {
-                            site.settings = edited.settings;
-                        }
-                    });
-                    $scope.$apply();
-                }
-            });
-        }
-    }
-    
-    function cancelEditing() {
-        $scope.editing = null;
-    }
-    
-    function deleteEditing() {
-        const domain = $scope.editing.domain;
-        
-        if (!domain) {
-            return;
-        }
+angular.module('site-list', ['ui.bootstrap', 'common'])
 
-        const modal = $uibModal.open({
-            scope: $scope,
-            size: 'sm',
-            templateUrl: 'delete-modal.html'
-        });
-
-        modal.result.then(function () {
-            $scope.editing = null;
-
-            chrome.storage.local.remove(domain, function () {
-                if (!chrome.runtime.lastError) {
-                    $scope.allSites = $scope.allSites.filter(site => site.domain != domain);
-
-                    // Reset the rules for which icon to show
-                    hwRules.resetRules();
-                }
-                $scope.$apply();
-            });
-        });
-    }
-
-    function copyPassword() {
-        const modal = $uibModal.open({
-            size: 'sm',
-            templateUrl: 'password-modal.html'
-        });
-
-        modal.result.then(function (masterPassword) {
-            const pw = hw.getHashword($scope.editing.domain, masterPassword, $scope.editing.settings);
-
-            $scope.clipboardApi.copy(pw);
-        });
-    }
-
-    function loadAllSites() {
-        chrome.storage.local.get(null, function (items) {
-            $scope.allSites = Object.keys(items).map(domain => {
-                return { domain, settings: items[domain] };
-            });
-            $scope.$apply();
-        });
-    }
-}])
+.controller('SiteListController', Controller)
 
 .directive('hwSortTrigger', function () {
     const SECONDARY_SORT = 'domain';
@@ -162,7 +76,7 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
                         chrome.storage.local.set(converted, function () {
                             if (!chrome.runtime.lastError) {
                                 hwRules.resetRules();
-                                $scope.loadAllSites();
+                                $scope.$ctrl.loadAllSites();
                             }
                         });
                     }

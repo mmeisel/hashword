@@ -9,7 +9,7 @@
     },
     "browser_action": {
         "default_title": "Hashword",
-        "default_popup": "popup.html",
+        "default_popup": "popup/popup.html",
         "default_icon": {
             "16": "images/icon16-inactive.png",
             "19": "images/icon19-inactive.png",
