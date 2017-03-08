@@ -14,7 +14,7 @@ angular.module('clipboard', [])
             copy: copy
         };
 
-        var textarea = element.find('textarea')[0];
+        const textarea = element.find('textarea')[0];
 
         function copy(value) {
             textarea.value = value;

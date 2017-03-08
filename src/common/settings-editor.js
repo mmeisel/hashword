@@ -1,5 +1,3 @@
-/*global angular */
-
 angular.module('settings-editor', ['templates'])
 .component('hwSettingsEditor', {
     templateUrl: 'settings-editor.html',

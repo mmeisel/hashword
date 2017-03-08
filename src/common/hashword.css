@@ -3,14 +3,30 @@ label {
 }
 .container {
     padding: 15px 15px 5px 15px;
-    min-width: 300px;
+}
+.popup .container {
+    /* The popup needs to be a more-or-less fixed size to work around a chrome bug:
+     * https://bugs.chromium.org/p/chromium/issues/detail?id=428044
+     */
+    width: 300px;
+    min-height: 240px;
 }
 .container.compact {
     max-width: 750px;
 }
-.popup {
-    /* Workaround for https://bugs.chromium.org/p/chromium/issues/detail?id=428044 */
-    min-height: 220px;
+.ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}
+.popup-domain {
+    display: inline-block;
+    max-width: 224px;
+    padding: 6px 0 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .popup-title {
     padding: 10px;
@@ -21,6 +37,11 @@ label {
     width: 19px;
     height: 19px;
     margin-top: -1px;
+}
+.popup-footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
 }
 input[name="generation"] {
     width: 60px;

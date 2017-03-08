@@ -1,0 +1,17 @@
+<p class="ellipsis"><b>Settings for {{ service.activeDomain }}</b></p>
+<ng-form name="settingsForm" class="form-horizontal">
+  <hw-settings-editor settings="settings" notes></hw-settings-editor>
+  <hr/>
+  <div class="form-group">
+    <div class="col-xs-12 text-center">
+      <button type="button" class="btn btn-default" ng-click="service.hideSettings()">
+        Back
+      </button>
+      <button type="button" class="btn btn-success"
+              ng-disabled="settingsForm.$pristine"
+              ng-click="$ctrl.saveSettings()">
+        Save
+      </button>
+    </div>
+  </div>
+</ng-form>
