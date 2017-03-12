@@ -9,7 +9,7 @@ label {
      * https://bugs.chromium.org/p/chromium/issues/detail?id=428044
      */
     width: 300px;
-    min-height: 240px;
+    min-height: 225px;
 }
 .container.compact {
     max-width: 750px;
@@ -22,8 +22,8 @@ label {
 }
 .popup-domain {
     display: inline-block;
-    max-width: 224px;
-    padding: 6px 0 3px;
+    width: 224px;
+    padding: 6px 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -42,6 +42,10 @@ label {
     position: absolute;
     bottom: 0;
     width: 100%;
+}
+.popup-footer hr {
+    margin-top: 0;
+    margin-bottom: 16px;
 }
 input[name="generation"] {
     width: 60px;
