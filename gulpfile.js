@@ -7,6 +7,7 @@ var concat = require('gulp-concat');
 var htmlmin = require('gulp-htmlmin');
 var streamqueue = require('streamqueue');
 var templatecache = require('gulp-angular-templatecache');
+var zip = require('gulp-zip');
 
 var src = {
     assets: ['lib/{fonts,images}/**/*', 'src/{fonts,images}/**/*'],
@@ -69,7 +70,7 @@ gulp.task('assets', function () {
 
 var allTasks = ['scripts', 'html', 'css', 'assets', 'chrome'];
 
-gulp.task('watch', allTasks, function() {
+gulp.task('watch', allTasks, function () {
     gulp.watch(src.commonJs, ['common']);
     gulp.watch(src.commonTemplates, ['common']);
     gulp.watch(src.html, ['html']);
@@ -77,6 +78,12 @@ gulp.task('watch', allTasks, function() {
     gulp.watch(src.css, ['css']);
     gulp.watch(src.chrome, ['chrome']);
     gulp.watch(src.assets, ['assets']);
+});
+
+gulp.task('zip', allTasks, function () {
+    gulp.src(outputdir + '/**')
+        .pipe(zip('hashword.zip'))
+        .pipe(gulp.dest('dist'));
 });
 
 // Regular build
