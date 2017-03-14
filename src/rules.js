@@ -32,18 +32,18 @@ hwRules.loadIcons = function () {
             const image = new Image();
 
             image.src = chrome.runtime.getURL('images/icon' + size + '-' + variant + '.png');
-            image.onload = handleImageLoaded.bind(image, size, resolve);
+            image.onload = handleImageLoaded.bind(null, image, size, resolve);
             image.onerror = reject;
             // Make sure the image object sticks around until it's loaded
             images.push(image);
         });
     }
 
-    function handleImageLoaded(size, resolve) {
+    function handleImageLoaded(image, size, resolve) {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
 
-        ctx.drawImage(this, 0, 0, size, size);
+        ctx.drawImage(image, 0, 0, size, size);
         resolve(ctx.getImageData(0, 0, size, size));
     }
 };
