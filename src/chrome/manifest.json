@@ -32,7 +32,7 @@
         "128": "images/icon128.png"
     },
     "incognito": "spanning",
-    "minimum_chrome_version": "40",
+    "minimum_chrome_version": "46",
     "options_ui": {
         "page": "options.html",
         "chrome_style": true
