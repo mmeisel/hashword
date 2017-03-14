@@ -1,4 +1,7 @@
+/*jshint strict:global */
 /*global hw, hwRules */
+
+'use strict';
 
 angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
 

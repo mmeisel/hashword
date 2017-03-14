@@ -1,4 +1,7 @@
+/*jshint strict:global */
 /*global angular, hw */
+
+'use strict';
 
 angular.module('index', ['settings-editor'])
 .controller('HashwordCtrl', ['$scope', function ($scope) {

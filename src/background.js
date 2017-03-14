@@ -1,4 +1,8 @@
+/*jshint strict:global */
 /*global hwRules */
+
+'use strict';
+
 chrome.runtime.onInstalled.addListener(function (details) {
     // Install declarative content rules
 
