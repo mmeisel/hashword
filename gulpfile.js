@@ -5,6 +5,7 @@
 var gulp = require('gulp');
 var concat = require('gulp-concat');
 var htmlmin = require('gulp-htmlmin');
+var insert = require('gulp-insert');
 var streamqueue = require('streamqueue');
 var templatecache = require('gulp-angular-templatecache');
 var zip = require('gulp-zip');
@@ -38,6 +39,7 @@ gulp.task('common', function () {
     
     streamqueue({ objectMode: true }, js, templates)
         .pipe(concat('common.js'))
+        .pipe(insert.prepend('"use strict";\n'))
         .pipe(gulp.dest(outputdir));
 });
 
