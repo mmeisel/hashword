@@ -168,7 +168,7 @@ function ($scope ,  popupService ,  PopupModes) {
     this.copyPassword = function (closeWindow) {
         const pw = hw.getHashword(
             popupService.activeDomain,
-            $scope.password,
+            $scope.state.password,
             popupService.settings
         );
 
