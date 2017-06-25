@@ -6,5 +6,6 @@
         "angular": false,
         "chrome": false,
         "console": false
-    }
+    },
+    "strict": "implied"
 }

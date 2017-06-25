@@ -1,11 +1,9 @@
 /*jshint node:true */
 
-'use strict';
-
 var gulp = require('gulp');
+var babel = require('gulp-babel');
 var concat = require('gulp-concat');
 var htmlmin = require('gulp-htmlmin');
-var insert = require('gulp-insert');
 var streamqueue = require('streamqueue');
 var templatecache = require('gulp-angular-templatecache');
 var zip = require('gulp-zip');
@@ -17,7 +15,8 @@ var src = {
     js: ['src/**/*.js', '!src/common/**/*'],
     html: ['src/**/*.html', '!src/common/**/*'],
     commonTemplates: ['src/common/**/*.html'],
-    commonJs: ['lib/**/*.js', 'src/common/**/*.js']
+    commonJs: ['src/common/**/*.js'],
+    libJs: ['lib/**/*.js']
 };
 
 var outputdir = 'build';
@@ -31,15 +30,17 @@ var htmlminOptions = {
 
 // Merge common
 gulp.task('common', function () {
-    var js = gulp.src(src.commonJs);
-    
+    var commonJs = gulp.src(src.commonJs)
+        .pipe(babel());
+
     var templates = gulp.src(src.commonTemplates)
         .pipe(htmlmin(htmlminOptions))
         .pipe(templatecache({ module: 'templates', standalone: true }));
     
-    streamqueue({ objectMode: true }, js, templates)
+    var libJs = gulp.src(src.libJs);
+
+    streamqueue({ objectMode: true }, libJs, commonJs, templates)
         .pipe(concat('common.js'))
-        .pipe(insert.prepend('"use strict";\n'))
         .pipe(gulp.dest(outputdir));
 });
 
@@ -51,6 +52,7 @@ gulp.task('html', function () {
 
 gulp.task('scripts', ['common'], function () {
     gulp.src(src.js)
+        .pipe(babel())
         .pipe(gulp.dest(outputdir));
 });
 
@@ -75,6 +77,7 @@ var allTasks = ['scripts', 'html', 'css', 'assets', 'chrome'];
 gulp.task('watch', allTasks, function () {
     gulp.watch(src.commonJs, ['common']);
     gulp.watch(src.commonTemplates, ['common']);
+    gulp.watch(src.libJs, ['common']);
     gulp.watch(src.html, ['html']);
     gulp.watch(src.js, ['scripts']);
     gulp.watch(src.css, ['css']);
