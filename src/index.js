@@ -1,7 +1,4 @@
-/*jshint strict:global */
 /*global angular, hw */
-
-'use strict';
 
 angular.module('index', ['settings-editor'])
 .controller('HashwordCtrl', ['$scope', function ($scope) {
@@ -13,7 +10,7 @@ angular.module('index', ['settings-editor'])
     return function ($scope, element) {
         var outputField = angular.element(element[0].querySelector('input.hw-output'));
         
-        element.on('submit', function (e) {
+        element.on('submit', (e) => {
             e.preventDefault();
             $scope.output = hw.getHashword($scope.form.domain, $scope.form.password, $scope.settings);
 
@@ -27,20 +24,16 @@ angular.module('index', ['settings-editor'])
             // select is broken on iOS, use setSelectionRange instead.
             outputField[0].setSelectionRange(0, outputField.val().length);
         }); 
-        outputField.on('focus', function () {
+        outputField.on('focus', () => {
             outputField.attr('type', 'text');
             outputField[0].setSelectionRange(0, outputField.val().length);
         })  
-        .on('blur', function () {
-            // Replace the text in case it was modified (and hide it).
-            // iOS won't let us select text in a readonly input.
-            outputField.attr('type', 'password').val($scope.output);
-        })  
-        .on('mouseup', function (e) {
-            // Without this, the mouseup will move the cursor. We want to keep the selection from
-            // the focus event.
-            e.preventDefault();
-        }); 
+        // Replace the text in case it was modified (and hide it).
+        // iOS won't let us select text in a readonly input.
+        .on('blur', () => outputField.attr('type', 'password').val($scope.output))
+        // Without this, the mouseup will move the cursor. We want to keep the selection from the
+        // focus event.
+        .on('mouseup', e => e.preventDefault());
     };
 })
 ;
