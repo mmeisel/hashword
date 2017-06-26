@@ -2,6 +2,7 @@
 
 const gulp = require('gulp');
 const del = require('del');
+const exec = require('child_process').exec;
 const streamqueue = require('streamqueue');
 const $ = require('gulp-load-plugins')();
 
@@ -90,15 +91,28 @@ gulp.task('clean', function () {
     del([outputdir, 'dist']);
 });
 
+gulp.task('reload', function (cb) {
+    const reloadCmd = 'node_modules/chrome-extensions-reloader/bin/chrome-extensions-reloader --single-run';
+    exec(reloadCmd, (err, stdout, stderr) => {
+        if (stdout.length > 0) {
+            console.log(stdout);
+        }
+        if (stderr.length > 0) {
+            console.error(stderr);
+        }
+        cb(err);
+    });
+});
+
 gulp.task('watch', allTasks, function () {
-    gulp.watch(src.commonJs, ['common']);
-    gulp.watch(src.commonTemplates, ['common']);
-    gulp.watch(src.libJs, ['lib']);
-    gulp.watch(src.html, ['html']);
-    gulp.watch(src.js, ['scripts']);
-    gulp.watch(src.css, ['css']);
-    gulp.watch(src.chrome, ['chrome']);
-    gulp.watch(src.assets, ['assets']);
+    gulp.watch(src.commonJs, ['common', 'reload']);
+    gulp.watch(src.commonTemplates, ['common', 'reload']);
+    gulp.watch(src.libJs, ['lib', 'reload']);
+    gulp.watch(src.html, ['html', 'reload']);
+    gulp.watch(src.js, ['scripts', 'reload']);
+    gulp.watch(src.css, ['css', 'reload']);
+    gulp.watch(src.chrome, ['chrome', 'reload']);
+    gulp.watch(src.assets, ['assets', 'reload']);
 });
 
 gulp.task('package', allTasks, function () {
