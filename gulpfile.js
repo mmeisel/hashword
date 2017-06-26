@@ -1,14 +1,11 @@
 /*jshint node:true */
 
-var gulp = require('gulp');
-var babel = require('gulp-babel');
-var concat = require('gulp-concat');
-var htmlmin = require('gulp-htmlmin');
-var streamqueue = require('streamqueue');
-var templatecache = require('gulp-angular-templatecache');
-var zip = require('gulp-zip');
+const gulp = require('gulp');
+const del = require('del');
+const streamqueue = require('streamqueue');
+const $ = require('gulp-load-plugins')();
 
-var src = {
+const src = {
     assets: ['lib/{fonts,images}/**/*', 'src/{fonts,images}/**/*'],
     chrome: ['src/chrome/**/*'],
     css: ['lib/**/*.css', 'src/**/*.css'],
@@ -19,46 +16,56 @@ var src = {
     libJs: ['lib/**/*.js']
 };
 
-var outputdir = 'build';
+const outputdir = 'build';
 
-var htmlminOptions = {
+const htmlminOptions = {
     removeComments: true,
     collapseWhitespace: true,
     conservativeCollapse: true,
     removeTagWhitespace: true
 };
 
+gulp.task('lib', function () {
+    gulp.src(src.libJs)
+        .pipe($.concat('lib.js'))
+        .pipe(gulp.dest(outputdir));
+});
+
 // Merge common
 gulp.task('common', function () {
-    var commonJs = gulp.src(src.commonJs)
-        .pipe(babel());
+    const commonJs = gulp.src(src.commonJs);
 
-    var templates = gulp.src(src.commonTemplates)
-        .pipe(htmlmin(htmlminOptions))
-        .pipe(templatecache({ module: 'templates', standalone: true }));
+    const templates = gulp.src(src.commonTemplates)
+        .pipe($.htmlmin(htmlminOptions))
+        .pipe($.angularTemplatecache({ module: 'templates', standalone: true }));
     
-    var libJs = gulp.src(src.libJs);
-
-    streamqueue({ objectMode: true }, libJs, commonJs, templates)
-        .pipe(concat('common.js'))
+    streamqueue({ objectMode: true }, commonJs, templates)
+        .pipe($.sourcemaps.init())
+        .pipe($.concat('common.js'))
+        .pipe($.babel())
+        .pipe($.uglify())
+        .pipe($.sourcemaps.write('maps'))
         .pipe(gulp.dest(outputdir));
 });
 
 gulp.task('html', function () {
     gulp.src(src.html)
-        .pipe(htmlmin(htmlminOptions))
+        .pipe($.htmlmin(htmlminOptions))
         .pipe(gulp.dest(outputdir));
 });
 
-gulp.task('scripts', ['common'], function () {
+gulp.task('scripts', ['lib', 'common'], function () {
     gulp.src(src.js)
-        .pipe(babel())
+        .pipe($.sourcemaps.init())
+        .pipe($.babel())
+        .pipe($.uglify())
+        .pipe($.sourcemaps.write('maps'))
         .pipe(gulp.dest(outputdir));
 });
 
 gulp.task('css', function () {
     gulp.src(src.css)
-        .pipe(concat('styles.css'))
+        .pipe($.concat('styles.css'))
         .pipe(gulp.dest(outputdir));
 });
 
@@ -72,12 +79,16 @@ gulp.task('assets', function () {
         .pipe(gulp.dest(outputdir));
 });
 
-var allTasks = ['scripts', 'html', 'css', 'assets', 'chrome'];
+const allTasks = ['scripts', 'html', 'css', 'assets', 'chrome'];
+
+gulp.task('clean', function () {
+    del([outputdir, 'dist']);
+});
 
 gulp.task('watch', allTasks, function () {
     gulp.watch(src.commonJs, ['common']);
     gulp.watch(src.commonTemplates, ['common']);
-    gulp.watch(src.libJs, ['common']);
+    gulp.watch(src.libJs, ['lib']);
     gulp.watch(src.html, ['html']);
     gulp.watch(src.js, ['scripts']);
     gulp.watch(src.css, ['css']);
@@ -85,9 +96,11 @@ gulp.task('watch', allTasks, function () {
     gulp.watch(src.assets, ['assets']);
 });
 
-gulp.task('zip', allTasks, function () {
-    gulp.src(outputdir + '/**')
-        .pipe(zip('hashword.zip'))
+gulp.task('package', allTasks, function () {
+    const manifest = require(`./${outputdir}/manifest.json`);
+
+    gulp.src([`${outputdir}/**`, `!${outputdir}/maps{,/**}`])
+        .pipe($.zip(`hashword-${manifest.version}.zip`))
         .pipe(gulp.dest('dist'));
 });
 
