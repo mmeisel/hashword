@@ -1,10 +1,10 @@
 {
-	"folders": [
-		{
-			"path": ".",
+    "folders": [
+        {
+            "path": ".",
             "folder_exclude_patterns": ["build", "node_modules"]
-		}
-	],
+        }
+    ],
     "build_systems": [
         {
             "name": "gulp",
