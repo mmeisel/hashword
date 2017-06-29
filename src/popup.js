@@ -10,22 +10,26 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
 })
 
 .constant('PopupActionType', {
-    ACTIVE_TAB_FOUND: 'ACTIVE_TAB_FOUND'
+    ACTIVE_TAB_FOUND: 'ACTIVE_TAB_FOUND',
+    DOMAIN_CHANGED: 'DOMAIN_CHANGED',
+    MODE_CHANGED: 'MODE_CHANGED',
+    SETTINGS_CREATED: 'SETTINGS_CREATED',
+    SETTINGS_UPDATED: 'SETTINGS_UPDATED',
+    PASSWORD_FIELD_FOUND: 'PASSWORD_FIELD_FOUND',
+    SETTINGS_LOADED: 'SETTINGS_LOADED',
 })
 
 .service('popupRootReducer', [
          'PopupMode', 'PopupActionType',
 function (PopupMode,   PopupActionType) {
     return function (state = {}, action) {
-        switch (action.type) {
-            case PopupActionType.ACTIVE_TAB_FOUND:
-                return Object.assign({}, state, {
-                    tabId: action.tabId,
-                    domainInfo: action.domainInfo,
-                });
-            default:
-                return state;
+        let newState = state;
+
+        if (action.stateChanges) {
+            newState = Object.assign({}, state, action.stateChanges);
         }
+
+        return newState;
     };
 }])
 
@@ -33,49 +37,109 @@ function (PopupMode,   PopupActionType) {
     return Redux.createStore(popupRootReducer);
 }])
 
-.service('popupActions', ['popupStore', 'PopupActionType', function (popupStore, PopupActionType) {
+.service('popupActions', [
+         'popupStore', 'PopupActionType', 'PopupMode',
+function (popupStore,   PopupActionType,   PopupMode) {
     return Redux.bindActionCreators({
         activeTabFound,
+        domainChanged,
+        modeChanged,
+        settingsCreated,
+        settingsUpdated,
+        passwordFieldFound,
+        settingsLoaded,
     }, popupStore.dispatch.bind(popupStore));
 
     function activeTabFound(tab) {
         return {
             type: PopupActionType.ACTIVE_TAB_FOUND,
-            tabId: tab.id,
-            domainInfo: hw.getDomainInfo(tab.url)
+            stateChanges: {
+                tabId: tab.id,
+                domainInfo: hw.getDomainInfo(tab.url),
+            },
+        };
+    }
+
+    function domainChanged(activeDomain) {
+        const state = popupStore.getState();
+
+        return {
+            type: PopupActionType.DOMAIN_CHANGED,
+            stateChanges: {
+                activeDomain,
+                settings: state.allSettings[activeDomain] || hw.getDefaultSettings(),
+            },
+        };
+    }
+
+    function modeChanged(mode, error) {
+        return {
+            type: PopupActionType.MODE_CHANGED,
+            stateChanges: {
+                mode,
+                error: mode === PopupMode.ERROR ? error : null,
+            },
+        };
+    }
+
+    function settingsCreated(settings) {
+        return {
+            type: PopupActionType.SETTINGS_CREATED,
+            stateChanges: {
+                // Set createDate for new domains
+                settings: Object.assign({}, settings, { createDate: new Date().getTime() }),
+            },
+        };
+    }
+
+    function settingsUpdated(settings) {
+        return {
+            type: PopupActionType.SETTINGS_UPDATED,
+            stateChanges: { settings },
+        };
+    }
+
+    function settingsLoaded(allSettings) {
+        return {
+            type: PopupActionType.SETTINGS_LOADED,
+            stateChanges: { allSettings },
+        };
+    }
+
+    function passwordFieldFound(foundPasswordField) {
+        return {
+            type: PopupActionType.PASSWORD_FIELD_FOUND,
+            stateChanges: { foundPasswordField },
         };
     }
 }])
 
-.service('popupService', ['$timeout', 'popupActions', 'PopupMode', function ($timeout, popupActions, PopupMode) {
+.service('popupService', [
+         '$timeout', 'popupActions', 'popupStore', 'PopupMode',
+function ($timeout,   popupActions,   popupStore,   PopupMode) {
     const ctrl = this;
 
     angular.extend(ctrl, {
-        tabId: null,
-        mode: PopupMode.LOADING,
-        error: null,
-        domainInfo: null,
-        allSettings: null,
-        activeDomain: null,
-        foundPasswordField: null,
-        settings: null,
         hasSubdomain,
-        changeDomain,
-        showSettings,
-        hideSettings,
-        saveSettings,
+        changeDomain: popupActions.domainChanged,
+        showSettings: popupActions.modeChanged.bind(PopupMode.EDITING),
+        hideSettings: popupActions.modeChanged.bind(PopupMode.READY),
+        saveSettings: popupActions.settingsUpdated,
         updateAccessDate
     });
 
     ctrl.initPromise = new Promise(getActiveTab)
     .then(() => Promise.all([new Promise(getSettings), new Promise(checkActive)]))
-    .then(() => ctrl.mode = PopupMode.READY)
+    .then(popupActions.modeChanged.bind(PopupMode.READY))
     .catch(setError);
 
+    popupStore.subscribe()
+
     function setError(reason) {
-        console.error(reason);
-        ctrl.mode = PopupMode.ERROR;
-        ctrl.error = typeof(reason) === 'string' ? reason : 'Something went wrong!';
+        popupActions.modeChanged(
+            PopupMode.ERROR,
+            typeof(reason) === 'string' ? reason : 'Something went wrong!'
+        );
     }
 
     function getActiveTab(resolve, reject) {
@@ -91,17 +155,21 @@ function (PopupMode,   PopupActionType) {
     }
 
     function getSettings(resolve, reject) {
-        chrome.storage.local.get([ctrl.domainInfo.name, ctrl.domainInfo.tld], function (items) {
+        let domainInfo = popupStore.getState().domainInfo;
+
+        chrome.storage.local.get([domainInfo.name, domainInfo.tld], function (items) {
             if (chrome.runtime.lastError) {
                 return reject(chrome.runtime.lastError.message);
             }
 
+            popupActions.settingsLoaded(items);
             // Only use the full hostname as the key if there are already settings for it,
             // otherwise fall back to the effective TLD. In other words, the effective TLD
             // is the default unless the user specifically selects the full hostname
             // (or did so in the past).
-            ctrl.allSettings = items;
-            changeDomain(items[ctrl.domainInfo.name] ? ctrl.domainInfo.name : ctrl.domainInfo.tld);
+            popupActions.domainChanged(
+                items[ctrl.domainInfo.name] ? ctrl.domainInfo.name : ctrl.domainInfo.tld
+            );
             resolve();
         });
     }
@@ -113,48 +181,25 @@ function (PopupMode,   PopupActionType) {
             allFrames: true
         },
         function (results) {
-            if (!chrome.runtime.lastError && results) {
-                ctrl.foundPasswordField = results.reduce((prev, cur) => prev || cur);
-            }
-            else {
-                ctrl.foundPasswordField = false;
-            }
+            popupActions.passwordFieldFound(
+                !chrome.runtime.lastError && results && results.reduce((prev, cur) => prev || cur)
+            );
             resolve();
         });
     }
 
     function hasSubdomain() {
-        return ctrl.domainInfo && ctrl.domainInfo.tld != ctrl.domainInfo.name &&
-            ('www.' + ctrl.domainInfo.tld) != ctrl.domainInfo.name;
+        const state = popupStore.getState();
+
+        return state.domainInfo && state.domainInfo.tld != state.domainInfo.name &&
+            ('www.' + state.domainInfo.tld) != state.domainInfo.name;
     }
 
-    function changeDomain(newDomain) {
-        ctrl.activeDomain = newDomain;
-        ctrl.settings = ctrl.allSettings[newDomain] || hw.getDefaultSettings();
-    }
-
-    function showSettings() {
-        ctrl.mode = PopupMode.EDITING;
-    }
-
-    function hideSettings() {
-        ctrl.mode = PopupMode.READY;
-    }
-
-    // Save settings, sets createDate for new domains.
-    function saveSettings(newSettings) {
-        if (newSettings != null) {
-            ctrl.settings = angular.copy(newSettings);
-        }
-
-        const isNewDomain = ctrl.settings.createDate == null;
+    function saveSettings(isNewDomain) {
+        const state = popupStore.getState();
         const items = {};
 
-        if (isNewDomain) {
-            ctrl.settings.createDate = new Date().getTime();
-        }
-
-        items[ctrl.activeDomain] = ctrl.settings;
+        items[state.activeDomain] = state.settings;
         chrome.storage.local.set(items, function () {
             // TODO: handle errors
             // If it's a new domain, reset the rules for which icon to show
@@ -165,8 +210,10 @@ function (PopupMode,   PopupActionType) {
     }
 
     function updateAccessDate() {
-        ctrl.settings.accessDate = new Date().getTime();
-        saveSettings();
+        const newSettings = Object.assign({}, popupStore.getState().settings, {
+            accessDate: new Date().getTime()
+        });
+        popupActions.settingsUpdated(newSettings);
     }
 }])
 
@@ -249,7 +296,7 @@ function ($scope ,  popupService ,  PopupMode) {
 
 .controller('PopupSettingsFormController', [
          '$scope', 'popupService',
-function ($scope ,  popupService ) {
+function ($scope ,  popupService) {
     this.saveSettings = saveSettings;
 
     $scope.service = popupService;
