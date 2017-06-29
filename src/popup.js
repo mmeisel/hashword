@@ -2,19 +2,57 @@
 
 angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
 
-.constant('PopupModes', {
+.constant('PopupMode', {
     LOADING: 'LOADING',
     ERROR: 'ERROR',
     READY: 'READY',
     EDITING: 'EDITING'
 })
 
-.service('popupService', ['$timeout', 'PopupModes', function ($timeout, PopupModes) {
+.constant('PopupActionType', {
+    ACTIVE_TAB_FOUND: 'ACTIVE_TAB_FOUND'
+})
+
+.service('popupRootReducer', [
+         'PopupMode', 'PopupActionType',
+function (PopupMode,   PopupActionType) {
+    return function (state = {}, action) {
+        switch (action.type) {
+            case PopupActionType.ACTIVE_TAB_FOUND:
+                return Object.assign({}, state, {
+                    tabId: action.tabId,
+                    domainInfo: action.domainInfo,
+                });
+            default:
+                return state;
+        }
+    };
+}])
+
+.service('popupStore', ['popupRootReducer', function (popupRootReducer) {
+    return Redux.createStore(popupRootReducer);
+}])
+
+.service('popupActions', ['popupStore', 'PopupActionType', function (popupStore, PopupActionType) {
+    return Redux.bindActionCreators({
+        activeTabFound,
+    }, popupStore.dispatch.bind(popupStore));
+
+    function activeTabFound(tab) {
+        return {
+            type: PopupActionType.ACTIVE_TAB_FOUND,
+            tabId: tab.id,
+            domainInfo: hw.getDomainInfo(tab.url)
+        };
+    }
+}])
+
+.service('popupService', ['$timeout', 'popupActions', 'PopupMode', function ($timeout, popupActions, PopupMode) {
     const ctrl = this;
 
     angular.extend(ctrl, {
         tabId: null,
-        mode: PopupModes.LOADING,
+        mode: PopupMode.LOADING,
         error: null,
         domainInfo: null,
         allSettings: null,
@@ -31,20 +69,19 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
 
     ctrl.initPromise = new Promise(getActiveTab)
     .then(() => Promise.all([new Promise(getSettings), new Promise(checkActive)]))
-    .then(() => ctrl.mode = PopupModes.READY)
+    .then(() => ctrl.mode = PopupMode.READY)
     .catch(setError);
 
     function setError(reason) {
         console.error(reason);
-        ctrl.mode = PopupModes.ERROR;
+        ctrl.mode = PopupMode.ERROR;
         ctrl.error = typeof(reason) === 'string' ? reason : 'Something went wrong!';
     }
 
     function getActiveTab(resolve, reject) {
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             if (tabs.length && tabs[0].url && tabs[0].url.indexOf('http') === 0) {
-                ctrl.tabId = tabs[0].id;
-                ctrl.domainInfo = hw.getDomainInfo(tabs[0].url);
+                popupActions.activeTabFound(tabs[0]);
                 resolve();
             }
             else {
@@ -97,11 +134,11 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
     }
 
     function showSettings() {
-        ctrl.mode = PopupModes.EDITING;
+        ctrl.mode = PopupMode.EDITING;
     }
 
     function hideSettings() {
-        ctrl.mode = PopupModes.READY;
+        ctrl.mode = PopupMode.READY;
     }
 
     // Save settings, sets createDate for new domains.
@@ -152,9 +189,9 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
 })
 
 .controller('PopupPasswordFormController', [
-         '$scope', 'popupService', 'PopupModes',
-function ($scope ,  popupService ,  PopupModes) {
-    $scope.PopupModes = PopupModes;
+         '$scope', 'popupService', 'PopupMode',
+function ($scope ,  popupService ,  PopupMode) {
+    $scope.PopupMode = PopupMode;
     $scope.state = {
         domain: popupService.activeDomain,
         password: ''

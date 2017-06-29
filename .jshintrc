@@ -5,7 +5,9 @@
     "globals": {
         "angular": false,
         "chrome": false,
-        "console": false
+        "console": false,
+        "Redux": false
     },
-    "strict": "implied"
+    "strict": "implied",
+    "-W138": true
 }
