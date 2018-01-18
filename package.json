@@ -28,6 +28,10 @@
       "angular",
       "chrome",
       "console"
+    ],
+    "ignore": [
+      "/build",
+      "/lib"
     ]
   }
 }
