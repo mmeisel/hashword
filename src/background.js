@@ -3,8 +3,6 @@
 'use strict'
 
 chrome.runtime.onInstalled.addListener(function (details) {
-  // Install declarative content rules
-
   if (details.reason === 'update') {
     console.info('Upgrade detected, checking data format...')
 
