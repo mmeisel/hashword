@@ -3,6 +3,7 @@
 const gulp = require('gulp');
 const del = require('del');
 const exec = require('child_process').exec;
+var KarmaServer = require('karma').Server;
 const streamqueue = require('streamqueue');
 const $ = require('gulp-load-plugins')();
 
@@ -121,6 +122,14 @@ gulp.task('package', allTasks, function () {
     gulp.src([`${outputdir}/**`, `!${outputdir}/maps{,/**}`])
         .pipe($.zip(`hashword-${manifest.version}.zip`))
         .pipe(gulp.dest('dist'));
+});
+
+gulp.task('test', function (done) {
+    new KarmaServer({
+        configFile: __dirname + '/karma.conf.js',
+        singleRun: true
+    }, done)
+    .start();
 });
 
 // Regular build
