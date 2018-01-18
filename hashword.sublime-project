@@ -10,5 +10,12 @@
             "name": "gulp",
             "shell_cmd": "gulp"
         }
-    ]
+    ],
+    "SublimeLinter": {
+        "linters": {
+            "jshint": {
+                "@disable": true
+            }
+        }
+    }
 }

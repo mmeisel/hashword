@@ -1,39 +1,38 @@
-/*global angular, hw */
+/* global hw */
 
 angular.module('index', ['settings-editor'])
 .controller('HashwordCtrl', ['$scope', function ($scope) {
-    $scope.form = {};
-    $scope.settings = hw.getDefaultSettings();
-    $scope.output = '';
+  $scope.form = {}
+  $scope.settings = hw.getDefaultSettings()
+  $scope.output = ''
 }])
 .directive('hwSubmit', function () {
-    return function ($scope, element) {
-        var outputField = angular.element(element[0].querySelector('input.hw-output'));
-        
-        element.on('submit', (e) => {
-            e.preventDefault();
-            $scope.output = hw.getHashword($scope.form.domain, $scope.form.password, $scope.settings);
+  return function ($scope, element) {
+    var outputField = angular.element(element[0].querySelector('input.hw-output'))
 
-            // Manually inject the value into the input field instead of relying on angular binding.
-            // iOS will not allow the field to be focused programmatically unless it's done from
-            // the event handler directly. With angular binding, we would have to use $timeout to 
-            // wait for a digest cycle to complete before there was any text to select inside the
-            // field.
-            outputField.val($scope.output);
-            outputField[0].focus();
-            // select is broken on iOS, use setSelectionRange instead.
-            outputField[0].setSelectionRange(0, outputField.val().length);
-        }); 
-        outputField.on('focus', () => {
-            outputField.attr('type', 'text');
-            outputField[0].setSelectionRange(0, outputField.val().length);
-        })  
+    element.on('submit', (e) => {
+      e.preventDefault()
+      $scope.output = hw.getHashword($scope.form.domain, $scope.form.password, $scope.settings)
+
+      // Manually inject the value into the input field instead of relying on angular binding.
+      // iOS will not allow the field to be focused programmatically unless it's done from
+      // the event handler directly. With angular binding, we would have to use $timeout to
+      // wait for a digest cycle to complete before there was any text to select inside the
+      // field.
+      outputField.val($scope.output)
+      outputField[0].focus()
+      // select is broken on iOS, use setSelectionRange instead.
+      outputField[0].setSelectionRange(0, outputField.val().length)
+    })
+    outputField.on('focus', () => {
+      outputField.attr('type', 'text')
+      outputField[0].setSelectionRange(0, outputField.val().length)
+    })
         // Replace the text in case it was modified (and hide it).
         // iOS won't let us select text in a readonly input.
         .on('blur', () => outputField.attr('type', 'password').val($scope.output))
         // Without this, the mouseup will move the cursor. We want to keep the selection from the
         // focus event.
-        .on('mouseup', e => e.preventDefault());
-    };
+        .on('mouseup', e => e.preventDefault())
+  }
 })
-;
