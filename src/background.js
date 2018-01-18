@@ -1,7 +1,5 @@
 /* global hwRules */
 
-'use strict'
-
 chrome.runtime.onInstalled.addListener(function (details) {
   if (details.reason === 'update') {
     console.info('Upgrade detected, checking data format...')

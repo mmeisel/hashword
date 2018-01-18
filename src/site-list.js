@@ -1,7 +1,5 @@
 /* global hw, hwRules */
 
-'use strict'
-
 angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.bootstrap'])
 .controller('SiteListController', ['$scope', '$uibModal', function ($scope, $uibModal) {
   angular.extend($scope, {
