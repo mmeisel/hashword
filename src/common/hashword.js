@@ -188,10 +188,6 @@ hw.getDomainInfo = function (url) {
   return { name: a.hostname.toLowerCase(), tld: tld.getDomain(a.hostname).toLowerCase() }
 }
 
-hw.getDefaultSettings = function () {
-  return { pwLength: 16, symbols: true, generation: 1 }
-}
-
 hw.getHashword = function (domain, masterPassword, settings) {
   const key = masterPassword + '@' + domain.toLowerCase() + '+' + settings.generation
 

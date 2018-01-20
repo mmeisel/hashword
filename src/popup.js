@@ -58,11 +58,14 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
         return reject(chrome.runtime.lastError.message)
       }
 
+      ctrl.allSettings = {}
+      Object.keys(items).forEach(domain => {
+        ctrl.allSettings[domain] = new hw.Settings(items[domain])
+      })
       // Only use the full hostname as the key if there are already settings for it,
       // otherwise fall back to the effective TLD. In other words, the effective TLD
       // is the default unless the user specifically selects the full hostname
       // (or did so in the past).
-      ctrl.allSettings = items
       changeDomain(items[ctrl.domainInfo.name] ? ctrl.domainInfo.name : ctrl.domainInfo.tld)
       resolve()
     })
@@ -91,7 +94,7 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
 
   function changeDomain (newDomain) {
     ctrl.activeDomain = newDomain
-    ctrl.settings = ctrl.allSettings[newDomain] || hw.getDefaultSettings()
+    ctrl.settings = ctrl.allSettings[newDomain] || new hw.Settings()
   }
 
   function showSettings () {
@@ -112,8 +115,9 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
     const items = {}
 
     if (isNewDomain) {
-      ctrl.settings.createDate = new Date().getTime()
+      ctrl.settings.setCreateDate()
     }
+    ctrl.settings.saveRevision()
 
     items[ctrl.activeDomain] = ctrl.settings
     chrome.storage.local.set(items, function () {
@@ -126,7 +130,7 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
   }
 
   function updateAccessDate () {
-    ctrl.settings.accessDate = new Date().getTime()
+    ctrl.settings.setAccessDate()
     saveSettings()
   }
 }])

@@ -25,16 +25,17 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
       const edited = $scope.editing
       const items = {}
 
+      edited.settings.saveRevision()
       items[edited.domain] = edited.settings
       $scope.editing = null
 
       chrome.storage.local.set(items, function () {
         if (!chrome.runtime.lastError) {
-          $scope.allSites.forEach((site) => {
-            if (site.domain === edited.domain) {
-              site.settings = edited.settings
-            }
-          })
+          const match = $scope.allSites.find(site => site.domain === edited.domain)
+
+          if (match != null) {
+            match.settings = edited.settings
+          }
           $scope.$apply()
         }
       })
@@ -63,7 +64,7 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
 
       chrome.storage.local.remove(domain, function () {
         if (!chrome.runtime.lastError) {
-          $scope.allSites = $scope.allSites.filter((site) => site.domain !== domain)
+          $scope.allSites = $scope.allSites.filter(site => site.domain !== domain)
 
           // Reset the rules for which icon to show
           hwRules.resetRules()
@@ -89,7 +90,7 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
   function loadAllSites () {
     chrome.storage.local.get(null, function (items) {
       $scope.allSites = Object.keys(items).map((domain) => {
-        return { domain, settings: items[domain] }
+        return { domain, settings: new hw.Settings(items[domain]) }
       })
       $scope.$apply()
     })

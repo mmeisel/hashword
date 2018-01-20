@@ -3,7 +3,7 @@
 angular.module('index', ['settings-editor'])
 .controller('HashwordCtrl', ['$scope', function ($scope) {
   $scope.form = {}
-  $scope.settings = hw.getDefaultSettings()
+  $scope.settings = new hw.Settings()
   $scope.output = ''
 }])
 .directive('hwSubmit', function () {
