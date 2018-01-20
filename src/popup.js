@@ -53,15 +53,22 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
   }
 
   function getSettings (resolve, reject) {
-    chrome.storage.local.get([ctrl.domainInfo.name, ctrl.domainInfo.tld], function (items) {
+    const allDomains = [ctrl.domainInfo.name]
+
+    if (ctrl.domainInfo.tld !== ctrl.domainInfo.name) {
+      allDomains.push(ctrl.domainInfo.tld)
+    }
+
+    chrome.storage.local.get(allDomains, function (items) {
       if (chrome.runtime.lastError) {
         return reject(chrome.runtime.lastError.message)
       }
 
       ctrl.allSettings = {}
-      Object.keys(items).forEach(domain => {
+      allDomains.forEach(domain => {
         ctrl.allSettings[domain] = new hw.Settings(items[domain])
       })
+
       // Only use the full hostname as the key if there are already settings for it,
       // otherwise fall back to the effective TLD. In other words, the effective TLD
       // is the default unless the user specifically selects the full hostname
@@ -94,7 +101,7 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
 
   function changeDomain (newDomain) {
     ctrl.activeDomain = newDomain
-    ctrl.settings = ctrl.allSettings[newDomain] || new hw.Settings()
+    ctrl.settings = ctrl.allSettings[newDomain]
   }
 
   function showSettings () {
@@ -108,7 +115,10 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
     // Save settings, sets createDate for new domains.
   function saveSettings (newSettings) {
     if (newSettings != null) {
-      ctrl.settings = angular.copy(newSettings)
+      const newSettingsCopy = angular.copy(newSettings)
+
+      ctrl.allSettings[ctrl.activeDomain] = newSettingsCopy
+      ctrl.settings = newSettingsCopy
     }
 
     const isNewDomain = ctrl.settings.createDate == null
