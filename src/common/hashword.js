@@ -3,6 +3,51 @@
 // Global namespace
 var hw = {}
 
+;(function () {
+  const REVISABLE_FIELDS = ['pwLength', 'symbols', 'generation', 'notes']
+  const DEFAULTS = { pwLength: 16, symbols: true, generation: 1, history: [] }
+
+  hw.Settings = class Settings {
+    constructor (settings) {
+      Object.assign(this, DEFAULTS, settings)
+
+      if (this.rev == null) {
+        this.rev = this.generateRevisionHash()
+      }
+    }
+
+    setCreateDate (createDate) {
+      this.createDate = createDate == null ? new Date().getTime() : new Date(createDate).getTime()
+    }
+
+    setAccessDate (accessDate) {
+      this.accessDate = accessDate == null ? new Date().getTime() : new Date(accessDate).getTime()
+    }
+
+    saveRevision () {
+      const newRev = this.generateRevisionHash()
+
+      if (newRev !== this.rev) {
+        this.history.push(this.rev)
+        this.rev = newRev
+      }
+    }
+
+    generateRevisionHash () {
+      const hashData = {}
+
+      for (let field of REVISABLE_FIELDS) {
+        hashData[field] = this[field]
+      }
+      if (this.history.length) {
+        hashData.parent = this.history[this.history.length - 1]
+      }
+
+      return CryptoJS.SHA3(JSON.stringify(hashData), { outputLength: 32 }).toString()
+    }
+  }
+})()
+
 // Encoder than can be passed to crypto-js to stringify the hash
 hw.encoder = function (requireSymbols) {
   const CHAR_CLASSES = [
