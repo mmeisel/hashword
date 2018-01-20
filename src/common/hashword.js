@@ -5,7 +5,7 @@ var hw = {}
 
 ;(function () {
   const REVISABLE_FIELDS = ['pwLength', 'symbols', 'generation', 'notes']
-  const DEFAULTS = { pwLength: 16, symbols: true, generation: 1, history: [] }
+  const DEFAULTS = { pwLength: 16, symbols: true, generation: 1, notes: '', history: [] }
 
   hw.Settings = class Settings {
     constructor (settings) {

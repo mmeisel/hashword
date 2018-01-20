@@ -1,4 +1,4 @@
-/* global hwRules */
+/* global hw, hwRules */
 
 chrome.runtime.onInstalled.addListener(function (details) {
   if (details.reason === 'update') {
@@ -18,7 +18,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
   }
 
   function upgradeData (items) {
-    Object.keys(items).filter(function (domain) {
+    Object.keys(items).filter(domain => {
       let settings = items[domain]
       let upgraded = false
 
@@ -36,6 +36,13 @@ chrome.runtime.onInstalled.addListener(function (details) {
       // numbers. Fix this.
       if (settings.pwLength !== +settings.pwLength) {
         settings.pwLength = +settings.pwLength
+        upgraded = true
+      }
+
+      // Add revision data for sync. This is done automatically by the hw.Settings constructor.
+      // This will also normalize the revisable fields.
+      if (settings.rev == null) {
+        Object.assign(settings, new hw.Settings(settings))
         upgraded = true
       }
 
