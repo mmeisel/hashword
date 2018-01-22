@@ -158,7 +158,10 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
           if (imported) {
             const converted = {}
 
-            imported.data.forEach((site) => (converted[site.domain] = site.settings))
+            // TODO: if this is old data, it may need to be upgraded
+            imported.data.forEach(site => {
+              converted[site.domain] = new hw.Storage(site.settings)
+            })
 
             chrome.storage.local.set(converted, function () {
               if (!chrome.runtime.lastError) {
