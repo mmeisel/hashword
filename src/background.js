@@ -1,4 +1,4 @@
-/* global hw, hwRules */
+/* global hw, hwRules, hwStorage */
 
 chrome.runtime.onInstalled.addListener(function (details) {
   if (details.reason === 'update') {
@@ -7,11 +7,13 @@ chrome.runtime.onInstalled.addListener(function (details) {
     // Upgrade stored data to a new format when a new version is installed.
     // Delay installing the rules until the data is upgraded in case the new rules code relies
     // on the new format.
-    chrome.storage.local.get(null, function (items) {
-      upgradeData(items)
-      console.info('Data upgraded, adding declarativeContent rules')
-      hwRules.resetRules()
-    })
+    hwStorage.getAll(true)
+      .catch(error => console.error(error))
+      .then(items => {
+        upgradeData(items)
+        console.info('Data upgraded, adding declarativeContent rules')
+        hwRules.resetRules()
+      })
   } else {
     console.info('Adding declarativeContent rules for new install')
     hwRules.resetRules()
@@ -49,7 +51,8 @@ chrome.runtime.onInstalled.addListener(function (details) {
       return upgraded
     })
 
-    chrome.storage.local.set(items)
+    hwStorage.set(items)
+      .catch(error => console.error(error))
   }
 })
 

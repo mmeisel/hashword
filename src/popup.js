@@ -1,4 +1,4 @@
-/* global hw, hwRules */
+/* global hw, hwRules, hwStorage */
 
 angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
 
@@ -30,7 +30,7 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
   })
 
   ctrl.initPromise = new Promise(getActiveTab)
-    .then(() => Promise.all([new Promise(getSettings), new Promise(checkActive)]))
+    .then(() => Promise.all([getSettings(), checkActive()]))
     .then(() => (ctrl.mode = PopupModes.READY))
     .catch(setError)
 
@@ -52,18 +52,14 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
     })
   }
 
-  function getSettings (resolve, reject) {
+  function getSettings () {
     const allDomains = [ctrl.domainInfo.name]
 
     if (ctrl.domainInfo.tld !== ctrl.domainInfo.name) {
       allDomains.push(ctrl.domainInfo.tld)
     }
 
-    chrome.storage.local.get(allDomains, function (items) {
-      if (chrome.runtime.lastError) {
-        return reject(chrome.runtime.lastError.message)
-      }
-
+    return hwStorage.get(allDomains).then(items => {
       ctrl.allSettings = {}
       allDomains.forEach(domain => {
         ctrl.allSettings[domain] = new hw.Settings(items[domain])
@@ -74,17 +70,18 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
       // is the default unless the user specifically selects the full hostname
       // (or did so in the past).
       changeDomain(items[ctrl.domainInfo.name] ? ctrl.domainInfo.name : ctrl.domainInfo.tld)
-      resolve()
     })
   }
 
-  function checkActive (resolve) {
-    // Ask the page to tell us if there's a password field focused on it or not
-    chrome.tabs.executeScript(ctrl.tabId, {
-      file: 'check-active.js',
-      allFrames: true
-    },
-        function (results) {
+  function checkActive () {
+    return new Promise(resolve => {
+      // Ask the page to tell us if there's a password field focused on it or not
+      chrome.tabs.executeScript(ctrl.tabId,
+        {
+          file: 'check-active.js',
+          allFrames: true
+        },
+        results => {
           if (!chrome.runtime.lastError && results) {
             ctrl.foundPasswordField = results.reduce((prev, cur) => prev || cur)
           } else {
@@ -92,6 +89,7 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
           }
           resolve()
         })
+    })
   }
 
   function hasSubdomain () {
@@ -122,15 +120,13 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
     }
 
     const isNewDomain = ctrl.settings.createDate == null
-    const items = {}
 
     if (isNewDomain) {
       ctrl.settings.setCreateDate()
     }
     ctrl.settings.saveRevision()
 
-    items[ctrl.activeDomain] = ctrl.settings
-    chrome.storage.local.set(items, function () {
+    hwStorage.setOne(ctrl.activeDomain, ctrl.settings).then(() => {
       // TODO: handle errors
       // If it's a new domain, reset the rules for which icon to show
       if (isNewDomain) {

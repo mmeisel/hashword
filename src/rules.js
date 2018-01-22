@@ -1,3 +1,5 @@
+/* global hwStorage */
+
 // Global namespace
 var hwRules = {
   resetPromise: Promise.resolve(null)
@@ -56,20 +58,14 @@ hwRules.resetRules = function () {
   return hwRules.resetPromise.then(resetRulesStart, resetRulesStart)
 
   function resetRulesStart () {
-    hwRules.resetPromise = new Promise((resolve, reject) => {
-      chrome.storage.local.get(null, (hwData) => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError.message)
-        }
-
+    hwRules.resetPromise = hwStorage.getAll()
+      .then(hwData => {
         // Due to a chrome bug (https://code.google.com/p/chromium/issues/detail?id=462542)
         // we need to manually load the icon images first.
-        hwRules.loadIcons()
+        return hwRules.loadIcons()
                 .then(resetRulesInternal.bind(this, hwData))
-                .then(resolve, reject)
       })
-    })
-        .catch((reason) => console.error(reason))
+      .catch(error => console.error(error))
 
     return hwRules.resetPromise
   }
@@ -91,7 +87,7 @@ hwRules.resetRules = function () {
       actions: [new chrome.declarativeContent.SetIcon({ imageData: imageData.insert })]
     }
 
-    insertIconRule.conditions = Object.keys(hwData).map((domain) => {
+    insertIconRule.conditions = Object.keys(hwData).map(domain => {
       // Chrome adds an implicit '.' is added at the beginning of the hostname when matching,
       // so this will work for exact matches as well.
       return new chrome.declarativeContent.PageStateMatcher({

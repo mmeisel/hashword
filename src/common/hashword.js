@@ -4,7 +4,7 @@
 var hw = {}
 
 ;(function () {
-  const REVISABLE_FIELDS = ['pwLength', 'symbols', 'generation', 'notes']
+  const REVISABLE_FIELDS = ['pwLength', 'symbols', 'generation', 'notes', 'deleteDate']
   const DEFAULTS = { pwLength: 16, symbols: true, generation: 1, notes: '', history: [] }
 
   hw.Settings = class Settings {
@@ -22,6 +22,10 @@ var hw = {}
 
     setAccessDate (accessDate) {
       this.accessDate = accessDate == null ? new Date().getTime() : new Date(accessDate).getTime()
+    }
+
+    setDeleteDate (deleteDate) {
+      this.deleteDate = deleteDate == null ? new Date().getTime() : new Date(deleteDate).getTime()
     }
 
     saveRevision () {

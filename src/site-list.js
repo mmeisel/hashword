@@ -1,4 +1,4 @@
-/* global hw, hwRules */
+/* global hw, hwRules, hwStorage */
 
 angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.bootstrap'])
 .controller('SiteListController', ['$scope', '$uibModal', function ($scope, $uibModal) {
@@ -23,21 +23,18 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
   function saveEditing () {
     if ($scope.editing) {
       const edited = $scope.editing
-      const items = {}
 
       edited.settings.saveRevision()
-      items[edited.domain] = edited.settings
       $scope.editing = null
 
-      chrome.storage.local.set(items, function () {
-        if (!chrome.runtime.lastError) {
-          const match = $scope.allSites.find(site => site.domain === edited.domain)
+      return hwStorage.setOne(edited.domain, edited.settings).then(() => {
+        // TODO: surface errors
+        const match = $scope.allSites.find(site => site.domain === edited.domain)
 
-          if (match != null) {
-            match.settings = edited.settings
-          }
-          $scope.$apply()
+        if (match != null) {
+          match.settings = edited.settings
         }
+        $scope.$apply()
       })
     }
   }
@@ -47,31 +44,22 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
   }
 
   function deleteEditing () {
-    const domain = $scope.editing.domain
-
-    if (!domain) {
-      return
-    }
-
-    const modal = $uibModal.open({
-      scope: $scope,
-      size: 'sm',
-      templateUrl: 'delete-modal.html'
-    })
-
-    modal.result.then(function () {
-      $scope.editing = null
-
-      chrome.storage.local.remove(domain, function () {
-        if (!chrome.runtime.lastError) {
-          $scope.allSites = $scope.allSites.filter(site => site.domain !== domain)
-
-          // Reset the rules for which icon to show
-          hwRules.resetRules()
-        }
-        $scope.$apply()
+    if ($scope.editing) {
+      const edited = $scope.editing
+      const modal = $uibModal.open({
+        scope: $scope,
+        size: 'sm',
+        templateUrl: 'delete-modal.html'
       })
-    })
+
+      modal.result.then(() => {
+        edited.settings.setDeleteDate()
+        saveEditing().then(() => {
+          $scope.allSites = $scope.allSites.filter(site => site.domain !== edited.domain)
+          hwRules.resetRules()
+        })
+      })
+    }
   }
 
   function copyPassword () {
@@ -88,8 +76,9 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
   }
 
   function loadAllSites () {
-    chrome.storage.local.get(null, function (items) {
-      $scope.allSites = Object.keys(items).map((domain) => {
+    return hwStorage.getAll().then(items => {
+      // TODO: surface errors
+      $scope.allSites = Object.keys(items).map(domain => {
         return { domain, settings: new hw.Settings(items[domain]) }
       })
       $scope.$apply()
@@ -163,11 +152,10 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
               converted[site.domain] = new hw.Storage(site.settings)
             })
 
-            chrome.storage.local.set(converted, function () {
-              if (!chrome.runtime.lastError) {
-                hwRules.resetRules()
-                $scope.loadAllSites()
-              }
+            hwStorage.set(converted).then(() => {
+              // TODO: surface errors
+              hwRules.resetRules()
+              $scope.loadAllSites()
             })
           }
         }
