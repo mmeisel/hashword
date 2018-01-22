@@ -31,8 +31,8 @@ const uglifyOptions = {
 
 gulp.task('lib', function () {
   gulp.src(src.libJs)
-        .pipe($.concat('lib.js'))
-        .pipe(gulp.dest(outputdir))
+    .pipe($.concat('lib.js'))
+    .pipe(gulp.dest(outputdir))
 })
 
 // Merge common
@@ -40,47 +40,47 @@ gulp.task('common', function () {
   const commonJs = gulp.src(src.commonJs)
 
   const templates = gulp.src(src.commonTemplates)
-        .pipe($.htmlmin(htmlminOptions))
-        .pipe($.angularTemplatecache({ module: 'templates', standalone: true }))
+    .pipe($.htmlmin(htmlminOptions))
+    .pipe($.angularTemplatecache({ module: 'templates', standalone: true }))
 
   streamqueue({ objectMode: true }, commonJs, templates)
-        .pipe($.sourcemaps.init())
-        .pipe($.concat('common.js'))
-        .pipe($.babel())
-        .pipe($.uglify(uglifyOptions))
-        .pipe($.sourcemaps.write('maps'))
-        .pipe(gulp.dest(outputdir))
+    .pipe($.sourcemaps.init())
+    .pipe($.concat('common.js'))
+    .pipe($.babel())
+    .pipe($.uglify(uglifyOptions))
+    .pipe($.sourcemaps.write('maps'))
+    .pipe(gulp.dest(outputdir))
 })
 
 gulp.task('html', function () {
   gulp.src(src.html)
-        .pipe($.htmlmin(htmlminOptions))
-        .pipe(gulp.dest(outputdir))
+    .pipe($.htmlmin(htmlminOptions))
+    .pipe(gulp.dest(outputdir))
 })
 
 gulp.task('scripts', ['lib', 'common'], function () {
   gulp.src(src.js)
-        .pipe($.sourcemaps.init())
-        .pipe($.babel())
-        .pipe($.uglify(uglifyOptions))
-        .pipe($.sourcemaps.write('maps'))
-        .pipe(gulp.dest(outputdir))
+    .pipe($.sourcemaps.init())
+    .pipe($.babel())
+    .pipe($.uglify(uglifyOptions))
+    .pipe($.sourcemaps.write('maps'))
+    .pipe(gulp.dest(outputdir))
 })
 
 gulp.task('css', function () {
   gulp.src(src.css)
-        .pipe($.concat('styles.css'))
-        .pipe(gulp.dest(outputdir))
+    .pipe($.concat('styles.css'))
+    .pipe(gulp.dest(outputdir))
 })
 
 gulp.task('chrome', function () {
   gulp.src(src.chrome)
-        .pipe(gulp.dest(outputdir))
+    .pipe(gulp.dest(outputdir))
 })
 
 gulp.task('assets', function () {
   gulp.src(src.assets)
-        .pipe(gulp.dest(outputdir))
+    .pipe(gulp.dest(outputdir))
 })
 
 const allTasks = ['scripts', 'html', 'css', 'assets', 'chrome']
@@ -117,8 +117,8 @@ gulp.task('package', allTasks, function () {
   const manifest = require(`./${outputdir}/manifest.json`)
 
   gulp.src([`${outputdir}/**`, `!${outputdir}/maps{,/**}`])
-        .pipe($.zip(`hashword-${manifest.version}.zip`))
-        .pipe(gulp.dest('dist'))
+    .pipe($.zip(`hashword-${manifest.version}.zip`))
+    .pipe(gulp.dest('dist'))
 })
 
 // Regular build

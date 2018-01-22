@@ -24,15 +24,16 @@ angular.module('index', ['settings-editor'])
       // select is broken on iOS, use setSelectionRange instead.
       outputField[0].setSelectionRange(0, outputField.val().length)
     })
-    outputField.on('focus', () => {
-      outputField.attr('type', 'text')
-      outputField[0].setSelectionRange(0, outputField.val().length)
-    })
-        // Replace the text in case it was modified (and hide it).
-        // iOS won't let us select text in a readonly input.
-        .on('blur', () => outputField.attr('type', 'password').val($scope.output))
-        // Without this, the mouseup will move the cursor. We want to keep the selection from the
-        // focus event.
-        .on('mouseup', e => e.preventDefault())
+    outputField
+      .on('focus', () => {
+        outputField.attr('type', 'text')
+        outputField[0].setSelectionRange(0, outputField.val().length)
+      })
+      // Replace the text in case it was modified (and hide it).
+      // iOS won't let us select text in a readonly input.
+      .on('blur', () => outputField.attr('type', 'password').val($scope.output))
+      // Without this, the mouseup will move the cursor. We want to keep the selection from the
+      // focus event.
+      .on('mouseup', e => e.preventDefault())
   }
 })
