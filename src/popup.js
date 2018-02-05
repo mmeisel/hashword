@@ -29,26 +29,28 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
     updateAccessDate
   })
 
-  ctrl.initPromise = new Promise(getActiveTab)
+  ctrl.initPromise = getActiveTab()
     .then(() => Promise.all([getSettings(), checkActive()]))
     .then(() => (ctrl.mode = PopupModes.READY))
     .catch(setError)
 
-  function setError (reason) {
-    console.error(reason)
+  function setError (err) {
+    console.error(err.message)
     ctrl.mode = PopupModes.ERROR
-    ctrl.error = typeof (reason) === 'string' ? reason : 'Something went wrong!'
+    ctrl.error = typeof (err.message) === 'string' ? err.message : 'Something went wrong!'
   }
 
-  function getActiveTab (resolve, reject) {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      if (tabs.length && tabs[0].url && tabs[0].url.indexOf('http') === 0) {
-        ctrl.tabId = tabs[0].id
-        ctrl.domainInfo = hw.getDomainInfo(tabs[0].url)
-        resolve()
-      } else {
-        reject('Hashword cannot be used on this page.')
-      }
+  function getActiveTab () {
+    return new Promise((resolve, reject) => {
+      chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+        if (tabs.length && tabs[0].url && tabs[0].url.indexOf('http') === 0) {
+          ctrl.tabId = tabs[0].id
+          ctrl.domainInfo = hw.getDomainInfo(tabs[0].url)
+          resolve()
+        } else {
+          reject(new Error('Hashword cannot be used on this page.'))
+        }
+      })
     })
   }
 
