@@ -1,6 +1,9 @@
 const gulp = require('gulp')
 const del = require('del')
 const exec = require('child_process').exec
+const KarmaServer = require('karma').Server
+const glob = require('glob')
+const path = require('path')
 const streamqueue = require('streamqueue')
 const $ = require('gulp-load-plugins')()
 
@@ -119,6 +122,32 @@ gulp.task('package', allTasks, function () {
   gulp.src([`${outputdir}/**`, `!${outputdir}/maps{,/**}`])
     .pipe($.zip(`hashword-${manifest.version}.zip`))
     .pipe(gulp.dest('dist'))
+})
+
+gulp.task('test', allTasks, function (done) {
+  glob('./test/**/*.conf.js', (err, files) => {
+    if (err == null && files.length) {
+      karmaRunner(files).then(done)
+    }
+  })
+
+  function karmaRunner (configFiles) {
+    if (!configFiles.length) {
+      return Promise.resolve()
+    }
+
+    return new Promise(resolve => {
+      new KarmaServer(
+        {
+          configFile: path.resolve(__dirname, configFiles[0]),
+          singleRun: true
+        },
+        resolve
+      )
+      .start()
+    })
+    .then(() => karmaRunner(configFiles.slice(1)))
+  }
 })
 
 // Regular build
