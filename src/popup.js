@@ -128,7 +128,7 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
     }
     ctrl.settings.saveRevision()
 
-    hwStorage.setOne(ctrl.activeDomain, ctrl.settings).then(() => {
+    return hwStorage.setOne(ctrl.activeDomain, ctrl.settings).then(() => {
       // TODO: handle errors
       // If it's a new domain, reset the rules for which icon to show
       if (isNewDomain) {
