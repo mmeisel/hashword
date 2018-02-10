@@ -10,9 +10,9 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
 })
 
 .service('popupService', ['$timeout', 'PopupModes', function ($timeout, PopupModes) {
-  const ctrl = this
+  const svc = this
 
-  angular.extend(ctrl, {
+  angular.extend(svc, {
     tabId: null,
     mode: PopupModes.LOADING,
     error: null,
@@ -29,23 +29,23 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
     updateAccessDate
   })
 
-  ctrl.initPromise = getActiveTab()
+  svc.initPromise = getActiveTab()
     .then(() => Promise.all([getSettings(), checkActive()]))
-    .then(() => (ctrl.mode = PopupModes.READY))
+    .then(() => (svc.mode = PopupModes.READY))
     .catch(setError)
 
   function setError (err) {
     console.error(err.message)
-    ctrl.mode = PopupModes.ERROR
-    ctrl.error = typeof (err.message) === 'string' ? err.message : 'Something went wrong!'
+    svc.mode = PopupModes.ERROR
+    svc.error = typeof (err.message) === 'string' ? err.message : 'Something went wrong!'
   }
 
   function getActiveTab () {
     return new Promise((resolve, reject) => {
       chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
         if (tabs.length && tabs[0].url && tabs[0].url.indexOf('http') === 0) {
-          ctrl.tabId = tabs[0].id
-          ctrl.domainInfo = hw.getDomainInfo(tabs[0].url)
+          svc.tabId = tabs[0].id
+          svc.domainInfo = hw.getDomainInfo(tabs[0].url)
           resolve()
         } else {
           reject(new Error('Hashword cannot be used on this page.'))
@@ -55,39 +55,39 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
   }
 
   function getSettings () {
-    const allDomains = [ctrl.domainInfo.name]
+    const allDomains = [svc.domainInfo.name]
 
-    if (ctrl.domainInfo.tld !== ctrl.domainInfo.name) {
-      allDomains.push(ctrl.domainInfo.tld)
+    if (svc.domainInfo.tld !== svc.domainInfo.name) {
+      allDomains.push(svc.domainInfo.tld)
     }
 
     return hwStorage.get(allDomains).then(items => {
-      ctrl.allSettings = {}
+      svc.allSettings = {}
       allDomains.forEach(domain => {
-        ctrl.allSettings[domain] = new hw.Settings(items[domain])
+        svc.allSettings[domain] = new hw.Settings(items[domain])
       })
 
       // Only use the full hostname as the key if there are already settings for it,
       // otherwise fall back to the effective TLD. In other words, the effective TLD
       // is the default unless the user specifically selects the full hostname
       // (or did so in the past).
-      changeDomain(items[ctrl.domainInfo.name] ? ctrl.domainInfo.name : ctrl.domainInfo.tld)
+      changeDomain(items[svc.domainInfo.name] ? svc.domainInfo.name : svc.domainInfo.tld)
     })
   }
 
   function checkActive () {
     return new Promise(resolve => {
       // Ask the page to tell us if there's a password field focused on it or not
-      chrome.tabs.executeScript(ctrl.tabId,
+      chrome.tabs.executeScript(svc.tabId,
         {
           file: 'check-active.js',
           allFrames: true
         },
         results => {
           if (!chrome.runtime.lastError && results) {
-            ctrl.foundPasswordField = results.reduce((prev, cur) => prev || cur)
+            svc.foundPasswordField = results.reduce((prev, cur) => prev || cur)
           } else {
-            ctrl.foundPasswordField = false
+            svc.foundPasswordField = false
           }
           resolve()
         })
@@ -95,21 +95,21 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
   }
 
   function hasSubdomain () {
-    return ctrl.domainInfo && ctrl.domainInfo.tld !== ctrl.domainInfo.name &&
-            ('www.' + ctrl.domainInfo.tld) !== ctrl.domainInfo.name
+    return svc.domainInfo && svc.domainInfo.tld !== svc.domainInfo.name &&
+            ('www.' + svc.domainInfo.tld) !== svc.domainInfo.name
   }
 
   function changeDomain (newDomain) {
-    ctrl.activeDomain = newDomain
-    ctrl.settings = ctrl.allSettings[newDomain]
+    svc.activeDomain = newDomain
+    svc.settings = svc.allSettings[newDomain]
   }
 
   function showSettings () {
-    ctrl.mode = PopupModes.EDITING
+    svc.mode = PopupModes.EDITING
   }
 
   function hideSettings () {
-    ctrl.mode = PopupModes.READY
+    svc.mode = PopupModes.READY
   }
 
     // Save settings, sets createDate for new domains.
@@ -117,18 +117,18 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
     if (newSettings != null) {
       const newSettingsCopy = angular.copy(newSettings)
 
-      ctrl.allSettings[ctrl.activeDomain] = newSettingsCopy
-      ctrl.settings = newSettingsCopy
+      svc.allSettings[svc.activeDomain] = newSettingsCopy
+      svc.settings = newSettingsCopy
     }
 
-    const isNewDomain = ctrl.settings.createDate == null
+    const isNewDomain = svc.settings.createDate == null
 
     if (isNewDomain) {
-      ctrl.settings.setCreateDate()
+      svc.settings.setCreateDate()
     }
-    ctrl.settings.saveRevision()
+    svc.settings.saveRevision()
 
-    return hwStorage.setOne(ctrl.activeDomain, ctrl.settings).then(() => {
+    return hwStorage.setOne(svc.activeDomain, svc.settings).then(() => {
       // TODO: handle errors
       // If it's a new domain, reset the rules for which icon to show
       if (isNewDomain) {
@@ -138,7 +138,7 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
   }
 
   function updateAccessDate () {
-    ctrl.settings.setAccessDate()
+    svc.settings.setAccessDate()
     saveSettings()
   }
 }])
@@ -218,7 +218,8 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
 
       popupService.updateAccessDate()
     }
-  }])
+  }
+])
 
 .controller('PopupSettingsFormController', [
   '$scope', 'popupService',
@@ -232,4 +233,5 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
       popupService.saveSettings($scope.settings)
       popupService.hideSettings()
     }
-  }])
+  }
+])
