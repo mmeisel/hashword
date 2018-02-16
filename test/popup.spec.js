@@ -3,7 +3,7 @@
 
 const sandbox = sinon.createSandbox()
 
-describe('popup', () => {
+describe('popupService', () => {
   beforeEach(module('popup'))
 
   const invalidProtocols = ['file', 'chrome']
