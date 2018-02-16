@@ -1,10 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="options" ng-csp>
 <head>
   <title>Hashword Options</title>
+  <link rel="stylesheet" type="text/css" href="styles.css"/>
 </head>
 <body>
-  <p><a href="site-list.html" target="_blank">Site List</a></p>
-  <p><a href="https://mmeisel.github.io/hashword/">Standalone Web Version</a></p>
+  <div class="container">
+    <options-form></options-form>
+    <hr/>
+    <p><a href="site-list.html" target="_blank">Site List</a></p>
+  </div>
+  <script type="text/javascript" src="lib.js"></script>
+  <script type="text/javascript" src="common.js"></script>
+  <script type="text/javascript" src="rules.js"></script>
+  <script type="text/javascript" src="options.js"></script>
 </body>
 </html>

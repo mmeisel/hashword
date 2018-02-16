@@ -1,0 +1,24 @@
+<ng-form name="optionsForm" class="form-horizontal">
+  <div class="checkbox">
+    <label>
+      <input type="checkbox" name="useServer"
+             ng-model="$ctrl.options.useServer" ng-change="$ctrl.saveOptions()"/>
+      Sync with server
+    </label>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-xs-4">Server URL</label>
+    <div class="col-xs-8">
+      <!-- TODO: debounce change event, or use a different event -->
+      <input type="text" class="form-control" name="serverUrl"
+             ng-model="$ctrl.options.serverUrl" ng-change="$ctrl.saveOptions()"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-xs-12 text-center">
+      <button type="button" class="btn" ng-click="$ctrl.sync()">
+        Sync Now
+      </button>
+    </div>
+  </div>
+</ng-form>
