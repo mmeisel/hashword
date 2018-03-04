@@ -1,25 +1,13 @@
 /* global hw, hwRules, hwStorage */
 
-chrome.runtime.onInstalled.addListener(function (details) {
-  if (details.reason === 'update') {
-    console.info('Upgrade detected, checking data format...')
+angular.module('background', ['sync'])
 
-    // Upgrade stored data to a new format when a new version is installed.
-    // Delay installing the rules until the data is upgraded in case the new rules code relies
-    // on the new format.
-    hwStorage.getAll(true)
-      .catch(error => console.error(error))
-      .then(items => {
-        upgradeData(items)
-        console.info('Data upgraded, adding declarativeContent rules')
-        hwRules.resetRules()
-      })
-  } else {
-    console.info('Adding declarativeContent rules for new install')
-    hwRules.resetRules()
-  }
+.run(['backgroundService', function (backgroundService) {
+  backgroundService.init()
+}])
 
-  function upgradeData (items) {
+.service('backgroundService', ['syncService', function (syncService) {
+  this.upgradeData = items => {
     Object.keys(items).filter(domain => {
       let settings = items[domain]
       let upgraded = false
@@ -54,7 +42,41 @@ chrome.runtime.onInstalled.addListener(function (details) {
     hwStorage.set(items)
       .catch(error => console.error(error))
   }
-})
 
-// Just in case
-chrome.runtime.onStartup.addListener(hwRules.resetRules)
+  this.onInstalled = details => {
+    if (details.reason === 'update') {
+      console.info('Upgrade detected, checking data format...')
+
+      // Upgrade stored data to a new format when a new version is installed.
+      // Delay installing the rules until the data is upgraded in case the new rules code relies
+      // on the new format.
+      hwStorage.getAll(true)
+        .catch(error => console.error(error))
+        .then(items => {
+          this.upgradeData(items)
+          console.info('Data upgraded, adding declarativeContent rules')
+          hwRules.resetRules()
+        })
+    } else {
+      console.info('Adding declarativeContent rules for new install')
+      hwRules.resetRules()
+    }
+  }
+
+  this.onStartup = () => {
+    // Sometimes chrome doesn't seem to load these on startup as the documentation claims
+    hwRules.resetRules()
+
+    syncService.sync().then(domains => {
+      if (Object.keys(domains).length) {
+        // If anything changed, reset rules
+        hwRules.resetRules()
+      }
+    })
+  }
+
+  this.init = () => {
+    chrome.runtime.onInstalled.addListener(this.onInstalled)
+    chrome.runtime.onStartup.addListener(this.onStartup)
+  }
+}])

@@ -4,7 +4,7 @@
   "manifest_version": 2,
   "description": "Generate a unique, secure password for every web site from one master password.",
   "background": {
-    "scripts": ["lib.js", "common.js", "rules.js", "background.js"],
+    "page": "background.html",
     "persistent": false
   },
   "browser_action": {
