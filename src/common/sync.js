@@ -1,4 +1,4 @@
-/* global hwStorage */
+/* global hwRules, hwStorage */
 
 angular.module('sync', [])
 .service('syncService', ['$http', function ($http) {
@@ -41,10 +41,11 @@ angular.module('sync', [])
           return domainsToSync
         }
 
-        return hwStorage.set(results.changed).then(() => domainsToSync)
+        return hwStorage.set(results.changed)
+          .then(hwRules.resetRules)
+          .then(() => domainsToSync)
         // TODO: deal with conflicts
       })
-      // TODO: deal with errors
   }
 
   this.sync = function () {

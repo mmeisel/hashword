@@ -66,13 +66,7 @@ angular.module('background', ['sync'])
   this.onStartup = () => {
     // Sometimes chrome doesn't seem to load these on startup as the documentation claims
     hwRules.resetRules()
-
-    syncService.sync().then(domains => {
-      if (Object.keys(domains).length) {
-        // If anything changed, reset rules
-        hwRules.resetRules()
-      }
-    })
+    syncService.sync()
   }
 
   this.init = () => {

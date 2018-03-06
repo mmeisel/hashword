@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-/* global expect, hwStorage, inject, sinon */
+/* global expect, hwRules, hwStorage, inject, sinon */
 
 const sandbox = sinon.createSandbox()
 
@@ -131,15 +131,18 @@ describe('syncService', () => {
         changed: remoteSites
       })
 
-      return syncService.syncDomains('http://localhost', localSites).then(() => {
+      return syncService.syncDomains('http://localhost', localSites).then(results => {
         expect(stubs.storageSet.calledOnce).to.equal(true)
         expect(stubs.storageSet.getCalls()[0].args).to.deep.equal([remoteSites])
+        expect(stubs.resetRules.calledOnce).to.equal(true)
+        expect(results).to.deep.equal(localSites)
       })
     })
 
     function setUpStubs (localSites, remoteSites, response) {
       const stubs = {
-        storageSet: sandbox.stub(hwStorage, 'set').returns(Promise.resolve())
+        storageSet: sandbox.stub(hwStorage, 'set').returns(Promise.resolve()),
+        resetRules: sandbox.stub(hwRules, 'resetRules').returns(Promise.resolve())
       }
 
       $httpBackend.whenPATCH('http://localhost/sites').respond(response)
@@ -190,5 +193,7 @@ describe('syncService', () => {
     })
   })
 })
+
+// TODO: test error states/propagation
 
 afterEach(() => sandbox.restore())
