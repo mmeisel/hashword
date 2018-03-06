@@ -39,6 +39,7 @@
   },
   "permissions": [
     "activeTab",
+    "alarms",
     "clipboardWrite",
     "declarativeContent",
     "storage"
