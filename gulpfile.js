@@ -22,13 +22,15 @@ const src = {
   ],
   fonts: ['vendor/fonts/**/*'],
   html: ['src/**/*.html', '!src/**/*.tmpl.html'],
-  injectables: ['src/inject/**/*.js'],
-  js: ['src/**/*.js']
+  injectables: ['src/inject/**/*.js']
 }
 
 const outputdir = 'build'
 
-const babelOptions = { presets: ['es2015'] }
+const babelOptions = {
+  presets: ['es2015'],
+  sourceMaps: true
+}
 
 const htmlminOptions = {
   removeComments: true,
@@ -37,30 +39,49 @@ const htmlminOptions = {
   removeTagWhitespace: true
 }
 
+const sourcemapsOptions = { loadMaps: true }
+
 const uglifyOptions = {
   // The resulting value of injected scripts is important, negating IIFEs breaks this.
   compress: { negate_iife: false }
 }
 
-function getBrowserifyBuild (page) {
-  return browserify({ entries: `./src/pages/${page}/${page}.js`, debug: true })
-    .transform(ngHtml2Js({ extension: 'tmpl.html' })) // TODO: run htmlmin here?
-    // The babelOptions need to be copied as babelify mutates the object for some reason
-    .transform('babelify', Object.assign({}, babelOptions))
-    .bundle()
+function getBrowserify (page, watch) {
+  return browserify({
+    debug: true,
+    entries: `./src/pages/${page}/${page}.js`,
+    cache: {},
+    packageCache: {},
+    plugin: watch ? [watchify] : []
+  })
+  .transform(ngHtml2Js({ extension: 'tmpl.html' })) // TODO: run htmlmin here?
+  // The babelOptions need to be copied as babelify mutates the object for some reason
+  .transform('babelify', Object.assign({}, babelOptions))
+}
+
+function browserifyBundle (page, instance) {
+  return instance.bundle()
     .pipe(sourceStream(`${page}.js`))
     .pipe(buffer())
-    .pipe($.sourcemaps.init())
+    .pipe($.sourcemaps.init(sourcemapsOptions))
     .pipe($.uglify(uglifyOptions))
     .pipe($.sourcemaps.write('./maps'))
     .pipe(gulp.dest(`${outputdir}/pages/${page}`))
 }
 
 src.pages.forEach(page => {
-  gulp.task(`page-${page}`, () => getBrowserifyBuild(page))
+  gulp.task(`page-${page}`, () => browserifyBundle(page, getBrowserify(page, false)))
 
   gulp.task(`watch-${page}`, () => {
-    watchify(getBrowserifyBuild(page))
+    const instance = getBrowserify(page, true)
+
+    instance.on('update', () => {
+      return browserifyBundle(page, instance)
+        .on('end', () => gulp.start('reload'))
+    })
+    instance.on('log', message => console.log('[watchify]', `'${page}.js'`, message))
+
+    return browserifyBundle(page, instance)
   })
 })
 
@@ -70,7 +91,7 @@ gulp.task('watch-pages', src.pages.map(page => `watch-${page}`))
 
 gulp.task('injectables', () => {
   gulp.src(src.injectables, { base: 'src' })
-    .pipe($.sourcemaps.init())
+    .pipe($.sourcemaps.init(sourcemapsOptions))
     .pipe($.babel(babelOptions))
     .pipe($.uglify(uglifyOptions))
     .pipe($.sourcemaps.write('./maps'))
@@ -82,8 +103,6 @@ gulp.task('html', function () {
     .pipe($.htmlmin(htmlminOptions))
     .pipe(gulp.dest(outputdir))
 })
-
-gulp.task('scripts', ['pages', 'injectables'])
 
 gulp.task('css', function () {
   gulp.src(src.css)
@@ -106,7 +125,7 @@ gulp.task('fonts', () => {
     .pipe(gulp.dest(`${outputdir}/fonts`))
 })
 
-const allTasks = ['scripts', 'html', 'css', 'images', 'fonts', 'chrome']
+const allTasks = ['pages', 'injectables', 'html', 'css', 'images', 'fonts', 'chrome']
 
 gulp.task('clean', function () {
   del([outputdir, 'dist'])
@@ -125,13 +144,12 @@ gulp.task('reload', function (cb) {
   })
 })
 
-gulp.task('watch', allTasks, function () {
+gulp.task('watch', allTasks.filter(el => el !== 'pages').concat(['watch-pages']), () => {
   gulp.watch(src.html, ['html', 'reload'])
-  gulp.watch(src.js, src.pages.map(app => `watch-${app}`).concat(['reload']))
-  // TODO: other JS files
-  gulp.watch(src.css, ['css', 'reload'])
+  gulp.watch(src.injectables, ['injectables'])
+  gulp.watch(src.css, ['css'])
   gulp.watch(src.chrome, ['chrome', 'reload'])
-  gulp.watch(src.fonts, ['fonts', 'reload'])
+  gulp.watch(src.fonts, ['fonts'])
   gulp.watch(src.images, ['images', 'reload'])
 })
 
