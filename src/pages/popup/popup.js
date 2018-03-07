@@ -1,13 +1,23 @@
 const angular = require('angular')
-const clipboard = require('./common/clipboard')
-const filters = require('./common/filters')
-const hw = require('./common/hashword')
-const rules = require('./rules')
-const Settings = require('./common/settings')
-const settingsEditor = require('./common/settings-editor')
-const storage = require('./common/storage')
+const clipboard = require('../../lib/clipboard')
+const filters = require('../../lib/filters')
+const hw = require('../../lib/hashword')
+const rules = require('../../lib/rules')
+const Settings = require('../../lib/settings')
+const settingsEditor = require('../../lib/settings-editor')
+const storage = require('../../lib/storage')
+const popupFormTemplate = require('./popup-form.tmpl.html')
+const popupPasswordFormTemplate = require('./popup-password-form.tmpl.html')
+const popupSettingsFormTemplate = require('./popup-settings-form.tmpl.html')
 
-angular.module('popup', [clipboard, filters, settingsEditor])
+angular.module('popup', [
+  clipboard,
+  filters,
+  popupFormTemplate,
+  popupPasswordFormTemplate,
+  popupSettingsFormTemplate,
+  settingsEditor
+])
 
 .constant('PopupModes', {
   LOADING: 'LOADING',
@@ -87,7 +97,7 @@ angular.module('popup', [clipboard, filters, settingsEditor])
       // Ask the page to tell us if there's a password field focused on it or not
       chrome.tabs.executeScript(svc.tabId,
         {
-          file: 'check-active.js',
+          file: 'inject/check-active.js',
           allFrames: true
         },
         results => {
@@ -155,17 +165,17 @@ angular.module('popup', [clipboard, filters, settingsEditor])
     $scope.service = popupService
     popupService.initPromise.then(() => $scope.$apply())
   }],
-  templateUrl: 'popup-form.html'
+  templateUrl: popupFormTemplate
 })
 
 .component('popupPasswordForm', {
   controller: 'PopupPasswordFormController',
-  templateUrl: 'popup-password-form.html'
+  templateUrl: popupPasswordFormTemplate
 })
 
 .component('popupSettingsForm', {
   controller: 'PopupSettingsFormController',
-  templateUrl: 'popup-settings-form.html'
+  templateUrl: popupSettingsFormTemplate
 })
 
 .controller('PopupPasswordFormController', [

@@ -1,9 +1,12 @@
-/* global hw */
+const angular = require('angular')
+const hw = require('../../lib/hashword')
+const Settings = require('../../lib/settings')
+const settingsEditor = require('../../lib/settings-editor')
 
-angular.module('index', ['settings-editor'])
+angular.module('index', [settingsEditor])
 .controller('HashwordCtrl', ['$scope', function ($scope) {
   $scope.form = {}
-  $scope.settings = new hw.Settings()
+  $scope.settings = new Settings()
   $scope.output = ''
 }])
 .directive('hwSubmit', function () {

@@ -1,4 +1,4 @@
-const storage = require('./common/storage')
+const storage = require('./storage')
 
 const rules = {
   resetPromise: Promise.resolve(null),

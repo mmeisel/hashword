@@ -4,12 +4,12 @@
   "manifest_version": 2,
   "description": "Generate a unique, secure password for every web site from one master password.",
   "background": {
-    "page": "background.html",
+    "page": "pages/background/background.html",
     "persistent": false
   },
   "browser_action": {
     "default_title": "Hashword",
-    "default_popup": "popup.html",
+    "default_popup": "pages/popup/popup.html",
     "default_icon": {
       "16": "images/icon16-inactive.png",
       "19": "images/icon19-inactive.png",
@@ -34,7 +34,7 @@
   "incognito": "spanning",
   "minimum_chrome_version": "46",
   "options_ui": {
-    "page": "options.html",
+    "page": "pages/options/options.html",
     "chrome_style": true
   },
   "permissions": [

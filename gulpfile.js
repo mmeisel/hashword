@@ -2,6 +2,7 @@ const gulp = require('gulp')
 const browserify = require('browserify')
 const del = require('del')
 const exec = require('child_process').exec
+const glob = require('glob')
 const KarmaServer = require('karma').Server
 const path = require('path')
 const buffer = require('vinyl-buffer')
@@ -11,19 +12,23 @@ const watchify = require('watchify')
 const $ = require('gulp-load-plugins')()
 
 const src = {
-  apps: ['background', 'options', 'popup', 'site-list'],
-  assets: ['vendor/**/*.woff2', 'src/images/**/*'],
+  pages: glob.sync('src/pages/*').map(page => path.basename(page)),
+  images: ['images/**/*'],
   chrome: ['src/chrome/**/*'],
   css: [
     'node_modules/angular/angular-csp.css',
     'vendor/**/*.css',
     'src/**/*.css'
   ],
+  fonts: ['vendor/fonts/**/*'],
   html: ['src/**/*.html', '!src/**/*.tmpl.html'],
+  injectables: ['src/inject/**/*.js'],
   js: ['src/**/*.js']
 }
 
 const outputdir = 'build'
+
+const babelOptions = { presets: ['es2015'] }
 
 const htmlminOptions = {
   removeComments: true,
@@ -37,29 +42,39 @@ const uglifyOptions = {
   compress: { negate_iife: false }
 }
 
-src.apps.forEach(app => {
-  const browserifyArgs = { entries: `./src/${app}.js`, debug: true }
+function getBrowserifyBuild (page) {
+  return browserify({ entries: `./src/pages/${page}/${page}.js`, debug: true })
+    .transform(ngHtml2Js({ extension: 'tmpl.html' })) // TODO: run htmlmin here?
+    // The babelOptions need to be copied as babelify mutates the object for some reason
+    .transform('babelify', Object.assign({}, babelOptions))
+    .bundle()
+    .pipe(sourceStream(`${page}.js`))
+    .pipe(buffer())
+    .pipe($.sourcemaps.init())
+    .pipe($.uglify(uglifyOptions))
+    .pipe($.sourcemaps.write('./maps'))
+    .pipe(gulp.dest(`${outputdir}/pages/${page}`))
+}
 
-  gulp.task(`build-${app}`, () => {
-    return getBrowserifyBuild()
+src.pages.forEach(page => {
+  gulp.task(`page-${page}`, () => getBrowserifyBuild(page))
+
+  gulp.task(`watch-${page}`, () => {
+    watchify(getBrowserifyBuild(page))
   })
+})
 
-  gulp.task(`watch-${app}`, () => {
-    return watchify(getBrowserifyBuild())
-  })
+gulp.task('pages', src.pages.map(page => `page-${page}`))
 
-  function getBrowserifyBuild () {
-    return browserify(browserifyArgs)
-      .transform(ngHtml2Js({ extension: 'tmpl.html' })) // TODO: run htmlmin here?
-      .transform('babelify', { presets: ['es2015'] })
-      .bundle()
-      .pipe(sourceStream(`${app}.js`))
-      .pipe(buffer())
-      .pipe($.sourcemaps.init())
-      .pipe($.uglify(uglifyOptions))
-      .pipe($.sourcemaps.write('./maps'))
-      .pipe(gulp.dest(outputdir))
-  }
+gulp.task('watch-pages', src.pages.map(page => `watch-${page}`))
+
+gulp.task('injectables', () => {
+  gulp.src(src.injectables, { base: 'src' })
+    .pipe($.sourcemaps.init())
+    .pipe($.babel(babelOptions))
+    .pipe($.uglify(uglifyOptions))
+    .pipe($.sourcemaps.write('./maps'))
+    .pipe(gulp.dest(outputdir))
 })
 
 gulp.task('html', function () {
@@ -68,9 +83,7 @@ gulp.task('html', function () {
     .pipe(gulp.dest(outputdir))
 })
 
-// TODO: missing check-active.js right now (any other non-app standalone scripts? give them their
-//       own directory?)
-gulp.task('scripts', src.apps.map(app => `build-${app}`))
+gulp.task('scripts', ['pages', 'injectables'])
 
 gulp.task('css', function () {
   gulp.src(src.css)
@@ -83,12 +96,17 @@ gulp.task('chrome', function () {
     .pipe(gulp.dest(outputdir))
 })
 
-gulp.task('assets', function () {
-  gulp.src(src.assets)
-    .pipe(gulp.dest(outputdir))
+gulp.task('images', () => {
+  gulp.src(src.images)
+    .pipe(gulp.dest(`${outputdir}/images`))
 })
 
-const allTasks = ['scripts', 'html', 'css', 'assets', 'chrome']
+gulp.task('fonts', () => {
+  gulp.src(src.fonts)
+    .pipe(gulp.dest(`${outputdir}/fonts`))
+})
+
+const allTasks = ['scripts', 'html', 'css', 'images', 'fonts', 'chrome']
 
 gulp.task('clean', function () {
   del([outputdir, 'dist'])
@@ -109,11 +127,12 @@ gulp.task('reload', function (cb) {
 
 gulp.task('watch', allTasks, function () {
   gulp.watch(src.html, ['html', 'reload'])
-  gulp.watch(src.js, src.apps.map(app => `watch-${app}`).concat(['reload']))
+  gulp.watch(src.js, src.pages.map(app => `watch-${app}`).concat(['reload']))
   // TODO: other JS files
   gulp.watch(src.css, ['css', 'reload'])
   gulp.watch(src.chrome, ['chrome', 'reload'])
-  gulp.watch(src.assets, ['assets', 'reload'])
+  gulp.watch(src.fonts, ['fonts', 'reload'])
+  gulp.watch(src.images, ['images', 'reload'])
 })
 
 gulp.task('package', allTasks, function () {
@@ -124,10 +143,10 @@ gulp.task('package', allTasks, function () {
     .pipe(gulp.dest('dist'))
 })
 
-gulp.task('test', function (done) {
+gulp.task('test', done => {
   new KarmaServer(
     {
-      configFile: path.resolve(__dirname, 'test/karma.conf.js'),
+      configFile: path.resolve(__dirname, 'src/test/karma.conf.js'),
       singleRun: true
     },
     done

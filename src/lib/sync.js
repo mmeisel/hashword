@@ -1,5 +1,5 @@
 const angular = require('angular')
-const rules = require('../rules')
+const rules = require('./rules')
 const storage = require('./storage')
 
 const sync = angular.module('sync', [])

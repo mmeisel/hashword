@@ -3,12 +3,11 @@
 
 const angular = require('angular')
 
-require('../node_modules/angular-mocks/angular-mocks.js')
-require('../src/popup')
+require('angular-mocks')
 
-const rules = require('../src/rules')
-const storage = require('../src/common/storage')
-const sync = require('../src/common/sync')
+const rules = require('../lib/rules')
+const storage = require('../lib/storage')
+const sync = require('../lib/sync')
 
 const sandbox = sinon.createSandbox()
 

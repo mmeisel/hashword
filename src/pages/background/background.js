@@ -1,8 +1,8 @@
 const angular = require('angular')
-const rules = require('./rules')
-const Settings = require('./common/settings')
-const storage = require('./common/storage')
-const sync = require('./common/sync')
+const rules = require('../../lib/rules')
+const Settings = require('../../lib/settings')
+const storage = require('../../lib/storage')
+const sync = require('../../lib/sync')
 
 angular.module('background', [sync])
 
