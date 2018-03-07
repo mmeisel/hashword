@@ -1,5 +1,14 @@
 /* eslint-env mocha */
-/* global expect, hwRules, hwStorage, inject, sinon */
+/* global expect, inject, sinon */
+
+const angular = require('angular')
+
+require('../node_modules/angular-mocks/angular-mocks.js')
+require('../src/popup')
+
+const rules = require('../src/rules')
+const storage = require('../src/common/storage')
+const sync = require('../src/common/sync')
 
 const sandbox = sinon.createSandbox()
 
@@ -7,7 +16,7 @@ describe('syncService', () => {
   let $httpBackend
   let syncService
 
-  beforeEach(module('sync'))
+  beforeEach(angular.mock.module(sync))
 
   beforeEach(inject($injector => {
     $httpBackend = $injector.get('$httpBackend')
@@ -84,7 +93,7 @@ describe('syncService', () => {
 
     function setUpStubs (localSites, remoteSites) {
       const stubs = {
-        storageGetAll: sandbox.stub(hwStorage, 'getAll').returns(Promise.resolve(localSites)),
+        storageGetAll: sandbox.stub(storage, 'getAll').returns(Promise.resolve(localSites)),
         syncDomains: sandbox.stub(syncService, 'syncDomains').returns(Promise.resolve(localSites))
       }
 
@@ -141,8 +150,8 @@ describe('syncService', () => {
 
     function setUpStubs (localSites, remoteSites, response) {
       const stubs = {
-        storageSet: sandbox.stub(hwStorage, 'set').returns(Promise.resolve()),
-        resetRules: sandbox.stub(hwRules, 'resetRules').returns(Promise.resolve())
+        storageSet: sandbox.stub(storage, 'set').returns(Promise.resolve()),
+        resetRules: sandbox.stub(rules, 'resetRules').returns(Promise.resolve())
       }
 
       $httpBackend.whenPATCH('http://localhost/sites').respond(response)
@@ -154,7 +163,7 @@ describe('syncService', () => {
 
   describe('#sync()', () => {
     it('should do nothing when useServer is false', () => {
-      const getOptionsStub = sandbox.stub(hwStorage, 'getOptions').returns(Promise.resolve({
+      const getOptionsStub = sandbox.stub(storage, 'getOptions').returns(Promise.resolve({
         useServer: false
       }))
       const getDomainsStub = sandbox.stub(syncService, 'getDomainsToSync').returns(Promise.resolve({}))
@@ -176,7 +185,7 @@ describe('syncService', () => {
         }
       }
 
-      const getOptionsStub = sandbox.stub(hwStorage, 'getOptions').returns(Promise.resolve({
+      const getOptionsStub = sandbox.stub(storage, 'getOptions').returns(Promise.resolve({
         useServer: true,
         serverUrl: 'http://localhost'
       }))

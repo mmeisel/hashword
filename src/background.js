@@ -1,6 +1,10 @@
-/* global hw, hwRules, hwStorage */
+const angular = require('angular')
+const rules = require('./rules')
+const Settings = require('./common/settings')
+const storage = require('./common/storage')
+const sync = require('./common/sync')
 
-angular.module('background', ['sync'])
+angular.module('background', [sync])
 
 .run(['backgroundService', function (backgroundService) {
   backgroundService.init()
@@ -29,17 +33,17 @@ angular.module('background', ['sync'])
         upgraded = true
       }
 
-      // Add revision data for sync. This is done automatically by the hw.Settings constructor.
+      // Add revision data for sync. This is done automatically by the Settings constructor.
       // This will also normalize the revisable fields.
       if (settings.rev == null) {
-        Object.assign(settings, new hw.Settings(settings))
+        Object.assign(settings, new Settings(settings))
         upgraded = true
       }
 
       return upgraded
     })
 
-    hwStorage.set(items)
+    storage.set(items)
       .catch(error => console.error(error))
   }
 
@@ -50,22 +54,22 @@ angular.module('background', ['sync'])
       // Upgrade stored data to a new format when a new version is installed.
       // Delay installing the rules until the data is upgraded in case the new rules code relies
       // on the new format.
-      hwStorage.getAll(true)
+      storage.getAll(true)
         .catch(error => console.error(error))
         .then(items => {
           this.upgradeData(items)
           console.info('Data upgraded, adding declarativeContent rules')
-          hwRules.resetRules()
+          rules.resetRules()
         })
     } else {
       console.info('Adding declarativeContent rules for new install')
-      hwRules.resetRules()
+      rules.resetRules()
     }
   }
 
   this.onStartup = () => {
     // Sometimes chrome doesn't seem to load these on startup as the documentation claims
-    hwRules.resetRules()
+    rules.resetRules()
     syncService.sync()
   }
 

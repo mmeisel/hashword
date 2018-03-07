@@ -1,6 +1,14 @@
-/* global hw, hwRules, hwStorage */
+const angular = require('angular')
+const clipboard = require('./common/clipboard')
+const filters = require('./common/filters')
+const hw = require('./common/hashword')
+const rules = require('./rules')
+const Settings = require('./common/settings')
+const storage = require('./common/storage')
+const settingsEditor = require('./common/settings-editor')
+const uiBootstrap = require('angular-ui-bootstrap')
 
-angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.bootstrap'])
+angular.module('site-list', [clipboard, filters, settingsEditor, uiBootstrap])
 .controller('SiteListController', ['$scope', '$uibModal', function ($scope, $uibModal) {
   angular.extend($scope, {
     predicate: ['domain'],
@@ -27,7 +35,7 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
       edited.settings.saveRevision()
       $scope.editing = null
 
-      return hwStorage.setOne(edited.domain, edited.settings).then(() => {
+      return storage.setOne(edited.domain, edited.settings).then(() => {
         // TODO: surface errors
         const match = $scope.allSites.find(site => site.domain === edited.domain)
 
@@ -56,7 +64,7 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
         edited.settings.setDeleteDate()
         saveEditing().then(() => {
           $scope.allSites = $scope.allSites.filter(site => site.domain !== edited.domain)
-          hwRules.resetRules()
+          rules.resetRules()
         })
       })
     }
@@ -76,10 +84,10 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
   }
 
   function loadAllSites () {
-    return hwStorage.getAll().then(items => {
+    return storage.getAll().then(items => {
       // TODO: surface errors
       $scope.allSites = Object.keys(items).map(domain => {
-        return { domain, settings: new hw.Settings(items[domain]) }
+        return { domain, settings: new Settings(items[domain]) }
       })
       $scope.$apply()
     })
@@ -152,9 +160,9 @@ angular.module('site-list', ['clipboard', 'filters', 'settings-editor', 'ui.boot
               converted[site.domain] = new hw.Storage(site.settings)
             })
 
-            hwStorage.set(converted).then(() => {
+            storage.set(converted).then(() => {
               // TODO: surface errors
-              hwRules.resetRules()
+              rules.resetRules()
               $scope.loadAllSites()
             })
           }

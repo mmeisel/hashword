@@ -1,56 +1,9 @@
-/* global CryptoJS, tld */
+const SHA3 = require('crypto-js/sha3')
+const WordArray = require('crypto-js/lib-typedarrays')
 
-// Global namespace
-var hw = {}
+const tld = require('tldjs')
 
-;(function () {
-  const REVISABLE_FIELDS = ['pwLength', 'symbols', 'generation', 'notes', 'deleteDate']
-  const DEFAULTS = { pwLength: 16, symbols: true, generation: 1, notes: '', history: [] }
-
-  hw.Settings = class Settings {
-    constructor (settings) {
-      Object.assign(this, DEFAULTS, settings)
-
-      if (this.rev == null) {
-        this.rev = this.generateRevisionHash()
-      }
-    }
-
-    setCreateDate (createDate) {
-      this.createDate = createDate == null ? new Date().getTime() : new Date(createDate).getTime()
-    }
-
-    setAccessDate (accessDate) {
-      this.accessDate = accessDate == null ? new Date().getTime() : new Date(accessDate).getTime()
-    }
-
-    setDeleteDate (deleteDate) {
-      this.deleteDate = deleteDate == null ? new Date().getTime() : new Date(deleteDate).getTime()
-    }
-
-    saveRevision () {
-      const newRev = this.generateRevisionHash()
-
-      if (newRev !== this.rev) {
-        this.history.push(this.rev)
-        this.rev = newRev
-      }
-    }
-
-    generateRevisionHash () {
-      const hashData = {}
-
-      for (let field of REVISABLE_FIELDS) {
-        hashData[field] = this[field]
-      }
-      if (this.history.length) {
-        hashData.parent = this.history[this.history.length - 1]
-      }
-
-      return CryptoJS.SHA3(JSON.stringify(hashData), { outputLength: 32 }).toString()
-    }
-  }
-})()
+const hw = {}
 
 // Encoder than can be passed to crypto-js to stringify the hash
 hw.encoder = function (requireSymbols) {
@@ -170,7 +123,7 @@ hw.encoder = function (requireSymbols) {
       }
     }
 
-    return CryptoJS.lib.WordArray.create(words, str.length >>> 1)
+    return WordArray.create(words, str.length >>> 1)
   }
 
   /* Make sure the number is exactly `len` characters by padding it with 0s. Note that `len`s
@@ -195,6 +148,8 @@ hw.getDomainInfo = function (url) {
 hw.getHashword = function (domain, masterPassword, settings) {
   const key = masterPassword + '@' + domain.toLowerCase() + '+' + settings.generation
 
-  return CryptoJS.SHA3(key, { outputLength: settings.pwLength * 4 })
+  return SHA3(key, { outputLength: settings.pwLength * 4 })
         .toString(hw.encoder(settings.symbols))
 }
+
+module.exports = hw

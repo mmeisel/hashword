@@ -1,10 +1,13 @@
-/* global hwRules, hwStorage */
+const angular = require('angular')
+const rules = require('../rules')
+const storage = require('./storage')
 
-angular.module('sync', [])
-.service('syncService', ['$http', function ($http) {
+const sync = angular.module('sync', [])
+
+sync.service('syncService', ['$http', function ($http) {
   this.getDomainsToSync = function (serverUrl) {
     return Promise.all([
-      hwStorage.getAll(),
+      storage.getAll(),
       $http.get(`${serverUrl}/sites`)
     ])
     .then(results => {
@@ -41,15 +44,15 @@ angular.module('sync', [])
           return domainsToSync
         }
 
-        return hwStorage.set(results.changed)
-          .then(hwRules.resetRules)
+        return storage.set(results.changed)
+          .then(rules.resetRules)
           .then(() => domainsToSync)
         // TODO: deal with conflicts
       })
   }
 
   this.sync = function () {
-    return hwStorage.getOptions().then(options => {
+    return storage.getOptions().then(options => {
       if (!options.useServer) {
         return {}
       }
@@ -60,3 +63,5 @@ angular.module('sync', [])
     })
   }
 }])
+
+module.exports = 'sync'

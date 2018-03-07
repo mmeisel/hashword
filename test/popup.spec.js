@@ -1,10 +1,19 @@
 /* eslint-env mocha */
-/* global expect, inject, hw, hwRules, hwStorage, sinon */
+/* global expect, inject, sinon */
+
+const angular = require('angular')
+
+require('../node_modules/angular-mocks/angular-mocks.js')
+require('../src/popup')
+
+const rules = require('../src/rules')
+const Settings = require('../src/common/settings')
+const storage = require('../src/common/storage')
 
 const sandbox = sinon.createSandbox()
 
 describe('popupService', () => {
-  beforeEach(module('popup'))
+  beforeEach(angular.mock.module('popup'))
 
   const invalidProtocols = ['file', 'chrome']
 
@@ -16,7 +25,7 @@ describe('popupService', () => {
         // For getActiveTab()
         chrome.tabs.query.yields([{ id: 1, url: `${protocol}://ignore-me` }])
         // For getSettings() (shouldn't be used)
-        sandbox.stub(hwStorage, 'get').returns(Promise.resolve({}))
+        sandbox.stub(storage, 'get').returns(Promise.resolve({}))
         // For checkActive() (shouldn't be used)
         chrome.tabs.executeScript.yields(null)
       })
@@ -44,7 +53,7 @@ describe('popupService', () => {
   validNoSubdomain.forEach(data => {
     const newDescriptor = data.isNewDomain ? 'new' : 'existing'
     const resetRulesDescriptor = data.isNewDomain ? '' : 'not '
-    const expectedSettings = new hw.Settings(data.isNewDomain ? {} : {
+    const expectedSettings = new Settings(data.isNewDomain ? {} : {
       symbols: false,
       generation: 2,
       createDate: new Date().getTime()
@@ -64,7 +73,7 @@ describe('popupService', () => {
         // For getActiveTab()
         chrome.tabs.query.yields([{ id: 1, url: `${data.protocol}://${data.domain}` }])
         // For getSettings()
-        sandbox.stub(hwStorage, 'get').returns(Promise.resolve(storageResponse))
+        sandbox.stub(storage, 'get').returns(Promise.resolve(storageResponse))
         // For checkActive()
         chrome.tabs.executeScript.yields(null)
       })
@@ -87,8 +96,8 @@ describe('popupService', () => {
       })
 
       it(`should save with expected settings and ${resetRulesDescriptor}reset rules`, () => {
-        const setOneStub = sandbox.stub(hwStorage, 'setOne').returns(Promise.resolve())
-        const resetRulesStub = sandbox.stub(hwRules, 'resetRules')
+        const setOneStub = sandbox.stub(storage, 'setOne').returns(Promise.resolve())
+        const resetRulesStub = sandbox.stub(rules, 'resetRules')
 
         return popupService.initPromise
           .then(() => popupService.saveSettings())
@@ -118,7 +127,7 @@ describe('popupService', () => {
       // For getActiveTab()
       chrome.tabs.query.yields([{ id: 1, url: 'https://sub.example.com' }])
       // For getSettings()
-      sandbox.stub(hwStorage, 'get').returns(Promise.resolve({}))
+      sandbox.stub(storage, 'get').returns(Promise.resolve({}))
       // For checkActive()
       chrome.tabs.executeScript.yields(null)
     })
@@ -151,7 +160,7 @@ describe('popupService', () => {
   })
 
   describe('on https://sub.example.com (only subdomain has settings)', () => {
-    const expectedSettings = new hw.Settings({
+    const expectedSettings = new Settings({
       symbols: false,
       generation: 2,
       createDate: new Date().getTime()
@@ -163,7 +172,7 @@ describe('popupService', () => {
       // For getActiveTab()
       chrome.tabs.query.yields([{ id: 1, url: 'https://sub.example.com' }])
       // For getSettings()
-      sandbox.stub(hwStorage, 'get').returns(Promise.resolve({ 'sub.example.com': expectedSettings }))
+      sandbox.stub(storage, 'get').returns(Promise.resolve({ 'sub.example.com': expectedSettings }))
       // For checkActive()
       chrome.tabs.executeScript.yields(null)
     })
@@ -197,13 +206,13 @@ describe('popupService', () => {
   })
 
   describe('on https://sub.example.com (both subdomain and tld have settings)', () => {
-    const expectedSubSettings = new hw.Settings({
+    const expectedSubSettings = new Settings({
       symbols: false,
       generation: 3,
       createDate: new Date().getTime()
     })
 
-    const expectedTldSettings = new hw.Settings({
+    const expectedTldSettings = new Settings({
       generation: 2,
       createDate: new Date().getTime()
     })
@@ -214,7 +223,7 @@ describe('popupService', () => {
       // For getActiveTab()
       chrome.tabs.query.yields([{ id: 1, url: 'https://sub.example.com' }])
       // For getSettings()
-      sandbox.stub(hwStorage, 'get').returns(Promise.resolve({
+      sandbox.stub(storage, 'get').returns(Promise.resolve({
         'example.com': expectedTldSettings,
         'sub.example.com': expectedSubSettings
       }))
@@ -250,7 +259,7 @@ describe('popupService', () => {
     })
 
     it('should save the active domain with current settings', () => {
-      const setOneStub = sandbox.stub(hwStorage, 'setOne').returns(Promise.resolve())
+      const setOneStub = sandbox.stub(storage, 'setOne').returns(Promise.resolve())
 
       return popupService.initPromise
         .then(() => popupService.saveSettings())
@@ -262,7 +271,7 @@ describe('popupService', () => {
     })
 
     it('should save the active domain with provided settings', () => {
-      const setOneStub = sandbox.stub(hwStorage, 'setOne').returns(Promise.resolve())
+      const setOneStub = sandbox.stub(storage, 'setOne').returns(Promise.resolve())
 
       return popupService.initPromise
         .then(() => popupService.saveSettings(expectedTldSettings))

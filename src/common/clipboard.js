@@ -1,5 +1,7 @@
-angular.module('clipboard', [])
-.directive('clipboard', function () {
+const angular = require('angular')
+const clipboard = angular.module('clipboard', [])
+
+clipboard.directive('clipboard', function () {
   return {
     link: linkFn,
     restrict: 'E',
@@ -24,3 +26,5 @@ angular.module('clipboard', [])
     }
   }
 })
+
+module.exports = 'clipboard'

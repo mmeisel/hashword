@@ -1,8 +1,5 @@
-// Global namespace
-var hwStorage = {}
-
-;(function () {
-  hwStorage.get = function (domains, includeDeleted = false) {
+const storage = {
+  get (domains, includeDeleted = false) {
     return new Promise((resolve, reject) => {
       chrome.storage.local.get(domains, items => {
         if (chrome.runtime.lastError) {
@@ -12,13 +9,13 @@ var hwStorage = {}
         }
       })
     })
-  }
+  },
 
-  hwStorage.getAll = function (includeDeleted = false) {
-    return hwStorage.get(null, includeDeleted)
-  }
+  getAll (includeDeleted = false) {
+    return storage.get(null, includeDeleted)
+  },
 
-  hwStorage.getOptions = function () {
+  getOptions () {
     return new Promise((resolve, reject) => {
       // Note that options are stored in sync storage
       chrome.storage.sync.get('options', items => {
@@ -29,9 +26,9 @@ var hwStorage = {}
         }
       })
     })
-  }
+  },
 
-  hwStorage.set = function (items) {
+  set (items) {
     return new Promise((resolve, reject) => {
       chrome.storage.local.set(items, () => {
         if (chrome.runtime.lastError) {
@@ -41,16 +38,16 @@ var hwStorage = {}
         }
       })
     })
-  }
+  },
 
-  hwStorage.setOne = function (domain, settings) {
+  setOne (domain, settings) {
     const items = {}
 
     items[domain] = settings
-    return hwStorage.set(items)
-  }
+    return storage.set(items)
+  },
 
-  hwStorage.setOptions = function (options) {
+  setOptions (options) {
     const items = { options }
 
     return new Promise((resolve, reject) => {
@@ -63,18 +60,20 @@ var hwStorage = {}
       })
     })
   }
+}
 
-  function removeDeleted (items) {
-    const filteredItems = {}
+function removeDeleted (items) {
+  const filteredItems = {}
 
-    Object.keys(items).forEach(domain => {
-      const settings = items[domain]
+  Object.keys(items).forEach(domain => {
+    const settings = items[domain]
 
-      if (settings.deleteDate == null) {
-        filteredItems[domain] = settings
-      }
-    })
+    if (settings.deleteDate == null) {
+      filteredItems[domain] = settings
+    }
+  })
 
-    return filteredItems
-  }
-})()
+  return filteredItems
+}
+
+module.exports = storage

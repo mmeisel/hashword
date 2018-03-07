@@ -1,6 +1,8 @@
-/* global hwStorage */
+const angular = require('angular')
+const storage = require('./common/storage')
+const sync = require('./common/sync')
 
-angular.module('options', [])
+angular.module('options', [sync])
 
 .component('optionsForm', {
   controller: 'OptionsFormController',
@@ -12,7 +14,7 @@ angular.module('options', [])
   function ($scope, syncService) {
     this.options = {}
 
-    hwStorage.getOptions().then(options => {
+    storage.getOptions().then(options => {
       console.log(options)
       this.options = options || { useServer: false }
       $scope.$apply()
@@ -21,7 +23,7 @@ angular.module('options', [])
     // TODO: handle errors
 
     this.saveOptions = function () {
-      hwStorage.setOptions(this.options)
+      storage.setOptions(this.options)
       // TODO: Indicate successful save to user
       .then(() => {
         console.log(this.options, 'saved')

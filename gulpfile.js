@@ -1,21 +1,26 @@
 const gulp = require('gulp')
+const browserify = require('browserify')
 const del = require('del')
 const exec = require('child_process').exec
 const KarmaServer = require('karma').Server
-const glob = require('glob')
 const path = require('path')
-const streamqueue = require('streamqueue')
+const buffer = require('vinyl-buffer')
+const ngHtml2Js = require('browserify-ng-html2js')
+const sourceStream = require('vinyl-source-stream')
+const watchify = require('watchify')
 const $ = require('gulp-load-plugins')()
 
 const src = {
-  assets: ['lib/{fonts,images}/**/*', 'src/{fonts,images}/**/*'],
+  apps: ['background', 'options', 'popup', 'site-list'],
+  assets: ['vendor/**/*.woff2', 'src/images/**/*'],
   chrome: ['src/chrome/**/*'],
-  css: ['lib/**/*.css', 'src/**/*.css'],
-  js: ['src/**/*.js', '!src/common/**/*'],
-  html: ['src/**/*.html', '!src/common/**/*'],
-  commonTemplates: ['src/common/**/*.html'],
-  commonJs: ['src/common/**/*.js'],
-  libJs: ['lib/**/*.js']
+  css: [
+    'node_modules/angular/angular-csp.css',
+    'vendor/**/*.css',
+    'src/**/*.css'
+  ],
+  html: ['src/**/*.html', '!src/**/*.tmpl.html'],
+  js: ['src/**/*.js']
 }
 
 const outputdir = 'build'
@@ -32,27 +37,29 @@ const uglifyOptions = {
   compress: { negate_iife: false }
 }
 
-gulp.task('lib', function () {
-  gulp.src(src.libJs)
-    .pipe($.concat('lib.js'))
-    .pipe(gulp.dest(outputdir))
-})
+src.apps.forEach(app => {
+  const browserifyArgs = { entries: `./src/${app}.js`, debug: true }
 
-// Merge common
-gulp.task('common', function () {
-  const commonJs = gulp.src(src.commonJs)
+  gulp.task(`build-${app}`, () => {
+    return getBrowserifyBuild()
+  })
 
-  const templates = gulp.src(src.commonTemplates)
-    .pipe($.htmlmin(htmlminOptions))
-    .pipe($.angularTemplatecache({ module: 'templates', standalone: true }))
+  gulp.task(`watch-${app}`, () => {
+    return watchify(getBrowserifyBuild())
+  })
 
-  streamqueue({ objectMode: true }, commonJs, templates)
-    .pipe($.sourcemaps.init())
-    .pipe($.concat('common.js'))
-    .pipe($.babel())
-    .pipe($.uglify(uglifyOptions))
-    .pipe($.sourcemaps.write('maps'))
-    .pipe(gulp.dest(outputdir))
+  function getBrowserifyBuild () {
+    return browserify(browserifyArgs)
+      .transform(ngHtml2Js({ extension: 'tmpl.html' })) // TODO: run htmlmin here?
+      .transform('babelify', { presets: ['es2015'] })
+      .bundle()
+      .pipe(sourceStream(`${app}.js`))
+      .pipe(buffer())
+      .pipe($.sourcemaps.init())
+      .pipe($.uglify(uglifyOptions))
+      .pipe($.sourcemaps.write('./maps'))
+      .pipe(gulp.dest(outputdir))
+  }
 })
 
 gulp.task('html', function () {
@@ -61,14 +68,9 @@ gulp.task('html', function () {
     .pipe(gulp.dest(outputdir))
 })
 
-gulp.task('scripts', ['lib', 'common'], function () {
-  gulp.src(src.js)
-    .pipe($.sourcemaps.init())
-    .pipe($.babel())
-    .pipe($.uglify(uglifyOptions))
-    .pipe($.sourcemaps.write('maps'))
-    .pipe(gulp.dest(outputdir))
-})
+// TODO: missing check-active.js right now (any other non-app standalone scripts? give them their
+//       own directory?)
+gulp.task('scripts', src.apps.map(app => `build-${app}`))
 
 gulp.task('css', function () {
   gulp.src(src.css)
@@ -106,11 +108,9 @@ gulp.task('reload', function (cb) {
 })
 
 gulp.task('watch', allTasks, function () {
-  gulp.watch(src.commonJs, ['common', 'reload'])
-  gulp.watch(src.commonTemplates, ['common', 'reload'])
-  gulp.watch(src.libJs, ['lib', 'reload'])
   gulp.watch(src.html, ['html', 'reload'])
-  gulp.watch(src.js, ['scripts', 'reload'])
+  gulp.watch(src.js, src.apps.map(app => `watch-${app}`).concat(['reload']))
+  // TODO: other JS files
   gulp.watch(src.css, ['css', 'reload'])
   gulp.watch(src.chrome, ['chrome', 'reload'])
   gulp.watch(src.assets, ['assets', 'reload'])
@@ -124,30 +124,15 @@ gulp.task('package', allTasks, function () {
     .pipe(gulp.dest('dist'))
 })
 
-gulp.task('test', allTasks, function (done) {
-  glob('./test/**/*.conf.js', (err, files) => {
-    if (err == null && files.length) {
-      karmaRunner(files).then(done)
-    }
-  })
-
-  function karmaRunner (configFiles) {
-    if (!configFiles.length) {
-      return Promise.resolve()
-    }
-
-    return new Promise(resolve => {
-      new KarmaServer(
-        {
-          configFile: path.resolve(__dirname, configFiles[0]),
-          singleRun: true
-        },
-        resolve
-      )
-      .start()
-    })
-    .then(() => karmaRunner(configFiles.slice(1)))
-  }
+gulp.task('test', function (done) {
+  new KarmaServer(
+    {
+      configFile: path.resolve(__dirname, 'test/karma.conf.js'),
+      singleRun: true
+    },
+    done
+  )
+  .start()
 })
 
 // Regular build

@@ -1,6 +1,13 @@
-/* global hw, hwRules, hwStorage */
+const angular = require('angular')
+const clipboard = require('./common/clipboard')
+const filters = require('./common/filters')
+const hw = require('./common/hashword')
+const rules = require('./rules')
+const Settings = require('./common/settings')
+const settingsEditor = require('./common/settings-editor')
+const storage = require('./common/storage')
 
-angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
+angular.module('popup', [clipboard, filters, settingsEditor])
 
 .constant('PopupModes', {
   LOADING: 'LOADING',
@@ -61,10 +68,10 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
       allDomains.push(svc.domainInfo.tld)
     }
 
-    return hwStorage.get(allDomains).then(items => {
+    return storage.get(allDomains).then(items => {
       svc.allSettings = {}
       allDomains.forEach(domain => {
-        svc.allSettings[domain] = new hw.Settings(items[domain])
+        svc.allSettings[domain] = new Settings(items[domain])
       })
 
       // Only use the full hostname as the key if there are already settings for it,
@@ -128,11 +135,11 @@ angular.module('popup', ['clipboard', 'filters', 'settings-editor'])
     }
     svc.settings.saveRevision()
 
-    return hwStorage.setOne(svc.activeDomain, svc.settings).then(() => {
+    return storage.setOne(svc.activeDomain, svc.settings).then(() => {
       // TODO: handle errors
       // If it's a new domain, reset the rules for which icon to show
       if (isNewDomain) {
-        hwRules.resetRules()
+        rules.resetRules()
       }
     })
   }

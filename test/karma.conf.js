@@ -6,17 +6,10 @@ module.exports = function (config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha', 'chai', 'sinon', 'sinon-chrome'],
+    frameworks: ['browserify', 'mocha', 'chai', 'sinon', 'sinon-chrome'],
 
     // list of files / patterns to load in the browser
-    files: [
-      '../build/lib.js',
-      '../node_modules/angular-mocks/angular-mocks.js',
-      '../build/common.js',
-      '../build/rules.js',
-      '../build/popup.js',
-      './popup.spec.js'
-    ],
+    files: ['./*.spec.js'],
 
     // list of files to exclude
     exclude: [
@@ -25,6 +18,12 @@ module.exports = function (config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+      './*.spec.js': ['browserify']
+    },
+
+    browserify: {
+      debug: true,
+      transform: ['browserify-ng-html2js', ['babelify', { presets: ['es2015'] }]]
     },
 
     // test results reporter to use
