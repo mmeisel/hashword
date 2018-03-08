@@ -17,14 +17,7 @@ angular.module('popup', [
   settingsEditor
 ])
 
-.constant('PopupModes', {
-  LOADING: 'LOADING',
-  ERROR: 'ERROR',
-  READY: 'READY',
-  EDITING: 'EDITING'
-})
-
-.service('popupService', ['$timeout', 'PopupModes', popupService])
+.service('popupService', popupService)
 
 .component('popupForm', {
   controller: ['$scope', 'popupService', function ($scope, popupService) {
@@ -35,7 +28,7 @@ angular.module('popup', [
 })
 
 .component('popupPasswordForm', {
-  controller: ['$scope', 'popupService', 'PopupModes', PopupPasswordFormController],
+  controller: ['$scope', 'popupService', PopupPasswordFormController],
   templateUrl: popupPasswordFormTemplate
 })
 

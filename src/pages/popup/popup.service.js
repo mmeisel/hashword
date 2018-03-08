@@ -4,43 +4,45 @@ const rules = require('../../lib/rules')
 const Settings = require('../../lib/settings')
 const storage = require('../../lib/storage')
 
-function popupService ($timeout, PopupModes) {
-  const svc = this
+const PopupModes = {
+  LOADING: 'LOADING',
+  ERROR: 'ERROR',
+  READY: 'READY',
+  EDITING: 'EDITING'
+}
 
-  angular.extend(svc, {
-    tabId: null,
-    mode: PopupModes.LOADING,
-    error: null,
-    domainInfo: null,
-    allSettings: null,
-    activeDomain: null,
-    foundPasswordField: null,
-    settings: null,
-    hasSubdomain,
-    changeDomain,
-    showSettings,
-    hideSettings,
-    saveSettings,
-    updateAccessDate
-  })
+class PopupService {
+  constructor () {
+    Object.assign(this, {
+      tabId: null,
+      mode: PopupModes.LOADING,
+      error: null,
+      domainInfo: null,
+      allSettings: null,
+      activeDomain: null,
+      foundPasswordField: null,
+      settings: null,
+      PopupModes
+    })
 
-  svc.initPromise = getActiveTab()
-    .then(() => Promise.all([getSettings(), checkActive()]))
-    .then(() => (svc.mode = PopupModes.READY))
-    .catch(setError)
-
-  function setError (err) {
-    console.error(err.message)
-    svc.mode = PopupModes.ERROR
-    svc.error = typeof (err.message) === 'string' ? err.message : 'Something went wrong!'
+    this.initPromise = this.getActiveTab()
+      .then(() => Promise.all([this.getSettings(), this.checkActive()]))
+      .then(() => (this.mode = PopupModes.READY))
+      .catch(this.setError.bind(this))
   }
 
-  function getActiveTab () {
+  setError (err) {
+    console.error(err.message)
+    this.mode = PopupModes.ERROR
+    this.error = typeof (err.message) === 'string' ? err.message : 'Something went wrong!'
+  }
+
+  getActiveTab () {
     return new Promise((resolve, reject) => {
       chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
         if (tabs.length && tabs[0].url && tabs[0].url.indexOf('http') === 0) {
-          svc.tabId = tabs[0].id
-          svc.domainInfo = hw.getDomainInfo(tabs[0].url)
+          this.tabId = tabs[0].id
+          this.domainInfo = hw.getDomainInfo(tabs[0].url)
           resolve()
         } else {
           reject(new Error('Hashword cannot be used on this page.'))
@@ -49,81 +51,81 @@ function popupService ($timeout, PopupModes) {
     })
   }
 
-  function getSettings () {
-    const allDomains = [svc.domainInfo.name]
+  getSettings () {
+    const allDomains = [this.domainInfo.name]
 
-    if (svc.domainInfo.tld !== svc.domainInfo.name) {
-      allDomains.push(svc.domainInfo.tld)
+    if (this.domainInfo.tld !== this.domainInfo.name) {
+      allDomains.push(this.domainInfo.tld)
     }
 
     return storage.get(allDomains).then(items => {
-      svc.allSettings = {}
+      this.allSettings = {}
       allDomains.forEach(domain => {
-        svc.allSettings[domain] = new Settings(items[domain])
+        this.allSettings[domain] = new Settings(items[domain])
       })
 
       // Only use the full hostname as the key if there are already settings for it,
       // otherwise fall back to the effective TLD. In other words, the effective TLD
       // is the default unless the user specifically selects the full hostname
       // (or did so in the past).
-      changeDomain(items[svc.domainInfo.name] ? svc.domainInfo.name : svc.domainInfo.tld)
+      this.changeDomain(items[this.domainInfo.name] ? this.domainInfo.name : this.domainInfo.tld)
     })
   }
 
-  function checkActive () {
+  checkActive () {
     return new Promise(resolve => {
       // Ask the page to tell us if there's a password field focused on it or not
-      chrome.tabs.executeScript(svc.tabId,
+      chrome.tabs.executeScript(this.tabId,
         {
           file: 'inject/check-active.js',
           allFrames: true
         },
         results => {
           if (!chrome.runtime.lastError && results) {
-            svc.foundPasswordField = results.reduce((prev, cur) => prev || cur)
+            this.foundPasswordField = results.reduce((prev, cur) => prev || cur)
           } else {
-            svc.foundPasswordField = false
+            this.foundPasswordField = false
           }
           resolve()
         })
     })
   }
 
-  function hasSubdomain () {
-    return svc.domainInfo && svc.domainInfo.tld !== svc.domainInfo.name &&
-            ('www.' + svc.domainInfo.tld) !== svc.domainInfo.name
+  hasSubdomain () {
+    return this.domainInfo && this.domainInfo.tld !== this.domainInfo.name &&
+            ('www.' + this.domainInfo.tld) !== this.domainInfo.name
   }
 
-  function changeDomain (newDomain) {
-    svc.activeDomain = newDomain
-    svc.settings = svc.allSettings[newDomain]
+  changeDomain (newDomain) {
+    this.activeDomain = newDomain
+    this.settings = this.allSettings[newDomain]
   }
 
-  function showSettings () {
-    svc.mode = PopupModes.EDITING
+  showSettings () {
+    this.mode = PopupModes.EDITING
   }
 
-  function hideSettings () {
-    svc.mode = PopupModes.READY
+  hideSettings () {
+    this.mode = PopupModes.READY
   }
 
     // Save settings, sets createDate for new domains.
-  function saveSettings (newSettings) {
+  saveSettings (newSettings) {
     if (newSettings != null) {
       const newSettingsCopy = angular.copy(newSettings)
 
-      svc.allSettings[svc.activeDomain] = newSettingsCopy
-      svc.settings = newSettingsCopy
+      this.allSettings[this.activeDomain] = newSettingsCopy
+      this.settings = newSettingsCopy
     }
 
-    const isNewDomain = svc.settings.createDate == null
+    const isNewDomain = this.settings.createDate == null
 
     if (isNewDomain) {
-      svc.settings.setCreateDate()
+      this.settings.setCreateDate()
     }
-    svc.settings.saveRevision()
+    this.settings.saveRevision()
 
-    return storage.setOne(svc.activeDomain, svc.settings).then(() => {
+    return storage.setOne(this.activeDomain, this.settings).then(() => {
       // TODO: handle errors
       // If it's a new domain, reset the rules for which icon to show
       if (isNewDomain) {
@@ -132,10 +134,10 @@ function popupService ($timeout, PopupModes) {
     })
   }
 
-  function updateAccessDate () {
-    svc.settings.setAccessDate()
-    saveSettings()
+  updateAccessDate () {
+    this.settings.setAccessDate()
+    this.saveSettings()
   }
 }
 
-module.exports = popupService
+module.exports = PopupService

@@ -1,7 +1,7 @@
 const hw = require('../../lib/hashword')
 
-function PopupPasswordFormController ($scope, popupService, PopupModes) {
-  $scope.PopupModes = PopupModes
+function PopupPasswordFormController ($scope, popupService) {
+  $scope.PopupModes = popupService.PopupModes
   $scope.state = {
     domain: popupService.activeDomain,
     password: ''

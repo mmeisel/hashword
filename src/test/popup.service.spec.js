@@ -1,26 +1,19 @@
 /* eslint-env mocha */
-/* global expect, inject, sinon */
-
-const angular = require('angular')
-
-require('angular-mocks')
-require('../pages/popup/popup')
+/* global expect, sinon */
 
 const rules = require('../lib/rules')
 const Settings = require('../lib/settings')
 const storage = require('../lib/storage')
+const PopupService = require('../pages/popup/popup.service')
 
 const sandbox = sinon.createSandbox()
+let popupService
 
 describe('popupService', () => {
-  beforeEach(angular.mock.module('popup'))
-
   const invalidProtocols = ['file', 'chrome']
 
   invalidProtocols.forEach(protocol => {
     describe(`on a ${protocol} tab`, () => {
-      let popupService
-
       beforeEach(() => {
         // For getActiveTab()
         chrome.tabs.query.yields([{ id: 1, url: `${protocol}://ignore-me` }])
@@ -30,7 +23,7 @@ describe('popupService', () => {
         chrome.tabs.executeScript.yields(null)
       })
 
-      beforeEach(inject(_popupService_ => (popupService = _popupService_)))
+      beforeEach(() => (popupService = new PopupService()))
 
       it('should enter the ERROR state', () => {
         expect(popupService.mode).to.equal('LOADING')
@@ -67,8 +60,6 @@ describe('popupService', () => {
     }
 
     describe(`on ${data.protocol}://${data.domain} (${newDescriptor}, no subdomain)`, () => {
-      let popupService
-
       beforeEach(() => {
         // For getActiveTab()
         chrome.tabs.query.yields([{ id: 1, url: `${data.protocol}://${data.domain}` }])
@@ -78,7 +69,7 @@ describe('popupService', () => {
         chrome.tabs.executeScript.yields(null)
       })
 
-      beforeEach(inject(_popupService_ => (popupService = _popupService_)))
+      beforeEach(() => (popupService = new PopupService()))
 
       it('should initialize correctly', () => {
         expect(popupService.mode).to.equal('LOADING')
@@ -121,8 +112,6 @@ describe('popupService', () => {
   })
 
   describe('on https://sub.example.com (new, subdomain)', () => {
-    let popupService
-
     beforeEach(() => {
       // For getActiveTab()
       chrome.tabs.query.yields([{ id: 1, url: 'https://sub.example.com' }])
@@ -132,7 +121,7 @@ describe('popupService', () => {
       chrome.tabs.executeScript.yields(null)
     })
 
-    beforeEach(inject(_popupService_ => (popupService = _popupService_)))
+    beforeEach(() => (popupService = new PopupService()))
 
     it('should initialize with the TLD', () => {
       expect(popupService.mode).to.equal('LOADING')
@@ -166,8 +155,6 @@ describe('popupService', () => {
       createDate: new Date().getTime()
     })
 
-    let popupService
-
     beforeEach(() => {
       // For getActiveTab()
       chrome.tabs.query.yields([{ id: 1, url: 'https://sub.example.com' }])
@@ -177,7 +164,7 @@ describe('popupService', () => {
       chrome.tabs.executeScript.yields(null)
     })
 
-    beforeEach(inject(_popupService_ => (popupService = _popupService_)))
+    beforeEach(() => (popupService = new PopupService()))
 
     it('should initialize with the subdomain', () => {
       expect(popupService.mode).to.equal('LOADING')
@@ -217,8 +204,6 @@ describe('popupService', () => {
       createDate: new Date().getTime()
     })
 
-    let popupService
-
     beforeEach(() => {
       // For getActiveTab()
       chrome.tabs.query.yields([{ id: 1, url: 'https://sub.example.com' }])
@@ -231,7 +216,7 @@ describe('popupService', () => {
       chrome.tabs.executeScript.yields(null)
     })
 
-    beforeEach(inject(_popupService_ => (popupService = _popupService_)))
+    beforeEach(() => (popupService = new PopupService()))
 
     it('should initialize with the subdomain', () => {
       expect(popupService.mode).to.equal('LOADING')
