@@ -1,7 +1,7 @@
 const angular = require('angular')
 const hw = require('../../lib/hashword')
 const Settings = require('../../lib/settings')
-const settingsEditor = require('../../lib/settings-editor')
+const settingsEditor = require('../../lib/settings-editor.module')
 
 angular.module('index', [settingsEditor])
 .controller('HashwordCtrl', ['$scope', function ($scope) {

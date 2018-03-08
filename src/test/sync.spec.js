@@ -7,7 +7,7 @@ require('angular-mocks')
 
 const rules = require('../lib/rules')
 const storage = require('../lib/storage')
-const sync = require('../lib/sync')
+const sync = require('../lib/sync.module')
 
 const sandbox = sinon.createSandbox()
 

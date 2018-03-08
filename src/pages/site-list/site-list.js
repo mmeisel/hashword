@@ -1,11 +1,11 @@
 const angular = require('angular')
-const clipboard = require('../../lib/clipboard')
+const clipboard = require('../../lib/clipboard.module')
 const filters = require('../../lib/filters')
 const hw = require('../../lib/hashword')
 const rules = require('../../lib/rules')
 const Settings = require('../../lib/settings')
 const storage = require('../../lib/storage')
-const settingsEditor = require('../../lib/settings-editor')
+const settingsEditor = require('../../lib/settings-editor.module')
 const uiBootstrap = require('angular-ui-bootstrap')
 
 angular.module('site-list', [clipboard, filters, settingsEditor, uiBootstrap])

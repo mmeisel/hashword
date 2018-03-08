@@ -1,6 +1,6 @@
 const angular = require('angular')
 const storage = require('../../lib/storage')
-const sync = require('../../lib/sync')
+const sync = require('../../lib/sync.module')
 
 angular.module('options', [sync])
 

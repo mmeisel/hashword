@@ -1,6 +1,5 @@
 const SHA3 = require('crypto-js/sha3')
 const WordArray = require('crypto-js/lib-typedarrays')
-
 const tld = require('tldjs')
 
 const hw = {}
