@@ -157,7 +157,7 @@ angular.module('site-list', [clipboard, filters, settingsEditor, uiBootstrap])
 
             // TODO: if this is old data, it may need to be upgraded
             imported.data.forEach(site => {
-              converted[site.domain] = new hw.Storage(site.settings)
+              converted[site.domain] = new Settings(site.settings)
             })
 
             storage.set(converted).then(() => {
