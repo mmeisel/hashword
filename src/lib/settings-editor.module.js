@@ -1,10 +1,10 @@
 const angular = require('angular')
 const template = require('./settings-editor.tmpl.html')
 
-const settingsEditor = angular.module('settings-editor', [template])
+const settingsEditor = angular.module('settings-editor', [])
 
 settingsEditor.component('hwSettingsEditor', {
-  templateUrl: template,
+  template,
   bindings: {
     settings: '=',
     notes: '@'

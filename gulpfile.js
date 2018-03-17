@@ -6,7 +6,7 @@ const glob = require('glob')
 const KarmaServer = require('karma').Server
 const path = require('path')
 const buffer = require('vinyl-buffer')
-const ngHtml2Js = require('browserify-ng-html2js')
+const html2js = require('html2js-browserify')
 const sourceStream = require('vinyl-source-stream')
 const watchify = require('watchify')
 const $ = require('gulp-load-plugins')()
@@ -54,7 +54,7 @@ function getBrowserify (page, watch) {
     packageCache: {},
     plugin: watch ? [watchify] : []
   })
-  .transform(ngHtml2Js({ extension: 'tmpl.html' })) // TODO: run htmlmin here?
+  .transform(html2js, Object.assign({ minify: true }, htmlminOptions))
   // The babelOptions need to be copied as babelify mutates the object for some reason
   .transform('babelify', Object.assign({}, babelOptions))
 }

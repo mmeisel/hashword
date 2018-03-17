@@ -8,14 +8,7 @@ const PopupPasswordFormController = require('./popup-password-form.controller')
 const popupPasswordFormTemplate = require('./popup-password-form.tmpl.html')
 const popupSettingsFormTemplate = require('./popup-settings-form.tmpl.html')
 
-angular.module('popup', [
-  clipboard,
-  filters,
-  popupFormTemplate,
-  popupPasswordFormTemplate,
-  popupSettingsFormTemplate,
-  settingsEditor
-])
+angular.module('popup', [clipboard, filters, settingsEditor])
 
 .service('popupService', popupService)
 
@@ -24,12 +17,12 @@ angular.module('popup', [
     $scope.service = popupService
     popupService.initPromise.then(() => $scope.$apply())
   }],
-  templateUrl: popupFormTemplate
+  template: popupFormTemplate
 })
 
 .component('popupPasswordForm', {
   controller: ['$scope', 'popupService', PopupPasswordFormController],
-  templateUrl: popupPasswordFormTemplate
+  template: popupPasswordFormTemplate
 })
 
 .component('popupSettingsForm', {
@@ -44,5 +37,5 @@ angular.module('popup', [
       popupService.hideSettings()
     }
   }],
-  templateUrl: popupSettingsFormTemplate
+  template: popupSettingsFormTemplate
 })
