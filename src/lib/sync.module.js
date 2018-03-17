@@ -1,6 +1,7 @@
 const angular = require('angular')
 const rules = require('./rules')
 const storage = require('./storage')
+const ServerType = require('./client-options').ServerType
 
 const sync = angular.module('sync', [])
 

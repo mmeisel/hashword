@@ -7,13 +7,15 @@ const rules = require('../../lib/rules')
 const Settings = require('../../lib/settings')
 const storage = require('../../lib/storage')
 const settingsEditor = require('../../lib/settings-editor.module')
+const syncUi = require('../../lib/sync-ui.module')
 const deleteModalTemplate = require('./delete-modal.tmpl.html')
 const passwordModalTemplate = require('./password-modal.tmpl.html')
 const sortTriggerTemplate = require('./sort-trigger.tmpl.html')
 
-angular.module('site-list', [clipboard, filters, settingsEditor, uiBootstrap])
+angular.module('site-list', [clipboard, filters, settingsEditor, syncUi, uiBootstrap])
+
 .controller('SiteListController', ['$scope', '$uibModal', function ($scope, $uibModal) {
-  angular.extend($scope, {
+  Object.assign($scope, {
     predicate: ['domain'],
     reverse: false,
     search: {},

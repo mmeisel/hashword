@@ -34,15 +34,12 @@
   "incognito": "spanning",
   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC3ZajsSS+Z19eOXpwBhjvaQpnTtMz00+tWlidTKnopWmbpynsrTGJD8aDaoMufcPKhOPmsjL04EKX+L31WnDTOwvDZ/qcejS1cWnlOnLjwZqOMrhM0KraF+nD2PmWUFWOBi4O0r6oq3aJjrrQEoa7ZPZ8qnCkAAd7zB5ZgTWfadQIDAQAB",
   "minimum_chrome_version": "46",
-  "options_ui": {
-    "page": "pages/options/options.html",
-    "chrome_style": true
-  },
   "permissions": [
     "activeTab",
     "alarms",
     "clipboardWrite",
     "declarativeContent",
+    "identity",
     "storage"
   ]
 }

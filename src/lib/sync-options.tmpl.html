@@ -1,0 +1,29 @@
+<form ng-submit="$ctrl.save()">
+  <p>
+    <label>
+      <input type="radio" name="serverType" value="NONE" ng-model="form.serverType" />
+      Do not sync with other devices
+    </label>
+  </p>
+  <p>
+    <label>
+      <input type="radio" name="serverType" value="OFFICIAL" ng-model="form.serverType" ng-change="testServer()" />
+      Use the official Hashword server
+    </label>
+  </p>
+  <p>
+    <label>
+      <input type="radio" name="serverType" value="CUSTOM" ng-model="form.serverType" ng-change="testServer()" />
+      Use your own server (see <a href="https://github.com/mmeisel/hashword-server">GitHub</a>)
+    </label>
+    <br/>
+    <label ng-if="form.serverType == 'CUSTOM'">
+      URL <input type="text" name="customServerUrl" ng-model="form.customServerUrl" />
+    </label>
+  </p>
+  <p>
+    <input type="button" value="Cancel" ng-click="$ctrl.resetForm()" ng-disabled="form.working" />
+    <input type="submit" ng-value="form.serverType == 'NONE' ? 'Save Changes' : 'Login'" ng-disabled="form.working" />
+  </p>
+  <p ng-if="form.error" style="color: red">{{ form.error }}</p>
+</form>

@@ -1,3 +1,5 @@
+const ClientOptions = require('./client-options')
+
 const storage = {
   get (domains, includeDeleted = false) {
     return new Promise((resolve, reject) => {
@@ -5,7 +7,7 @@ const storage = {
         if (chrome.runtime.lastError) {
           reject(new Error(chrome.runtime.lastError.message))
         } else {
-          resolve(includeDeleted ? items : removeDeleted(items))
+          resolve(sanitize(items, includeDeleted))
         }
       })
     })
@@ -17,12 +19,13 @@ const storage = {
 
   getOptions () {
     return new Promise((resolve, reject) => {
-      // Note that options are stored in sync storage
-      chrome.storage.sync.get('options', items => {
+      // Note that the options key uses a character that's not valid in domain names to prevent
+      // conflicts
+      chrome.storage.local.get('#options', items => {
         if (chrome.runtime.lastError) {
           reject(new Error(chrome.runtime.lastError.message))
         } else {
-          resolve(items.options)
+          resolve(new ClientOptions(items.options))
         }
       })
     })
@@ -48,10 +51,10 @@ const storage = {
   },
 
   setOptions (options) {
-    const items = { options }
+    const items = { '#options': options }
 
     return new Promise((resolve, reject) => {
-      chrome.storage.sync.set(items, () => {
+      chrome.storage.local.set(items, () => {
         if (chrome.runtime.lastError) {
           reject(new Error(chrome.runtime.lastError.message))
         } else {
@@ -62,18 +65,27 @@ const storage = {
   }
 }
 
-function removeDeleted (items) {
-  const filteredItems = {}
+function sanitize (items, includeDeleted) {
+  // Make sure the options don't leak
+  if (items.hasOwnProperty('#options')) {
+    delete items['#options']
+  }
 
-  Object.keys(items).forEach(domain => {
-    const settings = items[domain]
+  if (!includeDeleted) {
+    const filteredItems = {}
 
-    if (settings.deleteDate == null) {
-      filteredItems[domain] = settings
-    }
-  })
+    Object.keys(items).forEach(domain => {
+      const settings = items[domain]
 
-  return filteredItems
+      if (settings.deleteDate == null) {
+        filteredItems[domain] = settings
+      }
+    })
+
+    return filteredItems
+  }
+
+  return items
 }
 
 module.exports = storage

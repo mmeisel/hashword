@@ -1,7 +1,13 @@
 const SHA3 = require('crypto-js/sha3')
 
-const REVISABLE_FIELDS = ['pwLength', 'symbols', 'generation', 'notes', 'deleteDate']
-const DEFAULTS = { pwLength: 16, symbols: true, generation: 1, notes: '', history: [] }
+const REVISABLE_FIELDS = Object.freeze(['pwLength', 'symbols', 'generation', 'notes', 'deleteDate'])
+const DEFAULTS = Object.freeze({
+  pwLength: 16,
+  symbols: true,
+  generation: 1,
+  notes: '',
+  history: []
+})
 
 class Settings {
   constructor (settings) {

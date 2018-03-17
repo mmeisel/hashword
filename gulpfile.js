@@ -17,6 +17,7 @@ const src = {
   chrome: ['src/chrome/**/*'],
   css: [
     'node_modules/angular/angular-csp.css',
+    'node_modules/angular-ui-bootstrap/ui-bootstrap-csp.css',
     'vendor/**/*.css',
     'src/**/*.css'
   ],
@@ -61,6 +62,7 @@ function getBrowserify (page, watch) {
 
 function browserifyBundle (page, instance) {
   return instance.bundle()
+    .on('error', error => console.error(error))
     .pipe(sourceStream(`${page}.js`))
     .pipe(buffer())
     .pipe($.sourcemaps.init(sourcemapsOptions))

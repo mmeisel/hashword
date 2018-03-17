@@ -5,6 +5,7 @@ const angular = require('angular')
 
 require('angular-mocks')
 
+const ClientOptions = require('../lib/client-options')
 const rules = require('../lib/rules')
 const storage = require('../lib/storage')
 const sync = require('../lib/sync.module')
@@ -13,18 +14,146 @@ const sandbox = sinon.createSandbox()
 
 describe('syncService', () => {
   let $httpBackend
+  let $timeout
   let syncService
 
   beforeEach(angular.mock.module(sync))
 
   beforeEach(inject($injector => {
     $httpBackend = $injector.get('$httpBackend')
+    $timeout = $injector.get('$timeout')
     syncService = $injector.get('syncService')
   }))
 
   afterEach(() => {
     $httpBackend.verifyNoOutstandingExpectation()
     $httpBackend.verifyNoOutstandingRequest()
+  })
+
+  describe('#checkStatus()', () => {
+    it('should report OFF status when serverType is NONE', () => {
+      const getOptionsStub = sandbox.stub(storage, 'getOptions')
+        .returns(Promise.resolve(new ClientOptions({ serverType: 'NONE' })))
+
+      // Should not be called
+      $httpBackend.whenGET('http://localhost/api/user').respond({})
+
+      return syncService.checkStatus().then(result => {
+        expect(result).to.have.property('status', 'OFF')
+        expect(getOptionsStub.calledOnce).to.equal(true)
+      })
+    })
+
+    it('should use the hard-coded URL when serverType is OFFICIAL', () => {
+      const getOptionsStub = sandbox.stub(storage, 'getOptions')
+        .returns(Promise.resolve(new ClientOptions({ serverType: 'OFFICIAL' })))
+
+      $httpBackend.whenGET('https://hashword.org/api/user').respond(403, {})
+      setTimeout(() => $httpBackend.flush(), 0)
+
+      return syncService.checkStatus().then(result => {
+        expect(getOptionsStub.calledOnce).to.equal(true)
+      })
+    })
+
+    it('should use the customServerUrl URL when serverType is CUSTOM', () => {
+      const getOptionsStub = sandbox.stub(storage, 'getOptions')
+        .returns(Promise.resolve(new ClientOptions({
+          serverType: 'CUSTOM',
+          customServerUrl: 'http://localhost'
+        })))
+
+      $httpBackend.whenGET('http://localhost/api/user').respond(403, {})
+      setTimeout(() => $httpBackend.flush(), 0)
+
+      return syncService.checkStatus().then(result => {
+        expect(getOptionsStub.calledOnce).to.equal(true)
+      })
+    })
+
+    it('should report CONNECTED status when the server responds with a 200', () => {
+      const getOptionsStub = sandbox.stub(storage, 'getOptions')
+        .returns(Promise.resolve(new ClientOptions({
+          serverType: 'CUSTOM',
+          customServerUrl: 'http://localhost'
+        })))
+      const user = { name: 'Michael' }
+
+      $httpBackend.whenGET('http://localhost/api/user').respond(user)
+      setTimeout(() => $httpBackend.flush(), 0)
+
+      return syncService.checkStatus().then(result => {
+        expect(result).to.have.property('status', 'CONNECTED')
+        expect(result).to.have.property('user').that.deep.equals(user)
+        expect(getOptionsStub.calledOnce).to.equal(true)
+      })
+    })
+
+    it('should report AUTH_REQUIRED status when the server responds with a 403', () => {
+      const getOptionsStub = sandbox.stub(storage, 'getOptions')
+        .returns(Promise.resolve(new ClientOptions({
+          serverType: 'CUSTOM',
+          customServerUrl: 'http://localhost'
+        })))
+
+      $httpBackend.whenGET('http://localhost/api/user').respond(403, {})
+      setTimeout(() => $httpBackend.flush(), 0)
+
+      return syncService.checkStatus().then(result => {
+        expect(result).to.have.property('status', 'AUTH_REQUIRED')
+        expect(getOptionsStub.calledOnce).to.equal(true)
+      })
+    })
+
+    it('should report CONNECTED status when the server responds with a 200', () => {
+      const getOptionsStub = sandbox.stub(storage, 'getOptions')
+        .returns(Promise.resolve(new ClientOptions({
+          serverType: 'CUSTOM',
+          customServerUrl: 'http://localhost'
+        })))
+      const user = { name: 'Michael' }
+
+      $httpBackend.whenGET('http://localhost/api/user').respond(user)
+      setTimeout(() => $httpBackend.flush(), 0)
+
+      return syncService.checkStatus().then(result => {
+        expect(result).to.have.property('status', 'CONNECTED')
+        expect(result).to.have.property('user').that.deep.equals(user)
+        expect(getOptionsStub.calledOnce).to.equal(true)
+      })
+    })
+
+    it('should report SERVER_UNAVAILABLE status when the server responds with a non-403 error', () => {
+      const getOptionsStub = sandbox.stub(storage, 'getOptions')
+        .returns(Promise.resolve(new ClientOptions({
+          serverType: 'CUSTOM',
+          customServerUrl: 'http://localhost'
+        })))
+
+      $httpBackend.whenGET('http://localhost/api/user').respond(500, {})
+      setTimeout(() => $httpBackend.flush(), 0)
+
+      return syncService.checkStatus().then(result => {
+        expect(result).to.have.property('status', 'SERVER_UNAVAILABLE')
+        expect(getOptionsStub.calledOnce).to.equal(true)
+      })
+    })
+
+    it('should report SERVER_UNAVAILABLE status when the request times out', () => {
+      const getOptionsStub = sandbox.stub(storage, 'getOptions')
+        .returns(Promise.resolve(new ClientOptions({
+          serverType: 'CUSTOM',
+          customServerUrl: 'http://localhost'
+        })))
+
+      $httpBackend.whenGET('http://localhost/api/user').respond({})
+      setTimeout(() => $timeout.flush(5001), 0)
+
+      return syncService.checkStatus().then(result => {
+        expect(result).to.have.property('status', 'SERVER_UNAVAILABLE')
+        expect(getOptionsStub.calledOnce).to.equal(true)
+      })
+    })
   })
 
   describe('#getDomainsToSync()', () => {
