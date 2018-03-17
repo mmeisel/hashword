@@ -5,7 +5,7 @@ const storage = require('./storage')
 const sync = angular.module('sync', [])
 
 sync.service('syncService', ['$http', function ($http) {
-  this.getDomainsToSync = function (serverUrl) {
+  this.getDomainsToSync = serverUrl => {
     return Promise.all([
       storage.getAll(),
       $http.get(`${serverUrl}/sites`)
@@ -30,7 +30,7 @@ sync.service('syncService', ['$http', function ($http) {
     })
   }
 
-  this.syncDomains = function (serverUrl, domainsToSync) {
+  this.syncDomains = (serverUrl, domainsToSync) => {
     if (!Object.keys(domainsToSync).length) {
       return Promise.resolve({})
     }
@@ -51,7 +51,7 @@ sync.service('syncService', ['$http', function ($http) {
       })
   }
 
-  this.sync = function () {
+  this.sync = () => {
     return storage.getOptions().then(options => {
       if (!options.useServer) {
         return {}
