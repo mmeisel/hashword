@@ -8,7 +8,7 @@ sync.service('syncService', ['$http', function ($http) {
   this.getDomainsToSync = serverUrl => {
     return Promise.all([
       storage.getAll(),
-      $http.get(`${serverUrl}/sites`)
+      $http.get(`${serverUrl}/api/sites`)
     ])
     .then(results => {
       const localDomainMap = results[0]
@@ -36,7 +36,7 @@ sync.service('syncService', ['$http', function ($http) {
     }
 
     // The $http call must be wrapped since it returns a $q instead of a real Promise
-    return Promise.resolve($http.patch(`${serverUrl}/sites`, domainsToSync))
+    return Promise.resolve($http.patch(`${serverUrl}/api/sites`, domainsToSync))
       .then(response => {
         const results = response.data
 

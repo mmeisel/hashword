@@ -96,7 +96,7 @@ describe('syncService', () => {
         syncDomains: sandbox.stub(syncService, 'syncDomains').returns(Promise.resolve(localSites))
       }
 
-      $httpBackend.whenGET('http://localhost/sites').respond(remoteSites)
+      $httpBackend.whenGET('http://localhost/api/sites').respond(remoteSites)
       setTimeout(() => $httpBackend.flush(), 0)
 
       return stubs
@@ -153,7 +153,7 @@ describe('syncService', () => {
         resetRules: sandbox.stub(rules, 'resetRules').returns(Promise.resolve())
       }
 
-      $httpBackend.whenPATCH('http://localhost/sites').respond(response)
+      $httpBackend.whenPATCH('http://localhost/api/sites').respond(response)
       setTimeout(() => $httpBackend.flush(), 0)
 
       return stubs
