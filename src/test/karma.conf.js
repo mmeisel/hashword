@@ -23,7 +23,7 @@ module.exports = function (config) {
 
     browserify: {
       debug: true,
-      transform: ['browserify-ng-html2js', ['babelify', { presets: ['es2015'] }]]
+      transform: [['html2js-browserify', { minify: true }], ['babelify', { presets: ['es2015'] }]]
     },
 
     // test results reporter to use
