@@ -28,6 +28,11 @@ describe('syncService', () => {
   })
 
   describe('#getDomainsToSync()', () => {
+    const options = new ClientOptions({
+      serverType: 'CUSTOM',
+      customServerUrl: 'http://localhost'
+    })
+
     it('should not select domains where the rev and accessDate match the server', () => {
       const sites = {
         'example.com': {
@@ -35,10 +40,9 @@ describe('syncService', () => {
           rev: '22222222'
         }
       }
-
       const stubs = setUpStubs(sites, sites)
 
-      return syncService.getDomainsToSync('http://localhost').then(toSync => {
+      return syncService.getDomainsToSync(options).then(toSync => {
         expect(stubs.storageGetAll.calledOnce).to.equal(true)
         expect(toSync).to.deep.equal({})
       })
@@ -61,7 +65,7 @@ describe('syncService', () => {
 
       const stubs = setUpStubs(localSites, remoteSites)
 
-      return syncService.getDomainsToSync('http://localhost').then(toSync => {
+      return syncService.getDomainsToSync(options).then(toSync => {
         expect(stubs.storageGetAll.calledOnce).to.equal(true)
         expect(toSync).to.deep.equal(localSites)
       })
@@ -84,7 +88,7 @@ describe('syncService', () => {
 
       const stubs = setUpStubs(localSites, remoteSites)
 
-      return syncService.getDomainsToSync('http://localhost').then(toSync => {
+      return syncService.getDomainsToSync(options).then(toSync => {
         expect(stubs.storageGetAll.calledOnce).to.equal(true)
         expect(toSync).to.deep.equal(localSites)
       })
@@ -96,7 +100,7 @@ describe('syncService', () => {
         syncDomains: sandbox.stub(syncService, 'syncDomains').returns(Promise.resolve(localSites))
       }
 
-      $httpBackend.whenGET('http://localhost/api/sites').respond(remoteSites)
+      $httpBackend.whenGET(`${options.serverUrl}/api/sites`).respond(remoteSites)
       setTimeout(() => $httpBackend.flush(), 0)
 
       return stubs
@@ -104,6 +108,11 @@ describe('syncService', () => {
   })
 
   describe('#syncDomains()', () => {
+    const options = new ClientOptions({
+      serverType: 'CUSTOM',
+      customServerUrl: 'http://localhost'
+    })
+
     it('should save changes from the server', () => {
       const localSites = {
         'example.com': {
@@ -139,7 +148,7 @@ describe('syncService', () => {
         changed: remoteSites
       })
 
-      return syncService.syncDomains('http://localhost', localSites).then(results => {
+      return syncService.syncDomains(options, localSites).then(results => {
         expect(stubs.storageSet.calledOnce).to.equal(true)
         expect(stubs.storageSet.getCalls()[0].args).to.deep.equal([remoteSites])
         expect(stubs.resetRules.calledOnce).to.equal(true)
@@ -153,7 +162,7 @@ describe('syncService', () => {
         resetRules: sandbox.stub(rules, 'resetRules').returns(Promise.resolve())
       }
 
-      $httpBackend.whenPATCH('http://localhost/api/sites').respond(response)
+      $httpBackend.whenPATCH(`${options.serverUrl}/api/sites`).respond(response)
       setTimeout(() => $httpBackend.flush(), 0)
 
       return stubs
@@ -183,11 +192,12 @@ describe('syncService', () => {
           rev: '22222222'
         }
       }
-
-      const getOptionsStub = sandbox.stub(storage, 'getOptions').returns(Promise.resolve({
+      const options = {
         useServer: true,
         serverUrl: 'http://localhost'
-      }))
+      }
+
+      const getOptionsStub = sandbox.stub(storage, 'getOptions').returns(Promise.resolve(options))
       const getDomainsStub = sandbox.stub(syncService, 'getDomainsToSync').returns(Promise.resolve(localSites))
       const syncDomainsStub = sandbox.stub(syncService, 'syncDomains').returns(Promise.resolve(localSites))
 
@@ -195,13 +205,14 @@ describe('syncService', () => {
         expect(getOptionsStub.calledOnce).to.equal(true)
         expect(getDomainsStub.calledOnce).to.equal(true)
         expect(syncDomainsStub.calledOnce).to.equal(true)
-        expect(syncDomainsStub.getCalls()[0].args).to.deep.equal(['http://localhost', localSites])
+        expect(syncDomainsStub.getCalls()[0].args).to.deep.equal([options, localSites])
         expect(result).to.deep.equal(localSites)
       })
     })
   })
 })
 
+// TODO: Test login and bearer token
 // TODO: test error states/propagation
 
 afterEach(() => sandbox.restore())
