@@ -2,102 +2,21 @@ const angular = require('angular')
 const uiBootstrap = require('angular-ui-bootstrap')
 const clipboard = require('../../lib/clipboard.module')
 const filters = require('../../lib/filters')
-const hw = require('../../lib/hashword')
 const rules = require('../../lib/rules')
 const Settings = require('../../lib/settings')
 const storage = require('../../lib/storage')
 const settingsEditor = require('../../lib/settings-editor.module')
 const syncUi = require('../../lib/sync-ui.module')
-const deleteModalTemplate = require('./delete-modal.tmpl.html')
-const passwordModalTemplate = require('./password-modal.tmpl.html')
+const SiteTableController = require('./site-table.controller')
+const siteTableTemplate = require('./site-table.tmpl.html')
 const sortTriggerTemplate = require('./sort-trigger.tmpl.html')
 
 angular.module('site-list', [clipboard, filters, settingsEditor, syncUi, uiBootstrap])
 
-.controller('SiteListController', ['$scope', '$uibModal', function ($scope, $uibModal) {
-  Object.assign($scope, {
-    predicate: ['domain'],
-    reverse: false,
-    search: {},
-    edit,
-    saveEditing,
-    cancelEditing,
-    deleteEditing,
-    copyPassword,
-    loadAllSites
-  })
-
-  return loadAllSites()
-
-  function edit (site) {
-    $scope.editing = angular.copy(site)
-  }
-
-  function saveEditing () {
-    if ($scope.editing) {
-      const edited = $scope.editing
-
-      edited.settings.saveRevision()
-      $scope.editing = null
-
-      return storage.setOne(edited.domain, edited.settings).then(() => {
-        // TODO: surface errors
-        const match = $scope.allSites.find(site => site.domain === edited.domain)
-
-        if (match != null) {
-          match.settings = edited.settings
-        }
-        $scope.$apply()
-      })
-    }
-  }
-
-  function cancelEditing () {
-    $scope.editing = null
-  }
-
-  function deleteEditing () {
-    if ($scope.editing) {
-      const edited = $scope.editing
-      const modal = $uibModal.open({
-        scope: $scope,
-        size: 'sm',
-        template: deleteModalTemplate
-      })
-
-      modal.result.then(() => {
-        edited.settings.setDeleteDate()
-        saveEditing().then(() => {
-          $scope.allSites = $scope.allSites.filter(site => site.domain !== edited.domain)
-          rules.resetRules()
-        })
-      })
-    }
-  }
-
-  function copyPassword () {
-    const modal = $uibModal.open({
-      size: 'sm',
-      template: passwordModalTemplate
-    })
-
-    modal.result.then(function (masterPassword) {
-      const pw = hw.getHashword($scope.editing.domain, masterPassword, $scope.editing.settings)
-
-      $scope.clipboardApi.copy(pw)
-    })
-  }
-
-  function loadAllSites () {
-    return storage.getAll().then(items => {
-      // TODO: surface errors
-      $scope.allSites = Object.keys(items).map(domain => {
-        return { domain, settings: new Settings(items[domain]) }
-      })
-      $scope.$apply()
-    })
-  }
-}])
+.component('siteTable', {
+  controller: ['$scope', '$uibModal', SiteTableController],
+  template: siteTableTemplate
+})
 
 .directive('hwSortTrigger', function () {
   const SECONDARY_SORT = 'domain'
