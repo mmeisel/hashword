@@ -1,4 +1,5 @@
 const angular = require('angular')
+const uiBootstrap = require('angular-ui-bootstrap')
 const clipboard = require('../../lib/clipboard.module')
 const filters = require('../../lib/filters')
 const hw = require('../../lib/hashword')
@@ -6,7 +7,9 @@ const rules = require('../../lib/rules')
 const Settings = require('../../lib/settings')
 const storage = require('../../lib/storage')
 const settingsEditor = require('../../lib/settings-editor.module')
-const uiBootstrap = require('angular-ui-bootstrap')
+const deleteModalTemplate = require('./delete-modal.tmpl.html')
+const passwordModalTemplate = require('./password-modal.tmpl.html')
+const sortTriggerTemplate = require('./sort-trigger.tmpl.html')
 
 angular.module('site-list', [clipboard, filters, settingsEditor, uiBootstrap])
 .controller('SiteListController', ['$scope', '$uibModal', function ($scope, $uibModal) {
@@ -57,7 +60,7 @@ angular.module('site-list', [clipboard, filters, settingsEditor, uiBootstrap])
       const modal = $uibModal.open({
         scope: $scope,
         size: 'sm',
-        templateUrl: 'delete-modal.html'
+        template: deleteModalTemplate
       })
 
       modal.result.then(() => {
@@ -73,7 +76,7 @@ angular.module('site-list', [clipboard, filters, settingsEditor, uiBootstrap])
   function copyPassword () {
     const modal = $uibModal.open({
       size: 'sm',
-      templateUrl: 'password-modal.html'
+      template: passwordModalTemplate
     })
 
     modal.result.then(function (masterPassword) {
@@ -99,7 +102,7 @@ angular.module('site-list', [clipboard, filters, settingsEditor, uiBootstrap])
 
   return {
     transclude: true,
-    templateUrl: 'sort-trigger.html',
+    template: sortTriggerTemplate,
     scope: {
       sortBy: '@hwSortTrigger'
     },

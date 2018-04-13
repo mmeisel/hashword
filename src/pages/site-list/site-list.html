@@ -81,44 +81,7 @@
         </div>
       </div>
     </div>
-    <script type="text/ng-template" id="sort-trigger.html">
-      <a href ng-click="setSort()" ng-transclude></a>
-      <span class="glyphicon"
-            ng-class="{ 'glyphicon-arrow-up': !$parent.reverse, 'glyphicon-arrow-down': $parent.reverse }"
-            ng-show="$parent.predicate[0] == sortBy">
-      </span>
-    </script>
   </div>
-
-  <script type="text/ng-template" id="password-modal.html">
-    <form ng-submit="$close(password)">
-      <div class="modal-body">
-        <input type="password" name="password" class="form-control"
-               placeholder="Master Password" autofocus
-               ng-model="password"/>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" ng-click="$dismiss()">Cancel</button>
-        <button type="submit" class="btn btn-primary">
-          <span class="glyphicon glyphicon-copy"></span> Copy
-        </button>
-      </div>
-    </form>
-  </script>
-
-  <script type="text/ng-template" id="delete-modal.html">
-    <form ng-submit="$close()">
-      <div class="modal-body">
-        <p>Are you sure you want to forget your settings for {{ editing.domain }}?</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" ng-click="$dismiss()">Cancel</button>
-        <button type="button" class="btn btn-danger" ng-click="$close()">
-          <span class="glyphicon glyphicon-trash"></span> Forget
-        </button>
-      </div>
-    </form>
-  </script>
 
   <script type="text/javascript" src="site-list.js"></script>
 </body>
