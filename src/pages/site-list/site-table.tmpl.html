@@ -43,14 +43,18 @@
       <table class="table table-hover" ng-if="($ctrl.allSites | filter:$ctrl.search.query).length">
         <thead>
           <tr>
-            <th hw-sort-trigger="domain">Domain</th>
-            <th hw-sort-trigger="settings.createDate">Created</th>
-            <th hw-sort-trigger="settings.accessDate">Last Used</th>
+            <th ng-repeat="col in $ctrl.sortableColumns">
+              <a href ng-click="$ctrl.changeSort(col.predicate)">{{ col.name }}</a>
+              <span class="glyphicon"
+                  ng-class="{ 'glyphicon-arrow-up': !$ctrl.reverse, 'glyphicon-arrow-down': $ctrl.reverse }"
+                  ng-show="$ctrl.predicates[0] == col.predicate">
+              </span>
+            </th>
             <th style="width: 40px"></th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="site in $ctrl.allSites | filter:$ctrl.search.query | orderBy:$ctrl.predicate:$ctrl.reverse track by site.domain"
+          <tr ng-repeat="site in $ctrl.allSites | filter:$ctrl.search.query | orderBy:$ctrl.predicates:$ctrl.reverse track by site.domain"
               ng-class="{ 'success': $ctrl.editing.domain == site.domain }"
               ng-click="$ctrl.edit(site)">
             <td>{{ site.domain }}<br/><small class="text-muted">{{ site.settings.notes }}</small></td>

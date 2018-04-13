@@ -6,11 +6,18 @@ const storage = require('../../lib/storage')
 const deleteModalTemplate = require('./delete-modal.tmpl.html')
 const passwordModalTemplate = require('./password-modal.tmpl.html')
 
+const SECONDARY_SORT = 'domain'
+
 class SiteTableController {
   constructor ($scope, $uibModal) {
     Object.assign(this, {
       editing: null,
-      predicate: ['domain'],
+      sortableColumns: [
+        { predicate: 'domain', name: 'Domain' },
+        { predicate: 'settings.createDate', name: 'Created' },
+        { predicate: 'settings.accessDate', name: 'Last Used' }
+      ],
+      predicates: ['domain'],
       reverse: false,
       search: {},
       scope: $scope,
@@ -18,6 +25,15 @@ class SiteTableController {
     })
 
     this.loadAllSites()
+  }
+
+  changeSort (predicate) {
+    if (predicate === this.predicates[0]) {
+      this.reverse = !this.reverse
+    } else {
+      this.predicates = predicate === SECONDARY_SORT ? [predicate] : [predicate, SECONDARY_SORT]
+      this.reverse = false
+    }
   }
 
   edit (site) {

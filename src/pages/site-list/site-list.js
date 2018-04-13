@@ -9,37 +9,12 @@ const settingsEditor = require('../../lib/settings-editor.module')
 const syncUi = require('../../lib/sync-ui.module')
 const SiteTableController = require('./site-table.controller')
 const siteTableTemplate = require('./site-table.tmpl.html')
-const sortTriggerTemplate = require('./sort-trigger.tmpl.html')
 
 angular.module('site-list', [clipboard, filters, settingsEditor, syncUi, uiBootstrap])
 
 .component('siteTable', {
   controller: ['$scope', '$uibModal', SiteTableController],
   template: siteTableTemplate
-})
-
-.directive('hwSortTrigger', function () {
-  const SECONDARY_SORT = 'domain'
-
-  return {
-    transclude: true,
-    template: sortTriggerTemplate,
-    scope: {
-      sortBy: '@hwSortTrigger'
-    },
-    controller: ['$scope', function ($scope) {
-      $scope.setSort = function () {
-        const parent = $scope.$parent
-
-        parent.reverse = parent.predicate[0] === $scope.sortBy && !parent.reverse
-        parent.predicate = [$scope.sortBy]
-        if ($scope.sortBy !== SECONDARY_SORT) {
-          // Secondary sort should always be ascending
-          parent.predicate.push((parent.reverse ? '-' : '') + SECONDARY_SORT)
-        }
-      }
-    }]
-  }
 })
 
 .directive('hwExport', function () {
