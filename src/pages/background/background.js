@@ -55,12 +55,12 @@ angular.module('background', [sync])
       // Delay installing the rules until the data is upgraded in case the new rules code relies
       // on the new format.
       storage.getAll(true)
-        .catch(error => console.error(error))
         .then(items => {
           this.upgradeData(items)
           console.info('Data upgraded, adding declarativeContent rules')
           rules.resetRules()
         })
+        .catch(error => console.error(error))
     } else {
       console.info('Adding declarativeContent rules for new install')
       rules.resetRules()
