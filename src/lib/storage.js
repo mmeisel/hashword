@@ -1,5 +1,8 @@
 const ClientOptions = require('./client-options')
 
+// Note that the options key uses a character that's not valid in domain names to prevent conflicts
+const OPTIONS_KEY = '#options'
+
 const storage = {
   get (domains, includeDeleted = false) {
     return new Promise((resolve, reject) => {
@@ -19,13 +22,11 @@ const storage = {
 
   getOptions () {
     return new Promise((resolve, reject) => {
-      // Note that the options key uses a character that's not valid in domain names to prevent
-      // conflicts
-      chrome.storage.local.get('#options', items => {
+      chrome.storage.local.get(OPTIONS_KEY, items => {
         if (chrome.runtime.lastError) {
           reject(new Error(chrome.runtime.lastError.message))
         } else {
-          resolve(new ClientOptions(items.options))
+          resolve(new ClientOptions(items[OPTIONS_KEY]))
         }
       })
     })
@@ -51,7 +52,9 @@ const storage = {
   },
 
   setOptions (options) {
-    const items = { '#options': options }
+    const items = {}
+
+    items[OPTIONS_KEY] = options
 
     return new Promise((resolve, reject) => {
       chrome.storage.local.set(items, () => {
@@ -67,8 +70,8 @@ const storage = {
 
 function sanitize (items, includeDeleted) {
   // Make sure the options don't leak
-  if (items.hasOwnProperty('#options')) {
-    delete items['#options']
+  if (items.hasOwnProperty(OPTIONS_KEY)) {
+    delete items[OPTIONS_KEY]
   }
 
   if (!includeDeleted) {
