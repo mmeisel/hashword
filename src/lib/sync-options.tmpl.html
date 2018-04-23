@@ -1,29 +1,47 @@
-<form ng-submit="$ctrl.save()">
-  <p>
+<div>
+  <div class="radio">
     <label>
-      <input type="radio" name="serverType" value="NONE" ng-model="form.serverType" />
+      <input type="radio" name="serverType" value="NONE"
+             ng-model="$ctrl.form.serverType" ng-change="$ctrl.disableSync()" />
       Do not sync with other devices
     </label>
-  </p>
-  <p>
+  </div>
+  <div class="radio">
     <label>
-      <input type="radio" name="serverType" value="OFFICIAL" ng-model="form.serverType" ng-change="testServer()" />
+      <input type="radio" name="serverType" value="OFFICIAL"
+             ng-model="$ctrl.form.serverType" ng-change="$ctrl.connectOfficial()" />
       Use the official Hashword server
     </label>
-  </p>
-  <p>
+  </div>
+  <div class="radio">
     <label>
-      <input type="radio" name="serverType" value="CUSTOM" ng-model="form.serverType" ng-change="testServer()" />
+      <input type="radio" name="serverType" value="CUSTOM"
+             ng-model="$ctrl.form.serverType" ng-change="$ctrl.showCustomOptions()" />
       Use your own server (see <a href="https://github.com/mmeisel/hashword-server">GitHub</a>)
     </label>
-    <br/>
-    <label ng-if="form.serverType == 'CUSTOM'">
-      URL <input type="text" name="customServerUrl" ng-model="form.customServerUrl" />
-    </label>
-  </p>
-  <p>
-    <input type="button" value="Cancel" ng-click="$ctrl.resetForm()" ng-disabled="form.working" />
-    <input type="submit" ng-value="form.serverType == 'NONE' ? 'Save Changes' : 'Login'" ng-disabled="form.working" />
-  </p>
-  <p ng-if="form.error" style="color: red">{{ form.error }}</p>
-</form>
+  </div>
+  <div class="form-inline">
+    <div ng-if="$ctrl.state.showCustomOptions">
+      <div class="form-group">
+        <input type="text" name="customServerUrl" class="form-control" placeholder="URL" autofocus
+               ng-model="$ctrl.form.customServerUrl" />
+      </div>
+      <button class="btn btn-primary" ng-disabled="$ctrl.state.busy" ng-click="$ctrl.connectCustom()">
+        Connect
+      </button>
+    </div>
+    <div ng-if="$ctrl.state.showStatus">
+      <sync-status-display options="$ctrl.state.newOptions" sync-status="$ctrl.state.syncStatus">
+      </sync-status-display>
+    </div>
+    <div ng-if="$ctrl.state.showLogin">
+      <button class="btn btn-primary" ng-disabled="$ctrl.state.busy" ng-click="$ctrl.login()">
+        Login
+      </button>
+    </div>
+    <div class="form-group" ng-if="$ctrl.state.busy">
+      <i class="glyphicon glyphicon-refresh glyphicon-spin"></i>
+    </div>
+  </div>
+  <div class="alert alert-danger" ng-if="$ctrl.state.error">{{ $ctrl.state.error }}</div>
+</div>

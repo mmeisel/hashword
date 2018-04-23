@@ -1,16 +1,24 @@
-<ng-switch on="$ctrl.status">
+<ng-switch on="$ctrl.syncStatus.status">
   <p ng-switch-when="OFF">
-    [gray] Sync is not enabled.
+    <i class="glyphicon glyphicon-off text-muted"></i>
+    Sync is not enabled
   </p>
   <p ng-switch-when="AUTH_REQUIRED">
-    [yellow] Connected to {{ $ctrl.options.serverUrl }}, but you'll need to
-    <a href="" ng-click="$ctrl.login()">log in again</a>.
+    <i class="glyphicon glyphicon-exclamation-sign text-danger"></i>
+    You aren't logged in to {{ $ctrl.options.serverUrl }}
   </p>
   <p ng-switch-when="SERVER_UNAVAILABLE">
-    [red] Could not connect to {{ $ctrl.options.serverUrl }}
-    <!-- TODO: show error -->
+    <i class="glyphicon glyphicon-exclamation-sign text-danger"></i>
+    Could not connect to {{ $ctrl.options.serverUrl }}
   </p>
   <p ng-switch-when="CONNECTED">
-    [green] Connected to {{ $ctrl.options.serverUrl }} as {{ $ctrl.user.name }}
+    <i class="glyphicon glyphicon-ok text-success"></i>
+    Syncing with {{ $ctrl.options.serverUrl }}
+  </p>
+  <p ng-switch-default>
+    <span ng-if="$ctrl.error">
+      <i class="glyphicon glyphicon-remove text-danger"></i>
+      {{ $ctrl.error }}
+    </span>
   </p>
 </ng-switch>

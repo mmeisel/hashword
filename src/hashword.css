@@ -20,6 +20,17 @@ label {
     white-space: nowrap;
     display: block;
 }
+.glyphicon-spin {
+    animation: spin 2000ms infinite linear;
+}
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(359deg);
+    }
+}
 .popup-domain {
     display: inline-block;
     width: 224px;

@@ -9,12 +9,19 @@ const settingsEditor = require('../../lib/settings-editor.module')
 const syncUi = require('../../lib/sync-ui.module')
 const SiteTableController = require('./site-table.controller')
 const siteTableTemplate = require('./site-table.tmpl.html')
+const SyncUiWrapperController = require('./sync-ui-wrapper.controller')
+const syncUiWrapperTemplate = require('./sync-ui-wrapper.tmpl.html')
 
 angular.module('site-list', [clipboard, filters, settingsEditor, syncUi, uiBootstrap])
 
 .component('siteTable', {
   controller: ['$scope', '$uibModal', SiteTableController],
   template: siteTableTemplate
+})
+
+.component('syncUiWrapper', {
+  controller: ['$scope', '$uibModal', SyncUiWrapperController],
+  template: syncUiWrapperTemplate
 })
 
 .directive('hwExport', function () {

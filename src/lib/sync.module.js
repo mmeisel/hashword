@@ -14,7 +14,7 @@ sync.service('syncService', ['$http', function ($http) {
   })
 
   this.checkServerStatus = options => {
-    if (options == null) {
+    if (options == null || options.serverUrl == null) {
       return Promise.reject(new Error('Invalid serverUrl'))
     }
 
@@ -30,7 +30,7 @@ sync.service('syncService', ['$http', function ($http) {
       }
     })
     .catch(response => {
-      if (response.status === 403) {
+      if (response.status === 401) {
         return Promise.resolve({ status: this.SyncStatus.AUTH_REQUIRED })
       } else {
         console.error('Error talking to server', response)
@@ -39,12 +39,14 @@ sync.service('syncService', ['$http', function ($http) {
     })
   }
 
-  this.checkStatus = () => {
-    return storage.getOptions().then(options => {
+  this.checkStatus = options => {
+    const optionsPromise = options ? Promise.resolve(options) : storage.getOptions()
+
+    return optionsPromise.then(options => {
       if (options.serverType === ServerType.NONE) {
         return { status: this.SyncStatus.OFF }
       } else {
-        return this.checkServerStatus(options.serverUrl)
+        return this.checkServerStatus(options)
       }
     })
   }
@@ -136,7 +138,10 @@ sync.service('syncService', ['$http', function ($http) {
 }])
 
 function authHeaders (token) {
-  return { Authorization: `Bearer ${token}` }
+  if (token != null) {
+    return { Authorization: `Bearer ${token}` }
+  }
+  return {}
 }
 
 module.exports = 'sync'

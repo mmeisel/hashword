@@ -89,14 +89,14 @@ describe('syncService', () => {
       })
     })
 
-    it('should report AUTH_REQUIRED status when the server responds with a 403', () => {
+    it('should report AUTH_REQUIRED status when the server responds with a 401', () => {
       const getOptionsStub = sandbox.stub(storage, 'getOptions')
         .returns(Promise.resolve(new ClientOptions({
           serverType: 'CUSTOM',
           customServerUrl: 'http://localhost'
         })))
 
-      $httpBackend.whenGET('http://localhost/api/user').respond(403, {})
+      $httpBackend.whenGET('http://localhost/api/user').respond(401, {})
       setTimeout(() => $httpBackend.flush(), 0)
 
       return syncService.checkStatus().then(result => {
