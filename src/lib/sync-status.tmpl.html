@@ -10,15 +10,10 @@
   <p ng-switch-when="SERVER_UNAVAILABLE">
     <i class="glyphicon glyphicon-exclamation-sign text-danger"></i>
     Could not connect to {{ $ctrl.options.serverUrl }}
+    <span ng-if="$ctrl.syncStatus.error">({{ $ctrl.syncStatus.error }})</span>
   </p>
   <p ng-switch-when="CONNECTED">
     <i class="glyphicon glyphicon-ok text-success"></i>
-    Syncing with {{ $ctrl.options.serverUrl }}
-  </p>
-  <p ng-switch-default>
-    <span ng-if="$ctrl.error">
-      <i class="glyphicon glyphicon-remove text-danger"></i>
-      {{ $ctrl.error }}
-    </span>
+    Connected to {{ $ctrl.options.serverUrl }}
   </p>
 </ng-switch>

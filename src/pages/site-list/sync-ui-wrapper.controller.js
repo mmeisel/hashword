@@ -2,15 +2,27 @@ const storage = require('../../lib/storage')
 const syncOptionsModalTemplate = require('./sync-options-modal.tmpl.html')
 
 class SyncUiWrapperController {
-  constructor ($scope, $uibModal) {
+  constructor ($scope, syncService, $uibModal) {
     this.scope = $scope
+    this.syncService = syncService
     this.modal = $uibModal
-    this.ready = false
+    this.modalIsReady = false
+  }
 
-    storage.getOptions().then(options => {
-      this.options = options
-      this.scope.$apply()
-    })
+  $onInit () {
+    storage.getOptions().then(options => this.updateOptions(options))
+  }
+
+  updateOptions (newOptions) {
+    this.options = newOptions
+    this.updateSyncStatus()
+  }
+
+  updateSyncStatus () {
+    this.syncService.checkStatus(this.options)
+      .then(syncStatus => (this.syncStatus = syncStatus))
+      .catch(error => console.error('Could not update sync status', error.message))
+      .then(() => this.scope.$apply())
   }
 
   openSyncOptions () {
@@ -23,16 +35,12 @@ class SyncUiWrapperController {
 
     modal.result
       .then(() => storage.setOptions(this.newOptions))
-      .then(() => {
-        console.log(this, this.newOptions)
-        this.options = this.newOptions
-        // this.scope.$apply()
-      })
+      .then(() => this.updateOptions(this.newOptions))
   }
 
-  handleOptionsChange (newOptions) {
+  handleNewOptionsChange (newOptions) {
     this.newOptions = newOptions
-    this.ready = !!newOptions
+    this.modalIsReady = !!newOptions
   }
 }
 

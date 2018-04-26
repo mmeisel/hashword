@@ -64,7 +64,10 @@ class SyncOptionsController {
   }
 
   handleStateChange (oldState, newState) {
-    if (oldState.ready !== newState.ready) {
+    if (
+        oldState.ready !== newState.ready ||
+        (newState.ready && oldState.newOptions !== newState.newOptions)
+    ) {
       this.onChange({ newOptions: newState.ready ? newState.newOptions : null })
     }
   }

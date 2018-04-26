@@ -6,13 +6,14 @@ const rules = require('../../lib/rules')
 const Settings = require('../../lib/settings')
 const storage = require('../../lib/storage')
 const settingsEditor = require('../../lib/settings-editor.module')
+const sync = require('../../lib/sync.module')
 const syncUi = require('../../lib/sync-ui.module')
 const SiteTableController = require('./site-table.controller')
 const siteTableTemplate = require('./site-table.tmpl.html')
 const SyncUiWrapperController = require('./sync-ui-wrapper.controller')
 const syncUiWrapperTemplate = require('./sync-ui-wrapper.tmpl.html')
 
-angular.module('site-list', [clipboard, filters, settingsEditor, syncUi, uiBootstrap])
+angular.module('site-list', [clipboard, filters, settingsEditor, sync, syncUi, uiBootstrap])
 
 .component('siteTable', {
   controller: ['$scope', '$uibModal', SiteTableController],
@@ -20,7 +21,7 @@ angular.module('site-list', [clipboard, filters, settingsEditor, syncUi, uiBoots
 })
 
 .component('syncUiWrapper', {
-  controller: ['$scope', '$uibModal', SyncUiWrapperController],
+  controller: ['$scope', 'syncService', '$uibModal', SyncUiWrapperController],
   template: syncUiWrapperTemplate
 })
 

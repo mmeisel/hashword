@@ -34,7 +34,10 @@ sync.service('syncService', ['$http', function ($http) {
         return Promise.resolve({ status: this.SyncStatus.AUTH_REQUIRED })
       } else {
         console.error('Error talking to server', response)
-        return Promise.resolve({ status: this.SyncStatus.SERVER_UNAVAILABLE })
+        return Promise.resolve({
+          status: this.SyncStatus.SERVER_UNAVAILABLE,
+          error: response.statusText
+        })
       }
     })
   }

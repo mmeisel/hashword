@@ -2,9 +2,11 @@
   <h4 class="modal-title">Sync Options</h4>
 </div>
 <div class="modal-body">
-  <sync-options options="$ctrl.options" on-change="$ctrl.handleOptionsChange(newOptions)"></sync-options>
+  <sync-options options="$ctrl.options" on-change="$ctrl.handleNewOptionsChange(newOptions)"></sync-options>
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-default" ng-click="$dismiss()">Cancel</button>
-  <button type="button" class="btn btn-primary" ng-click="$close()" ng-disabled="!$ctrl.ready">Save</button>
+  <button type="button" class="btn btn-primary" ng-click="$close()" ng-disabled="!$ctrl.modalIsReady">
+    Save
+  </button>
 </div>
