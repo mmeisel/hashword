@@ -20,6 +20,10 @@ label {
     white-space: nowrap;
     display: block;
 }
+.row-flex {
+  display: flex;
+  flex-wrap: wrap;
+}
 .glyphicon-spin {
     animation: spin 2000ms infinite linear;
 }
