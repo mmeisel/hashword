@@ -31,8 +31,8 @@
       </button>
     </div>
     <div ng-if="$ctrl.state.showStatus">
-      <sync-status options="$ctrl.state.newOptions" sync-status="$ctrl.state.syncStatus">
-      </sync-status>
+      <server-status options="$ctrl.state.newOptions" status="$ctrl.state.serverStatus">
+      </server-status>
     </div>
     <div ng-if="$ctrl.state.showLogin">
       <button class="btn btn-primary" ng-disabled="$ctrl.state.busy" ng-click="$ctrl.login()">

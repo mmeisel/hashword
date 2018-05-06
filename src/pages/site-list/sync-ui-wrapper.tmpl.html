@@ -1,6 +1,6 @@
 <div class="row">
   <div class="col-md-10">
-    <sync-status options="$ctrl.options" sync-status="$ctrl.syncStatus"></sync-status>
+    <server-status options="$ctrl.options" status="$ctrl.serverStatus"></server-status>
     <p ng-if="$ctrl.options.serverType === 'NONE'">
       <small><a href hw-export>Backup</a> &bull; <a href hw-import>Restore</a></small>
     </p>

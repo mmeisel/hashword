@@ -6,7 +6,7 @@ const ServerType = require('./client-options').ServerType
 const sync = angular.module('sync', [])
 
 sync.service('syncService', ['$http', function ($http) {
-  this.SyncStatus = Object.freeze({
+  this.ServerStatus = Object.freeze({
     OFF: 'OFF',
     SERVER_UNAVAILABLE: 'SERVER_UNAVAILABLE',
     AUTH_REQUIRED: 'AUTH_REQUIRED',
@@ -25,17 +25,17 @@ sync.service('syncService', ['$http', function ($http) {
     }))
     .then(response => {
       return {
-        status: this.SyncStatus.CONNECTED,
+        status: this.ServerStatus.CONNECTED,
         user: response.data
       }
     })
     .catch(response => {
       if (response.status === 401) {
-        return Promise.resolve({ status: this.SyncStatus.AUTH_REQUIRED })
+        return Promise.resolve({ status: this.ServerStatus.AUTH_REQUIRED })
       } else {
         console.error('Error talking to server', response)
         return Promise.resolve({
-          status: this.SyncStatus.SERVER_UNAVAILABLE,
+          status: this.ServerStatus.SERVER_UNAVAILABLE,
           error: response.statusText
         })
       }
@@ -47,7 +47,7 @@ sync.service('syncService', ['$http', function ($http) {
 
     return optionsPromise.then(options => {
       if (options.serverType === ServerType.NONE) {
-        return { status: this.SyncStatus.OFF }
+        return { status: this.ServerStatus.OFF }
       } else {
         return this.checkServerStatus(options)
       }

@@ -8,7 +8,7 @@ const DEFAULT_STATE = Object.freeze({
   showLogin: false,
   showStatus: false,
   newOptions: null,
-  syncStatus: null
+  serverStatus: null
 })
 
 class SyncOptionsController {
@@ -106,13 +106,13 @@ class SyncOptionsController {
   connect () {
     this.setState({ busy: true, error: null })
 
-    return this.syncService.checkServerStatus(this.state.newOptions).then(syncStatus => {
+    return this.syncService.checkServerStatus(this.state.newOptions).then(serverStatus => {
       this.setState({
         busy: false,
-        ready: syncStatus.status === this.syncService.SyncStatus.CONNECTED,
-        showLogin: syncStatus.status === this.syncService.SyncStatus.AUTH_REQUIRED,
+        ready: serverStatus.status === this.syncService.ServerStatus.CONNECTED,
+        showLogin: serverStatus.status === this.syncService.ServerStatus.AUTH_REQUIRED,
         showStatus: true,
-        syncStatus
+        serverStatus
       })
     })
     .catch(error => {

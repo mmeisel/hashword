@@ -1,4 +1,4 @@
-<ng-switch on="$ctrl.syncStatus.status">
+<ng-switch on="$ctrl.serverStatus.status">
   <p ng-switch-when="OFF">
     <i class="glyphicon glyphicon-off text-muted"></i>
     Sync is not enabled
@@ -10,7 +10,7 @@
   <p ng-switch-when="SERVER_UNAVAILABLE">
     <i class="glyphicon glyphicon-exclamation-sign text-danger"></i>
     Could not connect to {{ $ctrl.options.serverUrl }}
-    <span ng-if="$ctrl.syncStatus.error">({{ $ctrl.syncStatus.error }})</span>
+    <span ng-if="$ctrl.serverStatus.error">({{ $ctrl.serverStatus.error }})</span>
   </p>
   <p ng-switch-when="CONNECTED">
     <i class="glyphicon glyphicon-ok text-success"></i>
