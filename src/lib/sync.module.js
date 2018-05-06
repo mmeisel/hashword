@@ -24,43 +24,39 @@ class SyncService {
   }
 
   checkServerStatus (options) {
-    if (options == null || options.serverUrl == null) {
-      return Promise.reject(new Error('Invalid serverUrl'))
-    }
-
-    return Promise.resolve(this.$http.get(`${options.serverUrl}/api/user`, {
-      timeout: 5000,
-      headers: authHeaders(options.accessToken),
-      withCredentials: true
-    }))
-    .then(response => {
-      return {
-        status: ServerStatus.CONNECTED,
-        user: response.data
-      }
-    })
-    .catch(response => {
-      if (response.status === 401) {
-        return Promise.resolve({ status: ServerStatus.AUTH_REQUIRED })
-      } else {
-        console.error('Error talking to server', response)
-        return Promise.resolve({
-          status: ServerStatus.SERVER_UNAVAILABLE,
-          error: response.statusText
-        })
-      }
-    })
-  }
-
-  checkStatus (options) {
     const optionsPromise = options ? Promise.resolve(options) : storage.getOptions()
 
     return optionsPromise.then(options => {
       if (options.serverType === ServerType.NONE) {
         return { status: ServerStatus.OFF }
-      } else {
-        return this.checkServerStatus(options)
       }
+
+      if (options.serverUrl == null) {
+        return Promise.reject(new Error('Invalid serverUrl'))
+      }
+
+      return Promise.resolve(this.$http.get(`${options.serverUrl}/api/user`, {
+        timeout: 5000,
+        headers: authHeaders(options.accessToken),
+        withCredentials: true
+      }))
+      .then(response => {
+        return {
+          status: ServerStatus.CONNECTED,
+          user: response.data
+        }
+      })
+      .catch(response => {
+        if (response.status === 401) {
+          return Promise.resolve({ status: ServerStatus.AUTH_REQUIRED })
+        } else {
+          console.error('Error talking to server', response)
+          return Promise.resolve({
+            status: ServerStatus.SERVER_UNAVAILABLE,
+            error: response.statusText
+          })
+        }
+      })
     })
   }
 

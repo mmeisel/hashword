@@ -19,7 +19,7 @@ class SyncUiWrapperController {
   }
 
   updateServerStatus () {
-    this.syncService.checkStatus(this.options)
+    this.syncService.checkServerStatus(this.options)
       .then(serverStatus => (this.serverStatus = serverStatus))
       .catch(error => console.error('Could not update sync status', error.message))
       .then(() => this.scope.$apply())

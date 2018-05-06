@@ -30,7 +30,7 @@ describe('syncService', () => {
     $httpBackend.verifyNoOutstandingRequest()
   })
 
-  describe('#checkStatus()', () => {
+  describe('#checkServerStatus()', () => {
     it('should report OFF status when serverType is NONE', () => {
       const getOptionsStub = sandbox.stub(storage, 'getOptions')
         .returns(Promise.resolve(new ClientOptions({ serverType: 'NONE' })))
@@ -38,7 +38,7 @@ describe('syncService', () => {
       // Should not be called
       $httpBackend.whenGET('http://localhost/api/user').respond({})
 
-      return syncService.checkStatus().then(result => {
+      return syncService.checkServerStatus().then(result => {
         expect(result).to.have.property('status', 'OFF')
         expect(getOptionsStub.calledOnce).to.equal(true)
       })
@@ -51,7 +51,7 @@ describe('syncService', () => {
       $httpBackend.whenGET('https://hashword.org/api/user').respond(403, {})
       setTimeout(() => $httpBackend.flush(), 0)
 
-      return syncService.checkStatus().then(result => {
+      return syncService.checkServerStatus().then(result => {
         expect(getOptionsStub.calledOnce).to.equal(true)
       })
     })
@@ -66,7 +66,7 @@ describe('syncService', () => {
       $httpBackend.whenGET('http://localhost/api/user').respond(403, {})
       setTimeout(() => $httpBackend.flush(), 0)
 
-      return syncService.checkStatus().then(result => {
+      return syncService.checkServerStatus().then(result => {
         expect(getOptionsStub.calledOnce).to.equal(true)
       })
     })
@@ -82,7 +82,7 @@ describe('syncService', () => {
       $httpBackend.whenGET('http://localhost/api/user').respond(user)
       setTimeout(() => $httpBackend.flush(), 0)
 
-      return syncService.checkStatus().then(result => {
+      return syncService.checkServerStatus().then(result => {
         expect(result).to.have.property('status', 'CONNECTED')
         expect(result).to.have.property('user').that.deep.equals(user)
         expect(getOptionsStub.calledOnce).to.equal(true)
@@ -99,7 +99,7 @@ describe('syncService', () => {
       $httpBackend.whenGET('http://localhost/api/user').respond(401, {})
       setTimeout(() => $httpBackend.flush(), 0)
 
-      return syncService.checkStatus().then(result => {
+      return syncService.checkServerStatus().then(result => {
         expect(result).to.have.property('status', 'AUTH_REQUIRED')
         expect(getOptionsStub.calledOnce).to.equal(true)
       })
@@ -116,7 +116,7 @@ describe('syncService', () => {
       $httpBackend.whenGET('http://localhost/api/user').respond(user)
       setTimeout(() => $httpBackend.flush(), 0)
 
-      return syncService.checkStatus().then(result => {
+      return syncService.checkServerStatus().then(result => {
         expect(result).to.have.property('status', 'CONNECTED')
         expect(result).to.have.property('user').that.deep.equals(user)
         expect(getOptionsStub.calledOnce).to.equal(true)
@@ -133,7 +133,7 @@ describe('syncService', () => {
       $httpBackend.whenGET('http://localhost/api/user').respond(500, {})
       setTimeout(() => $httpBackend.flush(), 0)
 
-      return syncService.checkStatus().then(result => {
+      return syncService.checkServerStatus().then(result => {
         expect(result).to.have.property('status', 'SERVER_UNAVAILABLE')
         expect(getOptionsStub.calledOnce).to.equal(true)
       })
@@ -149,7 +149,7 @@ describe('syncService', () => {
       $httpBackend.whenGET('http://localhost/api/user').respond({})
       setTimeout(() => $timeout.flush(5001), 0)
 
-      return syncService.checkStatus().then(result => {
+      return syncService.checkServerStatus().then(result => {
         expect(result).to.have.property('status', 'SERVER_UNAVAILABLE')
         expect(getOptionsStub.calledOnce).to.equal(true)
       })
