@@ -45,6 +45,10 @@ const storage = {
   },
 
   handleSyncResult (syncResult) {
+    if (syncResult.changed == null) {
+      return Promise.resolve()
+    }
+
     const items = sanitizeInputDomains(syncResult.changed)
 
     // Set the changed domains and LAST_SYNC_RESULT at the same time to keep things consistent.
