@@ -87,7 +87,7 @@ class SyncService {
 
   getDomainsToSync (options) {
     return Promise.all([
-      storage.getAll(),
+      storage.getAll(true),
       this.$http.get(`${options.serverUrl}/api/sites`, {
         headers: authHeaders(options.accessToken),
         withCredentials: true

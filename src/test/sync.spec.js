@@ -246,6 +246,32 @@ describe('syncService', () => {
       })
     })
 
+    it('should include deleted domains', () => {
+      const localSites = {
+        'example.com': {
+          accessDate: 1516754869000,
+          deleteDate: 1516754879000,
+          rev: '33333333'
+        }
+      }
+
+      const remoteSites = {
+        'example.com': {
+          accessDate: 1516754869000,
+          deleteDate: null,
+          rev: '22222222'
+        }
+      }
+
+      const stubs = setUpStubs(localSites, remoteSites)
+
+      return syncService.getDomainsToSync(options).then(toSync => {
+        expect(stubs.storageGetAll.calledOnce).to.equal(true)
+        expect(stubs.storageGetAll.getCalls()[0].args).to.deep.equal([true])
+        expect(toSync).to.deep.equal(localSites)
+      })
+    })
+
     function setUpStubs (localSites, remoteSites) {
       const stubs = {
         storageGetAll: sandbox.stub(storage, 'getAll').returns(Promise.resolve(localSites)),
