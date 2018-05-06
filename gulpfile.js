@@ -15,12 +15,7 @@ const src = {
   pages: glob.sync('src/pages/*').map(page => path.basename(page)),
   images: ['images/**/*'],
   chrome: ['src/chrome/**/*'],
-  css: [
-    'node_modules/angular/angular-csp.css',
-    'node_modules/angular-ui-bootstrap/ui-bootstrap-csp.css',
-    'vendor/**/*.css',
-    'src/**/*.css'
-  ],
+  css: ['vendor/**/*.css', 'src/**/*.css'],
   fonts: ['vendor/fonts/**/*'],
   html: ['src/**/*.html', '!src/**/*.tmpl.html'],
   injectables: ['src/inject/**/*.js']
