@@ -135,7 +135,7 @@ class SyncService {
 
   sync () {
     return storage.getOptions().then(options => {
-      if (!options.useServer) {
+      if (options.serverType === ServerType.NONE) {
         return {}
       }
 

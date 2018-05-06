@@ -299,9 +299,9 @@ describe('syncService', () => {
   })
 
   describe('#sync()', () => {
-    it('should do nothing when useServer is false', () => {
+    it('should do nothing when serverType is NONE', () => {
       const getOptionsStub = sandbox.stub(storage, 'getOptions').returns(Promise.resolve({
-        useServer: false
+        serverType: 'NONE'
       }))
       const getDomainsStub = sandbox.stub(syncService, 'getDomainsToSync').returns(Promise.resolve({}))
       const syncDomainsStub = sandbox.stub(syncService, 'syncDomains').returns(Promise.resolve({}))
@@ -321,10 +321,10 @@ describe('syncService', () => {
           rev: '22222222'
         }
       }
-      const options = {
-        useServer: true,
-        serverUrl: 'http://localhost'
-      }
+      const options = new ClientOptions({
+        serverType: 'CUSTOM',
+        customServerUrl: 'http://localhost'
+      })
 
       const getOptionsStub = sandbox.stub(storage, 'getOptions').returns(Promise.resolve(options))
       const getDomainsStub = sandbox.stub(syncService, 'getDomainsToSync').returns(Promise.resolve(localSites))
