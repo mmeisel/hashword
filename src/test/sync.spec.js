@@ -223,6 +223,29 @@ describe('syncService', () => {
       })
     })
 
+    it('should select any domains not on both client and server', () => {
+      const localSites = {
+        'example.com': {
+          accessDate: 1516754869000,
+          rev: '33333333'
+        }
+      }
+
+      const remoteSites = {
+        'google.com': {
+          accessDate: 1516754869000,
+          rev: '22222222'
+        }
+      }
+
+      const stubs = setUpStubs(localSites, remoteSites)
+
+      return syncService.getDomainsToSync(options).then(toSync => {
+        expect(stubs.storageGetAll.calledOnce).to.equal(true)
+        expect(toSync).to.deep.equal(Object.assign({ 'google.com': null }, localSites))
+      })
+    })
+
     function setUpStubs (localSites, remoteSites) {
       const stubs = {
         storageGetAll: sandbox.stub(storage, 'getAll').returns(Promise.resolve(localSites)),

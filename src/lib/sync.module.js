@@ -98,6 +98,7 @@ class SyncService {
       const remoteDomainMap = results[1].data
       const toSync = {}
 
+      // Check for domains that are either only remote or where the remote version is newer
       Object.keys(remoteDomainMap).forEach(domain => {
         const local = localDomainMap[domain]
         const remote = remoteDomainMap[domain]
@@ -106,6 +107,13 @@ class SyncService {
           toSync[domain] = null
         } else if (local.rev !== remote.rev || local.accessDate !== remote.accessDate) {
           toSync[domain] = local
+        }
+      })
+
+      // Check for domains that are only local
+      Object.keys(localDomainMap).forEach(domain => {
+        if (remoteDomainMap[domain] == null) {
+          toSync[domain] = localDomainMap[domain]
         }
       })
 
