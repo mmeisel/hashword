@@ -81,6 +81,10 @@ class SyncService {
     })
   }
 
+  getLastSyncResult () {
+    return storage.getLastSyncResult()
+  }
+
   getDomainsToSync (options) {
     return Promise.all([
       storage.getAll(),
@@ -119,18 +123,11 @@ class SyncService {
       headers: authHeaders(options.accessToken),
       withCredentials: true
     }))
-    .then(response => {
-      const results = response.data
-
-      if (!Object.keys(results.changed).length) {
-        return domainsToSync
-      }
-
-      return storage.set(results.changed)
+    .then(response => (
+      storage.handleSyncResult(response.data)
         .then(rules.resetRules)
-        .then(() => domainsToSync)
-      // TODO: deal with conflicts
-    })
+        .then(() => response.data)
+    ))
   }
 
   sync () {

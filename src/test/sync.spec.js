@@ -271,23 +271,25 @@ describe('syncService', () => {
         }
       }
 
-      const stubs = setUpStubs(localSites, remoteSites, {
+      const syncResult = {
         accepted: [],
         rejected: {},
         changed: remoteSites
-      })
+      }
+
+      const stubs = setUpStubs(syncResult)
 
       return syncService.syncDomains(options, localSites).then(results => {
-        expect(stubs.storageSet.calledOnce).to.equal(true)
-        expect(stubs.storageSet.getCalls()[0].args).to.deep.equal([remoteSites])
+        expect(stubs.storageHandleSyncResult.calledOnce).to.equal(true)
+        expect(stubs.storageHandleSyncResult.getCalls()[0].args).to.deep.equal([syncResult])
         expect(stubs.resetRules.calledOnce).to.equal(true)
-        expect(results).to.deep.equal(localSites)
+        expect(results).to.deep.equal(syncResult)
       })
     })
 
-    function setUpStubs (localSites, remoteSites, response) {
+    function setUpStubs (response) {
       const stubs = {
-        storageSet: sandbox.stub(storage, 'set').returns(Promise.resolve()),
+        storageHandleSyncResult: sandbox.stub(storage, 'handleSyncResult').returns(Promise.resolve()),
         resetRules: sandbox.stub(rules, 'resetRules').returns(Promise.resolve())
       }
 

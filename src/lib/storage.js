@@ -1,19 +1,15 @@
 const ClientOptions = require('./client-options')
 
-// Note that the options key uses a character that's not valid in domain names to prevent conflicts
-const OPTIONS_KEY = '#options'
+// Note that these special keys use a character that's not valid in domain names to prevent conflicts
+const SpecialKeys = {
+  OPTIONS: '#options',
+  LAST_SYNC_RESULT: '#sync'
+}
 
 const storage = {
   get (domains, includeDeleted = false) {
-    return new Promise((resolve, reject) => {
-      chrome.storage.local.get(domains, items => {
-        if (chrome.runtime.lastError) {
-          reject(new Error(chrome.runtime.lastError.message))
-        } else {
-          resolve(sanitize(items, includeDeleted))
-        }
-      })
-    })
+    return getLocal(domains)
+      .then(items => sanitizeOutputDomains(items, includeDeleted))
   },
 
   getAll (includeDeleted = false) {
@@ -21,58 +17,91 @@ const storage = {
   },
 
   getOptions () {
-    return new Promise((resolve, reject) => {
-      chrome.storage.local.get(OPTIONS_KEY, items => {
-        if (chrome.runtime.lastError) {
-          reject(new Error(chrome.runtime.lastError.message))
-        } else {
-          resolve(new ClientOptions(items[OPTIONS_KEY]))
-        }
-      })
-    })
+    return getLocal(SpecialKeys.OPTIONS)
+      .then(items => new ClientOptions(items[SpecialKeys.OPTIONS]))
+  },
+
+  getLastSyncResult () {
+    return getLocal(SpecialKeys.LAST_SYNC_RESULT)
+      .then(items => items[SpecialKeys.LAST_SYNC_RESULT])
   },
 
   set (items) {
-    return new Promise((resolve, reject) => {
-      chrome.storage.local.set(items, () => {
-        if (chrome.runtime.lastError) {
-          reject(new Error(chrome.runtime.lastError.message))
-        } else {
-          resolve()
-        }
-      })
-    })
+    return setLocal(sanitizeInputDomains(items))
   },
 
-  setOne (domain, settings) {
+  setOne (key, value) {
     const items = {}
 
-    items[domain] = settings
+    items[key] = value
     return storage.set(items)
   },
 
   setOptions (options) {
     const items = {}
 
-    items[OPTIONS_KEY] = options
+    items[SpecialKeys.OPTIONS] = options
+    return setLocal(items)
+  },
 
-    return new Promise((resolve, reject) => {
-      chrome.storage.local.set(items, () => {
-        if (chrome.runtime.lastError) {
-          reject(new Error(chrome.runtime.lastError.message))
-        } else {
-          resolve()
-        }
-      })
-    })
+  handleSyncResult (syncResult) {
+    const items = sanitizeInputDomains(syncResult.changed)
+
+    // Set the changed domains and LAST_SYNC_RESULT at the same time to keep things consistent.
+    items[SpecialKeys.LAST_SYNC_RESULT] = { timestamp: new Date().getTime(), data: syncResult }
+    return setLocal(items)
   }
 }
 
-function sanitize (items, includeDeleted) {
-  // Make sure the options don't leak
-  if (items.hasOwnProperty(OPTIONS_KEY)) {
-    delete items[OPTIONS_KEY]
-  }
+function getLocal (keys) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(keys, items => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message))
+      } else {
+        resolve(items)
+      }
+    })
+  })
+}
+
+function setLocal (items) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.set(items, () => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message))
+      } else {
+        resolve()
+      }
+    })
+  })
+}
+
+function sanitizeInputDomains (items) {
+  // Make sure we only accept things that look like valid domains.
+  // Just remove them and log a warning.
+  const filteredItems = {}
+
+  Object.keys(items).forEach(domain => {
+    // '#' is what the special keys start with and Chrome doesn't allow uppercase
+    // in declarativeContent rules
+    if (domain[0] === '#' || domain !== domain.toLowerCase()) {
+      console.warn('Ignoring invalid domain:', domain)
+    } else {
+      filteredItems[domain] = items[domain]
+    }
+  })
+
+  return filteredItems
+}
+
+function sanitizeOutputDomains (items, includeDeleted) {
+  // Make sure the special keys don't leak
+  Object.values(SpecialKeys).forEach(specialKey => {
+    if (items.hasOwnProperty(specialKey)) {
+      delete items[specialKey]
+    }
+  })
 
   if (!includeDeleted) {
     const filteredItems = {}
