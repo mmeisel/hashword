@@ -1,71 +1,38 @@
-<div class="row">
-  <div class="col-md-5 col-md-push-7">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title panel-title-tall" ng-if="!$ctrl.editing">Site Settings</h4>
-        <h4 class="panel-title panel-title-tall" ng-if="$ctrl.editing">Settings for {{ $ctrl.editing.domain }}</h4>
-      </div>
-      <div class="panel-body" ng-if="!$ctrl.editing">
-        <em class="text-muted">Click on a site to view or edit its settings.</em>
-      </div>
-      <form class="panel-body form-horizontal" ng-if="$ctrl.editing" ng-submit="$ctrl.saveEditing()">
-        <hw-settings-editor settings="$ctrl.editing.settings" notes></hw-settings-editor>
-        <div class="form-group">
-          <div class="col-xs-4 text-left">
-            <button type="button" class="btn btn-danger" ng-click="$ctrl.deleteEditing()">
-              <span class="glyphicon glyphicon-trash"></span>
-            </button>
-            <button type="button" class="btn btn-default" ng-click="$ctrl.copyPassword()">
-              <span class="glyphicon glyphicon-copy"></span>
-            </button>
-          </div>
-          <div class="col-xs-8 text-right">
-            <button type="button" class="btn btn-default" ng-click="$ctrl.cancelEditing()">Cancel</button>
-            <button type="submit" class="btn btn-success">Save</button>
-          </div>
-        </div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <div class="row">
+      <h4 class="panel-title panel-title-tall col-xs-7">Sites</h4>
+      <form class="col-xs-5">
+        <input type="text" class="form-control input-sm" placeholder="Search"
+               ng-model="$ctrl.search.query"/>
       </form>
-      <clipboard api="clipboardApi"></clipboard>
     </div>
   </div>
-  <div class="col-md-7 col-md-pull-5">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <div class="row">
-          <h4 class="panel-title panel-title-tall col-xs-7">Sites</h4>
-          <form class="col-xs-5">
-            <input type="text" class="form-control input-sm" placeholder="Search"
-                   ng-model="$ctrl.search.query"/>
-          </form>
-        </div>
-      </div>
-      <div class="panel-body" ng-if="!($ctrl.allSites | filter:$ctrl.search.query).length">No sites.</div>
-      <table class="table table-hover" ng-if="($ctrl.allSites | filter:$ctrl.search.query).length">
-        <thead>
-          <tr>
-            <th ng-repeat="col in $ctrl.sortableColumns">
-              <a href ng-click="$ctrl.changeSort(col.predicate)">{{ col.name }}</a>
-              <span class="glyphicon"
-                  ng-class="{ 'glyphicon-arrow-up': !$ctrl.reverse, 'glyphicon-arrow-down': $ctrl.reverse }"
-                  ng-show="$ctrl.predicates[0] == col.predicate">
-              </span>
-            </th>
-            <th style="width: 40px"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="site in $ctrl.allSites | filter:$ctrl.search.query | orderBy:$ctrl.predicates:$ctrl.reverse track by site.domain"
-              ng-class="{ 'success': $ctrl.editing.domain == site.domain }"
-              ng-click="$ctrl.edit(site)">
-            <td>{{ site.domain }}<br/><small class="text-muted">{{ site.settings.notes }}</small></td>
-            <td>{{ site.settings.createDate | hwDate }}</td>
-            <td>{{ site.settings.accessDate | hwDate }}</td>
-            <td>
-              <span class="glyphicon glyphicon-pencil hover-only"></span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+  <div class="panel-body" ng-if="!($ctrl.allSites | filter:$ctrl.search.query).length">No sites.</div>
+  <table class="table table-hover" ng-if="($ctrl.allSites | filter:$ctrl.search.query).length">
+    <thead>
+      <tr>
+        <th ng-repeat="col in $ctrl.sortableColumns">
+          <a href ng-click="$ctrl.changeSort(col.predicate)">{{ col.name }}</a>
+          <span class="glyphicon"
+              ng-class="{ 'glyphicon-arrow-up': !$ctrl.reverse, 'glyphicon-arrow-down': $ctrl.reverse }"
+              ng-show="$ctrl.predicates[0] == col.predicate">
+          </span>
+        </th>
+        <th style="width: 40px"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="site in $ctrl.allSites | filter:$ctrl.search.query | orderBy:$ctrl.predicates:$ctrl.reverse track by site.domain"
+          ng-class="{ 'success': $ctrl.editing.domain == site.domain }"
+          ng-click="$ctrl.onEdit({ site: site })">
+        <td>{{ site.domain }}<br/><small class="text-muted">{{ site.settings.notes }}</small></td>
+        <td>{{ site.settings.createDate | hwDate }}</td>
+        <td>{{ site.settings.accessDate | hwDate }}</td>
+        <td>
+          <span class="glyphicon glyphicon-pencil hover-only"></span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

@@ -8,19 +8,47 @@ const storage = require('../../lib/storage')
 const settingsEditor = require('../../lib/settings-editor.module')
 const sync = require('../../lib/sync.module')
 const syncUi = require('../../lib/sync-ui.module')
+const SiteListContainerController = require('./site-list-container.controller')
+const siteListContainerTemplate = require('./site-list-container.tmpl.html')
 const SiteTableController = require('./site-table.controller')
 const siteTableTemplate = require('./site-table.tmpl.html')
+const SiteDetailsController = require('./site-details.controller')
+const siteDetailsTemplate = require('./site-details.tmpl.html')
 const SyncUiWrapperController = require('./sync-ui-wrapper.controller')
 const syncUiWrapperTemplate = require('./sync-ui-wrapper.tmpl.html')
 
 angular.module('site-list', [clipboard, filters, settingsEditor, sync, syncUi, uiBootstrap])
 
+.component('siteListContainer', {
+  controller: ['$scope', SiteListContainerController],
+  template: siteListContainerTemplate
+})
+
 .component('siteTable', {
-  controller: ['$scope', '$uibModal', SiteTableController],
+  bindings: {
+    allSites: '<',
+    editing: '<',
+    onEdit: '&'
+  },
+  controller: ['$scope', SiteTableController],
   template: siteTableTemplate
 })
 
+.component('siteDetails', {
+  bindings: {
+    editing: '<',
+    onCancel: '&',
+    onDelete: '&',
+    onSave: '&'
+  },
+  controller: ['$scope', '$uibModal', SiteDetailsController],
+  template: siteDetailsTemplate
+})
+
 .component('syncUiWrapper', {
+  bindings: {
+    onSync: '&'
+  },
   controller: ['$scope', 'syncService', '$uibModal', SyncUiWrapperController],
   template: syncUiWrapperTemplate
 })

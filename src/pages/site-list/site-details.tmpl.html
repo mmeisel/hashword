@@ -1,0 +1,27 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h4 class="panel-title panel-title-tall" ng-if="!$ctrl.editing">Site Settings</h4>
+    <h4 class="panel-title panel-title-tall" ng-if="$ctrl.editing">Settings for {{ $ctrl.editing.domain }}</h4>
+  </div>
+  <div class="panel-body" ng-if="!$ctrl.editing">
+    <em class="text-muted">Click on a site to view or edit its settings.</em>
+  </div>
+  <form class="panel-body form-horizontal" ng-if="$ctrl.editing" ng-submit="$ctrl.onSave({ site: $ctrl.editing })">
+    <hw-settings-editor settings="$ctrl.editing.settings" notes></hw-settings-editor>
+    <div class="form-group">
+      <div class="col-xs-4 text-left">
+        <button type="button" class="btn btn-danger" ng-click="$ctrl.confirmDelete()">
+          <span class="glyphicon glyphicon-trash"></span>
+        </button>
+        <button type="button" class="btn btn-default" ng-click="$ctrl.copyPassword()">
+          <span class="glyphicon glyphicon-copy"></span>
+        </button>
+      </div>
+      <div class="col-xs-8 text-right">
+        <button type="button" class="btn btn-default" ng-click="$ctrl.onCancel()">Cancel</button>
+        <button type="submit" class="btn btn-success">Save</button>
+      </div>
+    </div>
+  </form>
+  <clipboard api="clipboardApi"></clipboard>
+</div>

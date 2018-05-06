@@ -1,0 +1,25 @@
+<div class="container">
+  <div class="row row-flex" style="align-items: flex-end">
+    <div class="col-md-7">
+      <h3><img src="../../images/icon38.png"/> Hashword Site List</h3>
+    </div>
+    <div class="col-md-5">
+      <sync-ui-wrapper on-sync="$ctrl.handleSync(result)"></sync-ui-wrapper>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-5 col-md-push-7">
+      <site-details editing="$ctrl.editing"
+                    on-cancel="$ctrl.cancelEditing()"
+                    on-delete="$ctrl.deleteSite(site)"
+                    on-save="$ctrl.saveSite(site)"
+      ></site-details>
+    </div>
+    <div class="col-md-7 col-md-pull-5">
+      <site-table all-sites="$ctrl.allSites"
+                  editing="$ctrl.editing"
+                  on-edit="$ctrl.editSite(site)"
+      ></site-table>
+    </div>
+  </div>
+</div>

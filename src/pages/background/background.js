@@ -70,8 +70,7 @@ angular.module('background', [sync])
   this.onStartup = () => {
     // Sometimes chrome doesn't seem to load these on startup as the documentation claims
     rules.resetRules()
-    // TODO: temporarily commented out for testing
-    // syncService.sync()
+    syncService.sync()
   }
 
   this.init = () => {
