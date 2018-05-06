@@ -332,13 +332,14 @@ describe('syncService', () => {
         expect(stubs.storageHandleSyncResult.calledOnce).to.equal(true)
         expect(stubs.storageHandleSyncResult.getCalls()[0].args).to.deep.equal([syncResult])
         expect(stubs.resetRules.calledOnce).to.equal(true)
-        expect(results).to.deep.equal(syncResult)
+        expect(results).to.have.property('data').that.deep.equals(syncResult)
       })
     })
 
     function setUpStubs (response) {
       const stubs = {
-        storageHandleSyncResult: sandbox.stub(storage, 'handleSyncResult').returns(Promise.resolve()),
+        storageHandleSyncResult: sandbox.stub(storage, 'handleSyncResult')
+          .returns(Promise.resolve({ timestamp: 1525624390000, data: response })),
         resetRules: sandbox.stub(rules, 'resetRules').returns(Promise.resolve())
       }
 
@@ -379,14 +380,15 @@ describe('syncService', () => {
 
       const getOptionsStub = sandbox.stub(storage, 'getOptions').returns(Promise.resolve(options))
       const getDomainsStub = sandbox.stub(syncService, 'getDomainsToSync').returns(Promise.resolve(localSites))
-      const syncDomainsStub = sandbox.stub(syncService, 'syncDomains').returns(Promise.resolve(localSites))
+      const syncDomainsStub = sandbox.stub(syncService, 'syncDomains')
+        .returns(Promise.resolve({ data: localSites }))
 
       return syncService.sync().then(result => {
         expect(getOptionsStub.calledOnce).to.equal(true)
         expect(getDomainsStub.calledOnce).to.equal(true)
         expect(syncDomainsStub.calledOnce).to.equal(true)
         expect(syncDomainsStub.getCalls()[0].args).to.deep.equal([options, localSites])
-        expect(result).to.deep.equal(localSites)
+        expect(result).to.deep.equal({ data: localSites })
       })
     })
   })

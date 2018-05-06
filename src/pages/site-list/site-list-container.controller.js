@@ -56,7 +56,6 @@ class SiteListContainerController {
   }
 
   handleSync (result) {
-    console.log('sync!', result)
     if (result.changed != null && Object.keys(result.changed).length) {
       this.loadAllSites()
     }

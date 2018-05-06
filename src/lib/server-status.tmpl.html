@@ -1,19 +1,45 @@
-<ng-switch on="$ctrl.status.status">
-  <p ng-switch-when="OFF">
+<p ng-switch="$ctrl.status.status">
+  <span ng-switch-when="OFF">
     <i class="glyphicon glyphicon-off text-muted"></i>
     Sync is not enabled
-  </p>
-  <p ng-switch-when="AUTH_REQUIRED">
+  </span>
+  <span ng-switch-when="AUTH_REQUIRED">
     <i class="glyphicon glyphicon-exclamation-sign text-danger"></i>
     You aren't logged in to {{ $ctrl.options.serverUrl }}
-  </p>
-  <p ng-switch-when="SERVER_UNAVAILABLE">
+  </span>
+  <span ng-switch-when="SERVER_UNAVAILABLE">
     <i class="glyphicon glyphicon-exclamation-sign text-danger"></i>
     Could not connect to {{ $ctrl.options.serverUrl }}
     <span ng-if="$ctrl.status.error">({{ $ctrl.status.error }})</span>
-  </p>
-  <p ng-switch-when="CONNECTED">
+  </span>
+  <span ng-switch-when="CONNECTED"
+        style="cursor: help"
+        uib-popover-template="'popover.tmpl.html'"
+        popover-placement="bottom"
+        popover-trigger="mouseenter">
     <i class="glyphicon glyphicon-ok text-success"></i>
-    Connected to {{ $ctrl.options.serverUrl }}
-  </p>
-</ng-switch>
+    Connected to server
+  </span>
+  <button type="button" class="btn btn-default" ng-if="$ctrl.onSyncOptions" ng-click="$ctrl.onSyncOptions()">
+    <i class="glyphicon glyphicon-cog"></i>
+  </button>
+
+  <script type="text/ng-template" id="popover.tmpl.html">
+    <div>
+      <div class="row">
+        <div class="col-md-3"><strong>Server</strong></div>
+        <div class="col-md-9">{{ $ctrl.options.serverUrl }}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-3"><strong>User</strong></div>
+        <div class="col-md-9">
+          {{ $ctrl.status.user.name || $ctrl.status.user.email }} ({{ $ctrl.status.user.provider }})
+        </div>
+      </div>
+      <div class="row" ng-if="$ctrl.syncResult">
+        <div class="col-md-3"><strong>Last sync</strong></div>
+        <div class="col-md-9">{{ $ctrl.syncResult.timestamp | date:'medium' }}</div>
+      </div>
+    </div>
+  </script>
+</p>

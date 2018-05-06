@@ -45,14 +45,14 @@ const storage = {
   },
 
   handleSyncResult (syncResult) {
-    if (syncResult.changed == null) {
+    if (syncResult.data.changed == null) {
       return Promise.resolve()
     }
 
-    const items = sanitizeInputDomains(syncResult.changed)
+    const items = sanitizeInputDomains(syncResult.data.changed)
 
     // Set the changed domains and LAST_SYNC_RESULT at the same time to keep things consistent.
-    items[SpecialKeys.LAST_SYNC_RESULT] = { timestamp: new Date().getTime(), data: syncResult }
+    items[SpecialKeys.LAST_SYNC_RESULT] = syncResult
     return setLocal(items)
   }
 }

@@ -7,6 +7,10 @@ class SyncUiWrapperController {
     this.syncService = syncService
     this.modal = $uibModal
     this.modalIsReady = false
+
+    this.syncService.getLastSyncResult()
+      .then(result => (this.syncResult = result))
+      .then(() => this.scope.$apply())
   }
 
   $onInit () {

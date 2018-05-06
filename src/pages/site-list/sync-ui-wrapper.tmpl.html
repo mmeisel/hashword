@@ -1,11 +1,10 @@
-<div class="row">
-  <div class="col-md-10">
-    <server-status options="$ctrl.options" status="$ctrl.serverStatus"></server-status>
-    <p ng-if="$ctrl.options.serverType === 'NONE'">
-      <small><a href hw-export>Backup</a> &bull; <a href hw-import>Restore</a></small>
-    </p>
-  </div>
-  <div class="col-md-2 text-right">
-    <a href ng-click="$ctrl.openSyncOptions()">Change</a>
-  </div>
+<div>
+  <server-status options="$ctrl.options"
+                 status="$ctrl.serverStatus"
+                 sync-result="$ctrl.syncResult"
+                 on-sync-options="$ctrl.openSyncOptions()"
+  ></server-status>
+  <p ng-if="$ctrl.options.serverType === 'NONE'">
+    <small><a href hw-export>Backup</a> &bull; <a href hw-import>Restore</a></small>
+  </p>
 </div>

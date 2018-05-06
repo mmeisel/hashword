@@ -123,7 +123,7 @@ class SyncService {
 
   syncDomains (options, domainsToSync) {
     if (!Object.keys(domainsToSync).length) {
-      return Promise.resolve({})
+      return Promise.resolve({ timestamp: new Date().getTime(), data: {} })
     }
 
     // The $http call must be wrapped since it returns a $q instead of a real Promise
@@ -131,11 +131,13 @@ class SyncService {
       headers: authHeaders(options.accessToken),
       withCredentials: true
     }))
-    .then(response => (
-      storage.handleSyncResult(response.data)
-        .then(rules.resetRules)
-        .then(() => response.data)
-    ))
+    .then(response => {
+      const syncResult = { timestamp: new Date().getTime(), data: response.data }
+
+      storage.handleSyncResult(syncResult)
+        .then(() => rules.resetRules())
+        .then(() => syncResult)
+    })
   }
 
   sync () {
