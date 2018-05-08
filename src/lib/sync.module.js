@@ -117,6 +117,7 @@ class SyncService {
         }
       })
 
+      console.info('Found', Object.keys(toSync).length, 'domain(s) to sync')
       return toSync
     })
   }
@@ -136,12 +137,15 @@ class SyncService {
 
       storage.handleSyncResult(syncResult)
         .then(() => rules.resetRules())
+        .then(() => console.info('Synced', Object.keys(domainsToSync).length, 'domain(s)'))
         .then(() => syncResult)
     })
   }
 
-  sync () {
-    return storage.getOptions().then(options => {
+  sync (options) {
+    const optionsPromise = options ? Promise.resolve(options) : storage.getOptions()
+
+    return optionsPromise.then(options => {
       if (options.serverType === ServerType.NONE) {
         return {}
       }

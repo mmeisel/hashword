@@ -1,5 +1,7 @@
 const ClientOptions = require('./client-options')
 
+const SETTINGS_UPDATED_MESSAGE_TYPE = 'SETTINGS_UPDATED'
+
 // Note that these special keys use a character that's not valid in domain names to prevent conflicts
 const SpecialKeys = {
   OPTIONS: '#options',
@@ -7,6 +9,8 @@ const SpecialKeys = {
 }
 
 const storage = {
+  SETTINGS_UPDATED_MESSAGE_TYPE,
+
   get (domains, includeDeleted = false) {
     return getLocal(domains)
       .then(items => sanitizeOutputDomains(items, includeDeleted))
@@ -28,6 +32,10 @@ const storage = {
 
   set (items) {
     return setLocal(sanitizeInputDomains(items))
+      .then(() => chrome.runtime.sendMessage({
+        type: SETTINGS_UPDATED_MESSAGE_TYPE,
+        payload: items
+      }))
   },
 
   setOne (key, value) {
@@ -49,11 +57,17 @@ const storage = {
       return Promise.resolve()
     }
 
-    const items = sanitizeInputDomains(syncResult.data.changed)
+    const domains = sanitizeInputDomains(syncResult.data.changed)
 
     // Set the changed domains and LAST_SYNC_RESULT at the same time to keep things consistent.
+    const items = Object.assign({}, domains)
     items[SpecialKeys.LAST_SYNC_RESULT] = syncResult
+
     return setLocal(items)
+      .then(() => chrome.runtime.sendMessage({
+        type: SETTINGS_UPDATED_MESSAGE_TYPE,
+        payload: domains
+      }))
   }
 }
 

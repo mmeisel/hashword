@@ -56,7 +56,7 @@ class SiteListContainerController {
   }
 
   handleSync (result) {
-    if (result.changed != null && Object.keys(result.changed).length) {
+    if (result.data.changed != null && Object.keys(result.data.changed).length) {
       this.loadAllSites()
     }
   }

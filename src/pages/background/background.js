@@ -73,8 +73,18 @@ angular.module('background', [sync])
     syncService.sync()
   }
 
+  this.onSettingsUpdated = updated => {
+    console.info('Settings updated, starting sync...')
+    syncService.sync()
+  }
+
   this.init = () => {
     chrome.runtime.onInstalled.addListener(this.onInstalled)
     chrome.runtime.onStartup.addListener(this.onStartup)
+    chrome.runtime.onMessage.addListener(request => {
+      if (request.type === storage.SETTINGS_UPDATED_MESSAGE_TYPE) {
+        this.onSettingsUpdated(request.payload)
+      }
+    })
   }
 }])
