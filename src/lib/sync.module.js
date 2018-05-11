@@ -3,6 +3,8 @@ const rules = require('./rules')
 const storage = require('./storage')
 const ServerType = require('./client-options').ServerType
 
+const MAX_SYNC_STALENESS_MS = 60000
+
 const ServerStatus = Object.freeze({
   OFF: 'OFF',
   SERVER_UNAVAILABLE: 'SERVER_UNAVAILABLE',
@@ -124,7 +126,10 @@ class SyncService {
 
   syncDomains (options, domainsToSync) {
     if (!Object.keys(domainsToSync).length) {
-      return Promise.resolve({ timestamp: Date.now(), data: {} })
+      const syncResult = { data: {}, serverUrl: options.serverUrl, timestamp: Date.now() }
+
+      return storage.handleSyncResult(syncResult)
+        .then(() => syncResult)
     }
 
     // The $http call must be wrapped since it returns a $q instead of a real Promise
@@ -133,7 +138,7 @@ class SyncService {
       withCredentials: true
     }))
     .then(response => {
-      const syncResult = { timestamp: Date.now(), data: response.data }
+      const syncResult = { data: response.data, serverUrl: options.serverUrl, timestamp: Date.now() }
 
       storage.handleSyncResult(syncResult)
         .then(() => rules.resetRules())
@@ -142,8 +147,8 @@ class SyncService {
     })
   }
 
-  sync (options) {
-    const optionsPromise = options ? Promise.resolve(options) : storage.getOptions()
+  syncNow (optionsArg) {
+    const optionsPromise = optionsArg ? Promise.resolve(optionsArg) : storage.getOptions()
 
     return optionsPromise.then(options => {
       if (options.serverType === ServerType.NONE) {
@@ -153,6 +158,25 @@ class SyncService {
       return this.getDomainsToSync(options).then(toSync => {
         return this.syncDomains(options, toSync)
       })
+    })
+  }
+
+  // TODO: tests for this and getLastSyncResult
+  requestSync (optionsArg) {
+    const optionsPromise = optionsArg ? Promise.resolve(optionsArg) : storage.getOptions()
+
+    return Promise.all([optionsPromise, this.getLastSyncResult()]).then(results => {
+      const options = results[0]
+      const syncResult = results[1]
+      const now = Date.now()
+      const resultExpiration = syncResult.timestamp + MAX_SYNC_STALENESS_MS
+
+      // Run a new sync if the serverUrl has changed or the last result is stale
+      if (options.serverUrl !== syncResult.serverUrl || now >= resultExpiration) {
+        return this.syncNow(options)
+      }
+      console.info('Last sync result is still fresh')
+      return syncResult
     })
   }
 }

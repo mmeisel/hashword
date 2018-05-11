@@ -25,7 +25,7 @@ class SyncUiWrapperController {
         this.serverStatus = serverStatus
 
         if (serverStatus.status === this.syncService.ServerStatus.CONNECTED) {
-          return this.syncService.sync(this.options)
+          return this.syncService.requestSync(this.options)
             .then(result => {
               this.syncResult = result
               this.onSync({ result })

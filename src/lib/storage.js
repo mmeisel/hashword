@@ -53,21 +53,20 @@ const storage = {
   },
 
   handleSyncResult (syncResult) {
-    if (syncResult.data.changed == null) {
-      return Promise.resolve()
+    const resultItems = { [SpecialKeys.LAST_SYNC_RESULT]: syncResult }
+
+    if (syncResult.data.changed != null) {
+      // Set the changed domains and LAST_SYNC_RESULT at the same time to keep things consistent.
+      const domains = sanitizeInputDomains(syncResult.data.changed)
+
+      return setLocal(Object.assign({}, resultItems, domains))
+        .then(() => chrome.runtime.sendMessage({
+          type: SETTINGS_UPDATED_MESSAGE_TYPE,
+          payload: domains
+        }))
+    } else {
+      return setLocal(resultItems)
     }
-
-    const domains = sanitizeInputDomains(syncResult.data.changed)
-
-    // Set the changed domains and LAST_SYNC_RESULT at the same time to keep things consistent.
-    const items = Object.assign({}, domains)
-    items[SpecialKeys.LAST_SYNC_RESULT] = syncResult
-
-    return setLocal(items)
-      .then(() => chrome.runtime.sendMessage({
-        type: SETTINGS_UPDATED_MESSAGE_TYPE,
-        payload: domains
-      }))
   }
 }
 

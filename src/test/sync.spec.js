@@ -358,7 +358,7 @@ describe('syncService', () => {
       const getDomainsStub = sandbox.stub(syncService, 'getDomainsToSync').returns(Promise.resolve({}))
       const syncDomainsStub = sandbox.stub(syncService, 'syncDomains').returns(Promise.resolve({}))
 
-      return syncService.sync().then(result => {
+      return syncService.syncNow().then(result => {
         expect(getOptionsStub.calledOnce).to.equal(true)
         expect(getDomainsStub.called).to.equal(false)
         expect(syncDomainsStub.called).to.equal(false)
@@ -383,7 +383,7 @@ describe('syncService', () => {
       const syncDomainsStub = sandbox.stub(syncService, 'syncDomains')
         .returns(Promise.resolve({ data: localSites }))
 
-      return syncService.sync().then(result => {
+      return syncService.syncNow().then(result => {
         expect(getOptionsStub.calledOnce).to.equal(true)
         expect(getDomainsStub.calledOnce).to.equal(true)
         expect(syncDomainsStub.calledOnce).to.equal(true)

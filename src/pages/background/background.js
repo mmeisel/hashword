@@ -4,6 +4,9 @@ const Settings = require('../../lib/settings')
 const storage = require('../../lib/storage')
 const sync = require('../../lib/sync.module')
 
+const BACKGROUND_SYNC_ALARM_NAME = 'BACKGROUND_SYNC'
+const BACKGROUND_SYNC_INTERVAL_MINUTES = 30
+
 class BackgroundService {
   constructor (syncService) {
     this.syncService = syncService
@@ -68,22 +71,34 @@ class BackgroundService {
   onStartup () {
     // Sometimes chrome doesn't seem to load these on startup as the documentation claims
     rules.resetRules()
-    this.syncService.sync()
+    this.syncService.syncNow()
+  }
+
+  onMessage (message) {
+    if (message.type === storage.SETTINGS_UPDATED_MESSAGE_TYPE) {
+      this.onSettingsUpdated(message.payload)
+    }
+  }
+
+  onAlarm (alarm) {
+    if (alarm.name === BACKGROUND_SYNC_ALARM_NAME) {
+      console.info('Requesting background sync')
+      this.syncService.requestSync()
+      chrome.alarms.create(BACKGROUND_SYNC_ALARM_NAME, { delayInMinutes: BACKGROUND_SYNC_INTERVAL_MINUTES })
+    }
   }
 
   onSettingsUpdated (updated) {
-    console.info('Settings updated, starting sync...')
-    this.syncService.sync()
+    console.info('Settings updated, syncing')
+    this.syncService.syncNow()
   }
 
   init () {
     chrome.runtime.onInstalled.addListener(this.onInstalled.bind(this))
     chrome.runtime.onStartup.addListener(this.onStartup.bind(this))
-    chrome.runtime.onMessage.addListener(request => {
-      if (request.type === storage.SETTINGS_UPDATED_MESSAGE_TYPE) {
-        this.onSettingsUpdated(request.payload)
-      }
-    })
+    chrome.runtime.onMessage.addListener(this.onMessage.bind(this))
+    chrome.alarms.onAlarm.addListener(this.onAlarm.bind(this))
+    chrome.alarms.create(BACKGROUND_SYNC_ALARM_NAME, { delayInMinutes: BACKGROUND_SYNC_INTERVAL_MINUTES })
   }
 }
 
