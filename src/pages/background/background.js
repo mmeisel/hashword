@@ -4,14 +4,12 @@ const Settings = require('../../lib/settings')
 const storage = require('../../lib/storage')
 const sync = require('../../lib/sync.module')
 
-angular.module('background', [sync])
+class BackgroundService {
+  constructor (syncService) {
+    this.syncService = syncService
+  }
 
-.run(['backgroundService', function (backgroundService) {
-  backgroundService.init()
-}])
-
-.service('backgroundService', ['syncService', function (syncService) {
-  this.upgradeData = items => {
+  upgradeData (items) {
     Object.keys(items).filter(domain => {
       let settings = items[domain]
       let upgraded = false
@@ -47,7 +45,7 @@ angular.module('background', [sync])
       .catch(error => console.error(error))
   }
 
-  this.onInstalled = details => {
+  onInstalled (details) {
     if (details.reason === 'update') {
       console.info('Upgrade detected, checking data format...')
 
@@ -67,24 +65,28 @@ angular.module('background', [sync])
     }
   }
 
-  this.onStartup = () => {
+  onStartup () {
     // Sometimes chrome doesn't seem to load these on startup as the documentation claims
     rules.resetRules()
-    syncService.sync()
+    this.syncService.sync()
   }
 
-  this.onSettingsUpdated = updated => {
+  onSettingsUpdated (updated) {
     console.info('Settings updated, starting sync...')
-    syncService.sync()
+    this.syncService.sync()
   }
 
-  this.init = () => {
-    chrome.runtime.onInstalled.addListener(this.onInstalled)
-    chrome.runtime.onStartup.addListener(this.onStartup)
+  init () {
+    chrome.runtime.onInstalled.addListener(this.onInstalled.bind(this))
+    chrome.runtime.onStartup.addListener(this.onStartup.bind(this))
     chrome.runtime.onMessage.addListener(request => {
       if (request.type === storage.SETTINGS_UPDATED_MESSAGE_TYPE) {
         this.onSettingsUpdated(request.payload)
       }
     })
   }
-}])
+}
+
+angular.module('background', [sync])
+.run(['backgroundService', backgroundService => backgroundService.init()])
+.service('backgroundService', ['syncService', BackgroundService])
