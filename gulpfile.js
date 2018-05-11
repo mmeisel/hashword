@@ -24,7 +24,6 @@ const src = {
 const outputdir = 'build'
 
 const babelOptions = {
-  presets: ['es2015'],
   sourceMaps: true
 }
 
@@ -57,11 +56,12 @@ function getBrowserify (page, watch) {
 
 function browserifyBundle (page, instance) {
   return instance.bundle()
-    .on('error', error => console.error(error))
+    .on('error', error => console.error(error.message))
     .pipe(sourceStream(`${page}.js`))
     .pipe(buffer())
     .pipe($.sourcemaps.init(sourcemapsOptions))
-    .pipe($.uglify(uglifyOptions))
+    .pipe($.uglifyEs.default(uglifyOptions))
+    .on('error', error => console.error(error))
     .pipe($.sourcemaps.write('./maps'))
     .pipe(gulp.dest(`${outputdir}/pages/${page}`))
 }
@@ -90,7 +90,8 @@ gulp.task('injectables', () => {
   gulp.src(src.injectables, { base: 'src' })
     .pipe($.sourcemaps.init(sourcemapsOptions))
     .pipe($.babel(babelOptions))
-    .pipe($.uglify(uglifyOptions))
+    .pipe($.uglifyEs.default(uglifyOptions))
+    .on('error', error => console.error(error))
     .pipe($.sourcemaps.write('./maps'))
     .pipe(gulp.dest(outputdir))
 })
