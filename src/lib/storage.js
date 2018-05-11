@@ -39,17 +39,11 @@ const storage = {
   },
 
   setOne (key, value) {
-    const items = {}
-
-    items[key] = value
-    return storage.set(items)
+    return storage.set({ [key]: value })
   },
 
   setOptions (options) {
-    const items = {}
-
-    items[SpecialKeys.OPTIONS] = options
-    return setLocal(items)
+    return setLocal({ [SpecialKeys.OPTIONS]: options })
   },
 
   handleSyncResult (syncResult) {
