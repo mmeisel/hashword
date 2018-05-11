@@ -19,15 +19,15 @@ class Settings {
   }
 
   setCreateDate (createDate) {
-    this.createDate = createDate == null ? new Date().getTime() : new Date(createDate).getTime()
+    this.createDate = createDate == null ? Date.now() : new Date(createDate).getTime()
   }
 
   setAccessDate (accessDate) {
-    this.accessDate = accessDate == null ? new Date().getTime() : new Date(accessDate).getTime()
+    this.accessDate = accessDate == null ? Date.now() : new Date(accessDate).getTime()
   }
 
   setDeleteDate (deleteDate) {
-    this.deleteDate = deleteDate == null ? new Date().getTime() : new Date(deleteDate).getTime()
+    this.deleteDate = deleteDate == null ? Date.now() : new Date(deleteDate).getTime()
   }
 
   saveRevision () {

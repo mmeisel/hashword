@@ -49,7 +49,7 @@ describe('popupService', () => {
     const expectedSettings = new Settings(data.isNewDomain ? {} : {
       symbols: false,
       generation: 2,
-      createDate: new Date().getTime()
+      createDate: Date.now()
     })
     const storageResponse = {}
 
@@ -102,7 +102,7 @@ describe('popupService', () => {
               // Check the create date, then steal it from the object for comparison. Calling
               // expectedSettings.setCreateDate() would use the current time, which wouldn't match.
               // createDate should also not affect the rev.
-              expect(setOneArgs[1].createDate).to.be.a('number').that.is.closeTo(new Date().getTime(), 60000)
+              expect(setOneArgs[1].createDate).to.be.a('number').that.is.closeTo(Date.now(), 60000)
               expectedSettings.createDate = setOneArgs[1].createDate
             }
             expect(setOneArgs).to.deep.equal([data.normalized, expectedSettings])
@@ -152,7 +152,7 @@ describe('popupService', () => {
     const expectedSettings = new Settings({
       symbols: false,
       generation: 2,
-      createDate: new Date().getTime()
+      createDate: Date.now()
     })
 
     beforeEach(() => {
@@ -196,12 +196,12 @@ describe('popupService', () => {
     const expectedSubSettings = new Settings({
       symbols: false,
       generation: 3,
-      createDate: new Date().getTime()
+      createDate: Date.now()
     })
 
     const expectedTldSettings = new Settings({
       generation: 2,
-      createDate: new Date().getTime()
+      createDate: Date.now()
     })
 
     beforeEach(() => {
