@@ -140,7 +140,7 @@ class SyncService {
     .then(response => {
       const syncResult = { data: response.data, serverUrl: options.serverUrl, timestamp: Date.now() }
 
-      storage.handleSyncResult(syncResult)
+      return storage.handleSyncResult(syncResult)
         .then(() => rules.resetRules())
         .then(() => console.info('Synced', Object.keys(domainsToSync).length, 'domain(s)'))
         .then(() => syncResult)

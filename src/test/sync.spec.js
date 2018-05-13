@@ -329,8 +329,14 @@ describe('syncService', () => {
       const stubs = setUpStubs(syncResult)
 
       return syncService.syncDomains(options, localSites).then(results => {
+        console.log(results)
         expect(stubs.storageHandleSyncResult.calledOnce).to.equal(true)
-        expect(stubs.storageHandleSyncResult.getCalls()[0].args).to.deep.equal([syncResult])
+
+        const handleSyncResultArgs = stubs.storageHandleSyncResult.getCalls()[0].args
+        expect(handleSyncResultArgs.length).to.equal(1)
+        expect(handleSyncResultArgs[0]).to.have.property('data').that.deep.equals(syncResult)
+        expect(handleSyncResultArgs[0]).to.have.property('timestamp').that.is.a('number')
+        expect(handleSyncResultArgs[0]).to.have.property('serverUrl').that.equals(options.serverUrl)
         expect(stubs.resetRules.calledOnce).to.equal(true)
         expect(results).to.have.property('data').that.deep.equals(syncResult)
       })
@@ -338,8 +344,7 @@ describe('syncService', () => {
 
     function setUpStubs (response) {
       const stubs = {
-        storageHandleSyncResult: sandbox.stub(storage, 'handleSyncResult')
-          .returns(Promise.resolve({ timestamp: 1525624390000, data: response })),
+        storageHandleSyncResult: sandbox.stub(storage, 'handleSyncResult').returns(Promise.resolve()),
         resetRules: sandbox.stub(rules, 'resetRules').returns(Promise.resolve())
       }
 
