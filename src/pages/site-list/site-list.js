@@ -66,7 +66,7 @@ angular.module('site-list', [clipboard, filters, settingsEditor, sync, syncUi, u
           })
 
           $element.attr('href', window.URL.createObjectURL(new window.Blob([output]),
-                                                      'application/json;charset=UTF-8'))
+            'application/json;charset=UTF-8'))
         })
   }
 })

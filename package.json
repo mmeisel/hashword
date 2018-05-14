@@ -18,6 +18,7 @@
     "tldjs": "^2.3.1"
   },
   "devDependencies": {
+    "ajv": "^5.5.2",
     "angular-mocks": "=1.5.11",
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
@@ -26,6 +27,12 @@
     "chai": "^4.1.2",
     "chrome-extensions-reloader": "^1.1.1",
     "del": "^3.0.0",
+    "eslint": "^4.19.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-standard": "^3.1.0",
     "glob": "^7.1.2",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.1",
@@ -48,19 +55,8 @@
     "mocha": "^5.1.1",
     "sinon": "^4.5.0",
     "sinon-chrome": "^2.3.2",
-    "standard": "^10.0.3",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
     "watchify": "^3.11.0"
-  },
-  "standard": {
-    "global": [
-      "chrome",
-      "console"
-    ],
-    "ignore": [
-      "/build",
-      "/lib"
-    ]
   }
 }

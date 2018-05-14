@@ -37,13 +37,13 @@ class SyncOptionsController {
     this.setState({ newOptions: new ClientOptions(this.options) })
 
     switch (this.options.serverType) {
-      case ClientOptions.ServerType.NONE:
-        this.setState({ ready: true })
-        break
-      case ClientOptions.ServerType.OFFICIAL:
-      case ClientOptions.ServerType.CUSTOM:
-        this.connect()
-        break
+    case ClientOptions.ServerType.NONE:
+      this.setState({ ready: true })
+      break
+    case ClientOptions.ServerType.OFFICIAL:
+    case ClientOptions.ServerType.CUSTOM:
+      this.connect()
+      break
     }
   }
 
@@ -65,8 +65,8 @@ class SyncOptionsController {
 
   handleStateChange (oldState, newState) {
     if (
-        oldState.ready !== newState.ready ||
-        (newState.ready && oldState.newOptions !== newState.newOptions)
+      oldState.ready !== newState.ready ||
+      (newState.ready && oldState.newOptions !== newState.newOptions)
     ) {
       this.onChange({ newOptions: newState.ready ? newState.newOptions : null })
     }

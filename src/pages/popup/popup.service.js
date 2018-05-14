@@ -109,7 +109,7 @@ class PopupService {
     this.mode = PopupModes.READY
   }
 
-    // Save settings, sets createDate for new domains.
+  // Save settings, sets createDate for new domains.
   saveSettings (newSettings) {
     if (newSettings != null) {
       const newSettingsCopy = angular.copy(newSettings)

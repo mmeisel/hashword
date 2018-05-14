@@ -11,10 +11,10 @@ function PopupPasswordFormController ($scope, popupService) {
 
   this.copyPassword = function (closeWindow) {
     const pw = hw.getHashword(
-          popupService.activeDomain,
-          $scope.state.password,
-          popupService.settings
-      )
+      popupService.activeDomain,
+      $scope.state.password,
+      popupService.settings
+    )
 
     $scope.clipboardApi.copy(pw)
 
@@ -36,10 +36,10 @@ function PopupPasswordFormController ($scope, popupService) {
 
   this.insertPassword = function () {
     const pw = hw.getHashword(
-          popupService.activeDomain,
-          $scope.state.password,
-          popupService.settings
-      )
+      popupService.activeDomain,
+      $scope.state.password,
+      popupService.settings
+    )
 
     // Populate field, then trigger the input event so hopefully the scripts on the page
     // will register that we've entered something.
