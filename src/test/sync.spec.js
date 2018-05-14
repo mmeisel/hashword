@@ -329,7 +329,6 @@ describe('syncService', () => {
       const stubs = setUpStubs(syncResult)
 
       return syncService.syncDomains(options, localSites).then(results => {
-        console.log(results)
         expect(stubs.storageHandleSyncResult.calledOnce).to.equal(true)
 
         const handleSyncResultArgs = stubs.storageHandleSyncResult.getCalls()[0].args
@@ -355,7 +354,7 @@ describe('syncService', () => {
     }
   })
 
-  describe('#sync()', () => {
+  describe('#syncNow()', () => {
     it('should do nothing when serverType is NONE', () => {
       const getOptionsStub = sandbox.stub(storage, 'getOptions').returns(Promise.resolve({
         serverType: 'NONE'
@@ -396,6 +395,77 @@ describe('syncService', () => {
         expect(result).to.deep.equal({ data: localSites })
       })
     })
+  })
+
+  describe('#requestSync()', () => {
+    const options = new ClientOptions({
+      serverType: 'CUSTOM',
+      customServerUrl: 'http://localhost'
+    })
+
+    it('should run a new sync if there was not one recently', () => {
+      const lastSyncResult = {
+        data: {},
+        serverUrl: options.serverUrl,
+        timestamp: Date.now() - 90000
+      }
+      const nextSyncResult = {
+        data: {},
+        serverUrl: options.serverUrl,
+        timestamp: Date.now()
+      }
+      const stubs = setUpStubs(lastSyncResult, nextSyncResult)
+
+      return syncService.requestSync(options).then(syncResult => {
+        expect(stubs.getLastSyncResult.calledOnce).to.equal(true)
+        expect(stubs.syncNow.calledOnce).to.equal(true)
+        expect(syncResult).to.equal(nextSyncResult)
+      })
+    })
+
+    it('should return cached results if there was a sync recently', () => {
+      const result = {
+        data: {},
+        serverUrl: options.serverUrl,
+        timestamp: Date.now()
+      }
+      const stubs = setUpStubs(result, result)
+
+      return syncService.requestSync(options).then(syncResult => {
+        expect(stubs.getLastSyncResult.calledOnce).to.equal(true)
+        expect(stubs.syncNow.called).to.equal(false)
+        expect(syncResult).to.equal(result)
+      })
+    })
+
+    it('should always run a new sync when the serverUrl has changed', () => {
+      const lastSyncResult = {
+        data: {},
+        serverUrl: 'http://some-other-server.com',
+        timestamp: Date.now() - 1000
+      }
+      const nextSyncResult = {
+        data: {},
+        serverUrl: options.serverUrl,
+        timestamp: Date.now()
+      }
+      const stubs = setUpStubs(lastSyncResult, nextSyncResult)
+
+      return syncService.requestSync(options).then(syncResult => {
+        expect(stubs.getLastSyncResult.calledOnce).to.equal(true)
+        expect(stubs.syncNow.calledOnce).to.equal(true)
+        expect(syncResult).to.equal(nextSyncResult)
+      })
+    })
+
+    function setUpStubs (lastSyncResult, nextSyncResult) {
+      const stubs = {
+        syncNow: sandbox.stub(syncService, 'syncNow').returns(Promise.resolve(nextSyncResult)),
+        getLastSyncResult: sandbox.stub(syncService, 'getLastSyncResult').returns(Promise.resolve(lastSyncResult))
+      }
+
+      return stubs
+    }
   })
 })
 

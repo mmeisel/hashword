@@ -161,7 +161,6 @@ class SyncService {
     })
   }
 
-  // TODO: tests for this and getLastSyncResult
   requestSync (optionsArg) {
     const optionsPromise = optionsArg ? Promise.resolve(optionsArg) : storage.getOptions()
 
