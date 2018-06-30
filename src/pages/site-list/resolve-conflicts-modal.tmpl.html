@@ -1,0 +1,63 @@
+<div class="modal-header">
+  <h4 class="modal-title">Resolve Conflicts</h4>
+</div>
+<div class="modal-body">
+  <h4 class="bg-danger text-center" style="padding: 15px">{{ $ctrl.currentDomain() }}</h4>
+  <div class="row" style="overflow-wrap: break-word">
+    <div class="col-sm-3 col-sm-offset-4"><strong>Local</strong></div>
+    <div class="col-sm-3"><strong>Remote</strong></div>
+  </div>
+  <div class="row" ng-repeat="param in $ctrl.settingParams">
+    <div class="col-sm-3 col-sm-offset-1 text-right">{{ param.name }}</div>
+    <div class="col-sm-3"
+         ng-if="$ctrl.currentLocal().deleteDate == null"
+         ng-class="$ctrl.hasSettingChanged(param.key) ? 'text-danger' : 'text-muted'"
+    >{{ $ctrl.currentLocal()[param.key] }}</div>
+    <div class="col-sm-3" ng-if="$index === 1 && $ctrl.currentLocal().deleteDate != null">
+      <span class="label label-danger">DELETED</span>
+    </div>
+    <div class="col-sm-3"
+         ng-if="$ctrl.currentRemote().deleteDate == null"
+         ng-class="$ctrl.hasSettingChanged(param.key) ? 'text-danger' : 'text-muted'"
+    >{{ $ctrl.currentRemote()[param.key] }}</div>
+    <div class="col-sm-3" ng-if="$index === 1 && $ctrl.currentRemote().deleteDate != null">
+      <span class="label label-danger">DELETED</span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-3 col-sm-offset-4">
+      <label>
+        <input type="checkbox"
+               ng-click="$ctrl.chooseLocal()"
+               ng-model="$ctrl.selectLocal[$ctrl.conflictPage]"></input>
+        Select
+      </label>
+    </div>
+    <div class="col-sm-3">
+      <label>
+        <input type="checkbox"
+               ng-click="$ctrl.chooseRemote()"
+               ng-model="$ctrl.selectRemote[$ctrl.conflictPage]"></input>
+        Select
+      </label>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" ng-click="$dismiss()">Cancel</button>
+  <button type="button" class="btn btn-default" ng-if="$ctrl.conflictPage > 0" ng-click="$ctrl.conflictPage -= 1">
+    Back
+  </button>
+  <button type="button" class="btn btn-primary"
+          ng-if="$ctrl.conflictPage < $ctrl.conflicts.length - 1"
+          ng-click="$ctrl.conflictPage += 1"
+          ng-disabled="!$ctrl.selectLocal[$ctrl.conflictPage] && !$ctrl.selectRemote[$ctrl.conflictPage]">
+    Next
+  </button>
+  <button type="button" class="btn btn-primary"
+          ng-if="$ctrl.conflictPage === $ctrl.conflicts.length - 1"
+          ng-disabled="!$ctrl.selectLocal[$ctrl.conflictPage] && !$ctrl.selectRemote[$ctrl.conflictPage]"
+          ng-click="$close()">
+    Done
+  </button>
+</div>

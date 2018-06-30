@@ -7,6 +7,7 @@ class SiteListContainerController {
   constructor ($scope) {
     this.scope = $scope
     this.editing = null
+    this.allSites = null
   }
 
   $onInit () {

@@ -47,6 +47,7 @@ angular.module('site-list', [clipboard, filters, settingsEditor, sync, syncUi, u
 
 .component('syncUiWrapper', {
   bindings: {
+    allSites: '<',
     onSync: '&'
   },
   controller: ['$scope', 'syncService', '$uibModal', SyncUiWrapperController],

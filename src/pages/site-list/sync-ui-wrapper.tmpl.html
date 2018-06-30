@@ -2,6 +2,7 @@
   <server-status options="$ctrl.options"
                  status="$ctrl.serverStatus"
                  sync-result="$ctrl.syncResult"
+                 on-resolve-conflicts="$ctrl.resolveConflicts()"
                  on-sync-options="$ctrl.openSyncOptions()"
   ></server-status>
   <p ng-if="$ctrl.options.serverType === 'NONE'">

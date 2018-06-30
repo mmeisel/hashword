@@ -2,9 +2,6 @@ const SECONDARY_SORT = 'domain'
 
 class SiteTableController {
   constructor ($scope) {
-    // TODO: break this file up into a site-list controller (container) and a site-table (presentation).
-    // allSites should be in the container (obviously), this way it can receive the signal to update
-    // from the sync-ui-wrapper
     Object.assign(this, {
       sortableColumns: [
         { predicate: 'domain', name: 'Domain' },

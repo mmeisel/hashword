@@ -12,13 +12,20 @@
     Could not connect to {{ $ctrl.options.serverUrl }}
     <span ng-if="$ctrl.status.error">({{ $ctrl.status.error }})</span>
   </span>
-  <span ng-switch-when="CONNECTED"
-        style="cursor: help"
-        uib-popover-template="'popover.tmpl.html'"
-        popover-placement="bottom"
-        popover-trigger="mouseenter">
-    <i class="glyphicon glyphicon-ok text-success"></i>
-    Connected to server
+  <span ng-switch-when="CONNECTED">
+    <span style="cursor: help"
+          ng-if="!$ctrl.hasConflicts()"
+          uib-popover-template="'popover.tmpl.html'"
+          popover-placement="bottom"
+          popover-trigger="mouseenter">
+      <i class="glyphicon glyphicon-ok text-success"></i>
+      Connected to server
+    </span>
+    <span ng-if="$ctrl.hasConflicts()">
+      <i class="glyphicon glyphicon-exclamation-sign text-danger"></i>
+      Some settings couldn't be synced automatically.
+      <a href ng-click="$ctrl.onResolveConflicts()"><strong>Fix it!</strong></a>
+    </span>
   </span>
   <button type="button" class="btn btn-default" ng-if="$ctrl.onSyncOptions" ng-click="$ctrl.onSyncOptions()">
     <i class="glyphicon glyphicon-cog"></i>

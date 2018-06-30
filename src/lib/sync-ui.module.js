@@ -12,7 +12,13 @@ angular.module('sync-ui', [sync, uiBootstrap])
     status: '<',
     syncResult: '<?',
     options: '<',
+    onResolveConflicts: '&?',
     onSyncOptions: '&?'
+  },
+  controller: class ServerStatusController {
+    hasConflicts () {
+      return this.syncResult && this.syncResult.data.rejected && Object.keys(this.syncResult.data.rejected).length > 0
+    }
   },
   template: serverStatusTemplate
 })

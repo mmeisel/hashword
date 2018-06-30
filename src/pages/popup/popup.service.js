@@ -120,6 +120,8 @@ class PopupService {
 
     const isNewDomain = this.settings.createDate == null
 
+    console.log(this.settings, isNewDomain)
+
     if (isNewDomain) {
       this.settings.setCreateDate()
     }
