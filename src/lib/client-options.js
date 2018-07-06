@@ -3,7 +3,7 @@ const ServerType = Object.freeze({
   OFFICIAL: 'OFFICIAL',
   CUSTOM: 'CUSTOM'
 })
-const OFFICIAL_URL = 'https://hashword.org'
+const OFFICIAL_URL = 'https://app.hashword.org'
 const DEFAULTS = Object.freeze({ serverType: ServerType.NONE })
 
 class ClientOptions {

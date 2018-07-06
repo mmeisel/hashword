@@ -48,7 +48,7 @@ describe('syncService', () => {
       const getOptionsStub = sandbox.stub(storage, 'getOptions')
         .returns(Promise.resolve(new ClientOptions({ serverType: 'OFFICIAL' })))
 
-      $httpBackend.whenGET('https://hashword.org/api/user').respond(403, {})
+      $httpBackend.whenGET('https://app.hashword.org/api/user').respond(403, {})
       setTimeout(() => $httpBackend.flush(), 0)
 
       return syncService.checkServerStatus().then(result => {
