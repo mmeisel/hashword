@@ -64,22 +64,24 @@ class SyncService {
 
   login (serverUrl) {
     return new Promise((resolve, reject) => {
-      chrome.identity.launchWebAuthFlow(
-        { url: `${serverUrl}/auth/login?client_id=chrome`, interactive: true },
-        responseUrl => {
-          if (responseUrl == null) {
-            reject(new Error(chrome.runtime.lastError ? chrome.runtime.lastError.message : 'Login failed.'))
-          } else {
-            const token = responseUrl.split('#')[1]
-
-            if (token) {
-              resolve(token)
+      chrome.management.getSelf(extensionInfo => {
+        chrome.identity.launchWebAuthFlow(
+          { url: `${serverUrl}/auth/login?client_id=${extensionInfo.id}`, interactive: true },
+          responseUrl => {
+            if (responseUrl == null) {
+              reject(new Error(chrome.runtime.lastError ? chrome.runtime.lastError.message : 'Login failed.'))
             } else {
-              reject(new Error(`URL ${responseUrl} does not appear to contain a token`))
+              const token = responseUrl.split('#')[1]
+
+              if (token) {
+                resolve(token)
+              } else {
+                reject(new Error(`URL ${responseUrl} does not appear to contain a token`))
+              }
             }
           }
-        }
-      )
+        )
+      })
     })
   }
 
