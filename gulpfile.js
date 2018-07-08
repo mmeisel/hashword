@@ -154,7 +154,11 @@ gulp.task('watch', allTasks.filter(el => el !== 'pages').concat(['watch-pages'])
 gulp.task('package', allTasks, function () {
   const manifest = require(`./${outputdir}/manifest.json`)
 
-  gulp.src([`${outputdir}/**`, `!${outputdir}/maps{,/**}`])
+  // Regenerate the manifest file without the key in it (Google will complain if we leave it)
+  delete manifest.key
+
+  gulp.src([`${outputdir}/**`, `!${outputdir}/maps{,/**}`, `!${outputdir}/manifest.json`])
+    .pipe($.file('manifest.json', JSON.stringify(manifest)))
     .pipe($.zip(`hashword-${manifest.version}.zip`))
     .pipe(gulp.dest('dist'))
 })
