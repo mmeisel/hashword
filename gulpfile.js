@@ -154,13 +154,34 @@ gulp.task('watch', allTasks.filter(el => el !== 'pages').concat(['watch-pages'])
 gulp.task('package', allTasks, function () {
   const manifest = require(`./${outputdir}/manifest.json`)
 
-  // Regenerate the manifest file without the key in it (Google will complain if we leave it)
-  delete manifest.key
+  // Check the manifest version against the latest version tag. If they don't match,
+  // assume this is a prerelease version and add the number of commits since the last tag
+  // to the version number. If they match, this has to be the same commit that's been tagged.
+  $.git.exec({ args: 'describe --match=[0-9]*.[0-9]*.[0-9]*' }, (err, stdout) => {
+    if (err) {
+      throw err
+    }
 
-  gulp.src([`${outputdir}/**`, `!${outputdir}/maps{,/**}`, `!${outputdir}/manifest.json`])
-    .pipe($.file('manifest.json', JSON.stringify(manifest)))
-    .pipe($.zip(`hashword-${manifest.version}.zip`))
-    .pipe(gulp.dest('dist'))
+    const describeParts = stdout.trim().split('-')
+    const baseVersion = describeParts[0]
+    const prereleaseVersion = describeParts[1]
+
+    if (prereleaseVersion != null) {
+      if (baseVersion === manifest.version) {
+        throw new Error(`You must build version ${manifest.version} from the tagged commit!`)
+      } else {
+        manifest.version = `${manifest.version}.${prereleaseVersion}`
+      }
+    }
+
+    // Remove the key from the manifest if it's present (Google will complain if we leave it)
+    delete manifest.key
+
+    gulp.src([`${outputdir}/**`, `!${outputdir}/**/maps{,/**}`, `!${outputdir}/manifest.json`])
+      .pipe($.file('manifest.json', JSON.stringify(manifest)))
+      .pipe($.zip(`hashword-${manifest.version}.zip`))
+      .pipe(gulp.dest('dist'))
+  })
 })
 
 gulp.task('test', done => {
