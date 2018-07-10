@@ -168,7 +168,7 @@ class SyncService {
 
     return Promise.all([optionsPromise, this.getLastSyncResult()]).then(results => {
       const options = results[0]
-      const syncResult = results[1]
+      const syncResult = results[1] || { timestamp: 0 }
       const now = Date.now()
       const resultExpiration = syncResult.timestamp + MAX_SYNC_STALENESS_MS
 
