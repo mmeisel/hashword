@@ -122,7 +122,7 @@ class SyncUiWrapperController {
   hasSettingChanged (settingKey) {
     // Return false if either one is deleted since we won't actually show the diff in that case
     return this.currentLocal().deleteDate == null && this.currentRemote().deleteDate == null &&
-      this.currentLocal()[settingKey] !== this.currentRemote[settingKey]
+      this.currentLocal()[settingKey] !== this.currentRemote()[settingKey]
   }
 
   chooseLocal () {
