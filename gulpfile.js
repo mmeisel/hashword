@@ -1,7 +1,6 @@
 const gulp = require('gulp')
 const browserify = require('browserify')
 const del = require('del')
-const exec = require('child_process').exec
 const glob = require('glob')
 const KarmaServer = require('karma').Server
 const path = require('path')
@@ -74,7 +73,6 @@ src.pages.forEach(page => {
 
     instance.on('update', () => {
       return browserifyBundle(page, instance)
-        .on('end', () => gulp.start('reload'))
     })
     instance.on('log', message => console.log('[watchify]', `'${page}.js'`, message))
 
@@ -82,11 +80,11 @@ src.pages.forEach(page => {
   })
 })
 
-gulp.task('pages', src.pages.map(page => `page-${page}`))
+gulp.task('pages', gulp.parallel(src.pages.map(page => `page-${page}`)))
 
-gulp.task('watch-pages', src.pages.map(page => `watch-${page}`))
+gulp.task('watch-pages', gulp.parallel(src.pages.map(page => `watch-${page}`)))
 
-gulp.task('injectables', () => {
+gulp.task('injectables', () =>
   gulp.src(src.injectables, { base: 'src' })
     .pipe($.sourcemaps.init(sourcemapsOptions))
     .pipe($.babel(babelOptions))
@@ -94,64 +92,51 @@ gulp.task('injectables', () => {
     .on('error', error => console.error(error))
     .pipe($.sourcemaps.write('./maps'))
     .pipe(gulp.dest(outputdir))
-})
+)
 
-gulp.task('html', function () {
+gulp.task('html', () =>
   gulp.src(src.html)
     .pipe($.htmlmin(htmlminOptions))
     .pipe(gulp.dest(outputdir))
-})
+)
 
-gulp.task('css', function () {
+gulp.task('css', () =>
   gulp.src(src.css)
     .pipe($.concat('styles.css'))
     .pipe(gulp.dest(outputdir))
-})
+)
 
-gulp.task('chrome', function () {
+gulp.task('chrome', () =>
   gulp.src(src.chrome)
     .pipe(gulp.dest(outputdir))
-})
+)
 
-gulp.task('images', () => {
+gulp.task('images', () =>
   gulp.src(src.images)
     .pipe(gulp.dest(`${outputdir}/images`))
-})
+)
 
-gulp.task('fonts', () => {
+gulp.task('fonts', () =>
   gulp.src(src.fonts)
     .pipe(gulp.dest(`${outputdir}/fonts`))
-})
+)
 
 const allTasks = ['pages', 'injectables', 'html', 'css', 'images', 'fonts', 'chrome']
 
-gulp.task('clean', function () {
+gulp.task('clean', () =>
   del([outputdir, 'dist'])
-})
+)
 
-gulp.task('reload', function (cb) {
-  const reloadCmd = 'node_modules/chrome-extensions-reloader/bin/chrome-extensions-reloader --single-run'
-  exec(reloadCmd, (err, stdout, stderr) => {
-    if (stdout.length > 0) {
-      console.log(stdout)
-    }
-    if (stderr.length > 0) {
-      console.error(stderr)
-    }
-    cb(err)
-  })
-})
-
-gulp.task('watch', allTasks.filter(el => el !== 'pages').concat(['watch-pages']), () => {
-  gulp.watch(src.html, ['html', 'reload'])
+gulp.task('watch', gulp.parallel(allTasks.filter(el => el !== 'pages').concat(['watch-pages'])), () => {
+  gulp.watch(src.html, ['html'])
   gulp.watch(src.injectables, ['injectables'])
   gulp.watch(src.css, ['css'])
-  gulp.watch(src.chrome, ['chrome', 'reload'])
+  gulp.watch(src.chrome, ['chrome'])
   gulp.watch(src.fonts, ['fonts'])
-  gulp.watch(src.images, ['images', 'reload'])
+  gulp.watch(src.images, ['images'])
 })
 
-gulp.task('package', allTasks, function () {
+gulp.task('package', gulp.parallel(allTasks), () => {
   const manifest = require(`./${outputdir}/manifest.json`)
 
   // Check the manifest version against the latest version tag. If they don't match,
@@ -177,7 +162,7 @@ gulp.task('package', allTasks, function () {
     // Remove the key from the manifest if it's present (Google will complain if we leave it)
     delete manifest.key
 
-    gulp.src([`${outputdir}/**`, `!${outputdir}/**/maps{,/**}`, `!${outputdir}/manifest.json`])
+    return gulp.src([`${outputdir}/**`, `!${outputdir}/**/maps{,/**}`, `!${outputdir}/manifest.json`])
       .pipe($.file('manifest.json', JSON.stringify(manifest)))
       .pipe($.zip(`hashword-${manifest.version}.zip`))
       .pipe(gulp.dest('dist'))
@@ -196,4 +181,4 @@ gulp.task('test', done => {
 })
 
 // Regular build
-gulp.task('default', allTasks)
+gulp.task('default', gulp.parallel(allTasks))
