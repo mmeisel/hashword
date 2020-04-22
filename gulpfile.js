@@ -23,7 +23,7 @@ const src = {
 const outputdir = 'build'
 
 const babelOptions = {
-  sourceMaps: true
+  sourceMap: true
 }
 
 const htmlminOptions = {
@@ -36,8 +36,8 @@ const htmlminOptions = {
 const sourcemapsOptions = { loadMaps: true }
 
 const uglifyOptions = {
-  // The resulting value of injected scripts is important, negating IIFEs breaks this.
-  compress: { negate_iife: false }
+  // The resulting value of injected scripts is important, these options prevent breaking this.
+  compress: { expression: true, negate_iife: false }
 }
 
 function getBrowserify (page, watch) {
