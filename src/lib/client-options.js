@@ -13,12 +13,12 @@ class ClientOptions {
 
   get serverUrl () {
     switch (this.serverType) {
-    case ServerType.NONE:
-      return null
-    case ServerType.OFFICIAL:
-      return OFFICIAL_URL
-    case ServerType.CUSTOM:
-      return this.customServerUrl
+      case ServerType.NONE:
+        return null
+      case ServerType.OFFICIAL:
+        return OFFICIAL_URL
+      case ServerType.CUSTOM:
+        return this.customServerUrl
     }
     throw new Error(`Invalid server type: ${this.serverType}`)
   }

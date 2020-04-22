@@ -10,32 +10,32 @@ const popupSettingsFormTemplate = require('./popup-settings-form.tmpl.html')
 
 angular.module('popup', [clipboard, filters, settingsEditor])
 
-.service('popupService', popupService)
+  .service('popupService', popupService)
 
-.component('popupForm', {
-  controller: ['$scope', 'popupService', function ($scope, popupService) {
-    $scope.service = popupService
-    popupService.initPromise.then(() => $scope.$apply())
-  }],
-  template: popupFormTemplate
-})
+  .component('popupForm', {
+    controller: ['$scope', 'popupService', function ($scope, popupService) {
+      $scope.service = popupService
+      popupService.initPromise.then(() => $scope.$apply())
+    }],
+    template: popupFormTemplate
+  })
 
-.component('popupPasswordForm', {
-  controller: ['$scope', 'popupService', PopupPasswordFormController],
-  template: popupPasswordFormTemplate
-})
+  .component('popupPasswordForm', {
+    controller: ['$scope', 'popupService', PopupPasswordFormController],
+    template: popupPasswordFormTemplate
+  })
 
-.component('popupSettingsForm', {
-  controller: ['$scope', 'popupService', function ($scope, popupService) {
-    this.saveSettings = saveSettings
+  .component('popupSettingsForm', {
+    controller: ['$scope', 'popupService', function ($scope, popupService) {
+      this.saveSettings = saveSettings
 
-    $scope.service = popupService
-    $scope.settings = angular.copy(popupService.settings)
+      $scope.service = popupService
+      $scope.settings = angular.copy(popupService.settings)
 
-    function saveSettings () {
-      popupService.saveSettings($scope.settings)
-      popupService.hideSettings()
-    }
-  }],
-  template: popupSettingsFormTemplate
-})
+      function saveSettings () {
+        popupService.saveSettings($scope.settings)
+        popupService.hideSettings()
+      }
+    }],
+    template: popupSettingsFormTemplate
+  })

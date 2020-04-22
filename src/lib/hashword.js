@@ -148,7 +148,7 @@ hw.getHashword = function (domain, masterPassword, settings) {
   const key = masterPassword + '@' + domain.toLowerCase() + '+' + settings.generation
 
   return SHA3(key, { outputLength: settings.pwLength * 4 })
-        .toString(hw.encoder(settings.symbols))
+    .toString(hw.encoder(settings.symbols))
 }
 
 module.exports = hw

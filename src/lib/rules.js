@@ -23,8 +23,8 @@ const rules = {
 
     return new Promise((resolve, reject) => {
       Promise.all(imagePromises)
-          .then(() => resolve(imageData))
-          .catch(reject)
+        .then(() => resolve(imageData))
+        .catch(reject)
     })
 
     function loadIcon (variant, size) {
@@ -61,7 +61,7 @@ const rules = {
           // Due to a chrome bug (https://code.google.com/p/chromium/issues/detail?id=462542)
           // we need to manually load the icon images first.
           return rules.loadIcons()
-                  .then(resetRulesInternal.bind(this, hwData))
+            .then(resetRulesInternal.bind(this, hwData))
         })
         .catch(error => console.error(error))
 

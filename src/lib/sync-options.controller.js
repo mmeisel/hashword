@@ -37,13 +37,13 @@ class SyncOptionsController {
     this.setState({ newOptions: new ClientOptions(this.options) })
 
     switch (this.options.serverType) {
-    case ClientOptions.ServerType.NONE:
-      this.setState({ ready: true })
-      break
-    case ClientOptions.ServerType.OFFICIAL:
-    case ClientOptions.ServerType.CUSTOM:
-      this.connect()
-      break
+      case ClientOptions.ServerType.NONE:
+        this.setState({ ready: true })
+        break
+      case ClientOptions.ServerType.OFFICIAL:
+      case ClientOptions.ServerType.CUSTOM:
+        this.connect()
+        break
     }
   }
 
@@ -115,10 +115,10 @@ class SyncOptionsController {
         serverStatus
       })
     })
-    .catch(error => {
-      this.setState({ busy: false, error: error.message })
-    })
-    .then(() => this.scope.$apply())
+      .catch(error => {
+        this.setState({ busy: false, error: error.message })
+      })
+      .then(() => this.scope.$apply())
   }
 
   login () {
@@ -131,10 +131,10 @@ class SyncOptionsController {
       this.setState({ newOptions })
       return this.connect()
     })
-    .catch(error => {
-      this.setState({ busy: false, error: error.message })
-      this.scope.$apply()
-    })
+      .catch(error => {
+        this.setState({ busy: false, error: error.message })
+        this.scope.$apply()
+      })
   }
 }
 

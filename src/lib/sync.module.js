@@ -42,23 +42,23 @@ class SyncService {
         headers: authHeaders(options.accessToken),
         withCredentials: true
       }))
-      .then(response => {
-        return {
-          status: ServerStatus.CONNECTED,
-          user: response.data
-        }
-      })
-      .catch(response => {
-        if (response.status === 401) {
-          return Promise.resolve({ status: ServerStatus.AUTH_REQUIRED })
-        } else {
-          console.error('Error talking to server', response)
-          return Promise.resolve({
-            status: ServerStatus.SERVER_UNAVAILABLE,
-            error: response.statusText
-          })
-        }
-      })
+        .then(response => {
+          return {
+            status: ServerStatus.CONNECTED,
+            user: response.data
+          }
+        })
+        .catch(response => {
+          if (response.status === 401) {
+            return Promise.resolve({ status: ServerStatus.AUTH_REQUIRED })
+          } else {
+            console.error('Error talking to server', response)
+            return Promise.resolve({
+              status: ServerStatus.SERVER_UNAVAILABLE,
+              error: response.statusText
+            })
+          }
+        })
     })
   }
 
@@ -97,33 +97,33 @@ class SyncService {
         withCredentials: true
       })
     ])
-    .then(results => {
-      const localDomainMap = results[0]
-      const remoteDomainMap = results[1].data
-      const toSync = {}
+      .then(results => {
+        const localDomainMap = results[0]
+        const remoteDomainMap = results[1].data
+        const toSync = {}
 
-      // Check for domains that are either only remote or where the remote version is newer
-      Object.keys(remoteDomainMap).forEach(domain => {
-        const local = localDomainMap[domain]
-        const remote = remoteDomainMap[domain]
+        // Check for domains that are either only remote or where the remote version is newer
+        Object.keys(remoteDomainMap).forEach(domain => {
+          const local = localDomainMap[domain]
+          const remote = remoteDomainMap[domain]
 
-        if (local == null) {
-          toSync[domain] = null
-        } else if (local.rev !== remote.rev || local.accessDate !== remote.accessDate) {
-          toSync[domain] = local
-        }
+          if (local == null) {
+            toSync[domain] = null
+          } else if (local.rev !== remote.rev || local.accessDate !== remote.accessDate) {
+            toSync[domain] = local
+          }
+        })
+
+        // Check for domains that are only local
+        Object.keys(localDomainMap).forEach(domain => {
+          if (remoteDomainMap[domain] == null) {
+            toSync[domain] = localDomainMap[domain]
+          }
+        })
+
+        console.info('Found', Object.keys(toSync).length, 'domain(s) to sync')
+        return toSync
       })
-
-      // Check for domains that are only local
-      Object.keys(localDomainMap).forEach(domain => {
-        if (remoteDomainMap[domain] == null) {
-          toSync[domain] = localDomainMap[domain]
-        }
-      })
-
-      console.info('Found', Object.keys(toSync).length, 'domain(s) to sync')
-      return toSync
-    })
   }
 
   syncDomains (options, domainsToSync) {
@@ -139,14 +139,14 @@ class SyncService {
       headers: authHeaders(options.accessToken),
       withCredentials: true
     }))
-    .then(response => {
-      const syncResult = { data: response.data, serverUrl: options.serverUrl, timestamp: Date.now() }
+      .then(response => {
+        const syncResult = { data: response.data, serverUrl: options.serverUrl, timestamp: Date.now() }
 
-      return storage.handleSyncResult(syncResult)
-        .then(() => rules.resetRules())
-        .then(() => console.info('Synced', Object.keys(domainsToSync).length, 'domain(s)'))
-        .then(() => syncResult)
-    })
+        return storage.handleSyncResult(syncResult)
+          .then(() => rules.resetRules())
+          .then(() => console.info('Synced', Object.keys(domainsToSync).length, 'domain(s)'))
+          .then(() => syncResult)
+      })
   }
 
   syncNow (optionsArg) {

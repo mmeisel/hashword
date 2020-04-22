@@ -48,9 +48,9 @@ function getBrowserify (page, watch) {
     packageCache: {},
     plugin: watch ? [watchify] : []
   })
-  .transform(html2js, Object.assign({ minify: true }, htmlminOptions))
+    .transform(html2js, Object.assign({ minify: true }, htmlminOptions))
   // The babelOptions need to be copied as babelify mutates the object for some reason
-  .transform('babelify', Object.assign({}, babelOptions))
+    .transform('babelify', Object.assign({}, babelOptions))
 }
 
 function browserifyBundle (page, instance) {
@@ -177,7 +177,7 @@ gulp.task('test', done => {
     },
     done
   )
-  .start()
+    .start()
 })
 
 // Regular build

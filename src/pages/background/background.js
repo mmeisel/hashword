@@ -103,5 +103,5 @@ class BackgroundService {
 }
 
 angular.module('background', [sync])
-.run(['backgroundService', backgroundService => backgroundService.init()])
-.service('backgroundService', ['syncService', BackgroundService])
+  .run(['backgroundService', backgroundService => backgroundService.init()])
+  .service('backgroundService', ['syncService', BackgroundService])
